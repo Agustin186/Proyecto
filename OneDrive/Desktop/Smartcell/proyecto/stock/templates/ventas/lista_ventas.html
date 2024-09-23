@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Interfaz de Ventas</title>
+    <link rel="stylesheet" href="{% static 'css/estilo_ventas.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nueva Venta</h1>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="vendedor">Vendedor:</label>
+                <select name="vendedor" id="vendedor">
+                    {% for empleado in empleados %}
+                        <option value="{{ empleado.id_emplead }}">{{ empleado.nombre_emplead }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
+            <div class="form-group">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha">
+            </div>
+            <div class="form-group">
+                <label for="cliente">Cliente:</label>
+                <select name="" id="">
+                    {% for cliente in clientes %}
+                    <option value=""></option>
+                     <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre">
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Descuento</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" name="cantidad"></td>
+                        <td><input type="text" name="descripcion"></td>
+                        <td><input type="number" name="precio"></td>
+                        <td><input type="number" name="descuento"></td>
+                        <td><input type="number" name="Subtotal"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <label for="pago">Forma de Pago:</label>
+                <select name="" id="">
+                    <option value="">Efectivo</option>
+                    <option value="">Transferencia</option>
+                    <option value="">Tarjeta de Debito</option>
+                    <option value="">Tarjeta de Credito</option>
+                </select>
+            </div>
+            <div class="total">
+                <label for="total">Total:</label>
+                <input type="number" id="total" name="total" readonly>
+            </div>
+            <div class="buttons">
+                <button type="submit">Aceptar</button>
+                <button type="button">Salir</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}
