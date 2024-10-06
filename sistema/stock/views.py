@@ -194,7 +194,7 @@ def eliminar_proveedores(request,id_prov):
 
 ##Compras
 def mostrar_compras(request):
-    return render(request,"compras/lista_compras.html")
+    return render(request,"compras/crear_compra.html")
 
 
 
@@ -235,6 +235,9 @@ def crear_venta(request):
                 cant_vendida=cantidad
             )
             nuevo_detalle.save()
+
+            producto.stock_actual-=cantidad
+            producto.save()
 
         return redirect('det_venta',id_venta=nueva_venta.id_venta)
 
@@ -283,3 +286,11 @@ def GenerarPdf(request,id_venta ):
     if pisa_status.err:
         return HttpResponse(f"error: {pisa_status.err}")
     return response
+
+def historial_ventas(request):
+    ventas=Ventas.objects.all().order_by("-fecha_hs")
+    context={
+        "ventas": ventas
+    }
+
+    return render (request, "ventas/historial_ventas.html", context)

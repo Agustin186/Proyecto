@@ -4,7 +4,7 @@
 {% block titulo %}Detalle de Venta{% endblock %}
 
 {% block contenido %}
-<div class="detalle-container">
+<div class="detalle-contenedor">
     <h2>Detalle de la Venta</h2>
     <p><strong>ID Venta:</strong> {{ venta.id_venta }}</p>
     <p><strong>Cliente:</strong> {{ venta.id_cli.nombre_cli }} {{ venta.id_cli.apellido_cli }}</p>
@@ -22,6 +22,7 @@
             </tr>
         </thead>
         <tbody>
+
             {% for detalle in detalles %}
             <tr>
                 <td>{{ detalle.id_prod.nombre_prod }}</td>

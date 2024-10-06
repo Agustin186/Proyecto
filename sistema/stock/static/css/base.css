@@ -32,6 +32,7 @@ html, body {
 /* Ajusta la posición del contenedor principal SMARTCELL */
 .container {
     display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
     margin-top: 10px; /* Espacio suficiente para la barra superior */
     margin-left: 10px; /* Mueve el contenido para que no se superponga con la barra de navegación */

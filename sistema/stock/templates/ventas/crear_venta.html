@@ -5,20 +5,20 @@
 {% block contenido %}
 <div class="contenedor">
     <div class="caja_venta">
-        <div class="header">
+        <div class="Encabezado">
             <h1>Nueva Venta</h1>
         </div>
 
         <form action="{% url 'crear_venta' %}" method="POST">
             {% csrf_token %}
             <!--FECHA DEL DIA-->
-            <div class="form-group">
+            <div class="grupo_formularios">
                 <label for="fecha">Fecha:</label>
                 <input type="date" id="fecha_hs" name="fecha_hs" >
             </div>
 
             <!-- SELECCION DEL VENDEDOR -->
-            <div class="form-group">
+            <div class="grupo_formularios">
                 <label for="vendedor">Vendedor:</label>
                 <select name="vendedor" id="vendedor">
                     {% for empleado in empleados %}
@@ -28,9 +28,10 @@
             </div>
         
             <!-- SELECCION DEL CLIENTE -->
-            <div class="form-group">
+            <div class="grupo_formularios">
                 <label>Cliente:</label>
                 <select name="cliente" id="cliente" >
+                    <option value=""></option>
                     {% for cliente in clientes %}
                     <option value="{{ cliente.id_cli }}" >{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
                     {% endfor %}
@@ -43,8 +44,9 @@
                         <th>Descripcion</th>
                         <th>Precio</th>
                         <th>Cantidad</th>
-                        <th>Descuento</th>
+                        <th>Descuento %</th>
                         <th>Subtotal</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,12 +66,12 @@
         
     </div>
 
-    <!-- CAJA DE PRODUCTOS -->
     <div class="caja_productos">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Productos</h4>
-
+                <!-- Barra de búsqueda -->
+                <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto...">
                 <div class="table-responsive">
                     <table class="table table-primary">
                         <thead>
@@ -80,7 +82,7 @@
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="lista-productos">
                             {% for producto in productos %}
                             <tr>
                                 <td>{{ producto.id_prod }}</td>
@@ -103,41 +105,73 @@
             </div>
         </div>
     </div>
-</div>
-
+    
 <script>
         //Confirmacion de la venta
         function ConfirmarVenta(){
             return confirm("¿Esta seguro de confirmar la venta?");
         }
-    document.addEventListener('DOMContentLoaded', function () {
-        // Selecciona la fecha del día
-        var hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_hs').value = hoy;
+
+        document.addEventListener('DOMContentLoaded', function () {
+     // Seleccionar la barra de búsqueda y la lista de productos
+     const buscarProducto = document.getElementById('buscarProducto');
+     const listaProductos = document.getElementById('lista-productos');
+
+    // Filtrar productos en tiempo real según el texto ingresado
+    buscarProducto.addEventListener('keyup', function () {
+        const texto = buscarProducto.value.toLowerCase();
+        const filas = listaProductos.querySelectorAll('tr');
+
+        filas.forEach(fila => {
+            const nombreProducto = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
+
+            if (nombreProducto.includes(texto)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+});
 
 
-        // Variables
-        const tablaVenta = document.querySelector('#tabla-venta tbody');
-        let totalVenta = 0;
 
-        // Funcion para actualizar el total
-        function actualizarTotal() {
-            const subtotales = document.querySelectorAll('.subtotal');
-            let total = 0;
-            subtotales.forEach(subtotal => {
-                total += parseFloat(subtotal.textContent);
-            });
-            document.getElementById('total').value = total.toFixed(2);
-        }
 
-        // Evento para añadir productos a la tabla de ventas
-        document.querySelectorAll('.agregar-producto').forEach(button => {
-            button.addEventListener('click', function () {
-                const id = this.dataset.id;
-                const nombre = this.dataset.nombre;
-                const precio = parseFloat(this.dataset.precio).toFixed(2);
+     document.addEventListener('DOMContentLoaded', function () {
+     var hoy = new Date().toISOString("en-CA").split('T')[0];
+     document.getElementById('fecha_hs').value = hoy;
 
-                // Crear una nueva fila para el producto
+     const tablaVenta = document.querySelector('#tabla-venta tbody');
+
+     function actualizarTotal() {
+        const subtotales = document.querySelectorAll('.subtotal');
+        let total = 0;
+        subtotales.forEach(subtotal => {
+            total += parseFloat(subtotal.textContent);
+        });
+        document.getElementById('total').value = total.toFixed(2);
+     }
+
+     document.querySelectorAll('.agregar-producto').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const precio = parseFloat(this.dataset.precio).toFixed(2);
+
+            const filaExistente = Array.from(tablaVenta.querySelectorAll('input[name="productos[]"]')).find(input => input.value === id);
+
+            if (filaExistente) {
+                const fila = filaExistente.closest('tr');
+                const cantidadInput = fila.querySelector('.cantidad');
+                const nuevaCantidad = parseInt(cantidadInput.value) + 1;
+                cantidadInput.value = nuevaCantidad;
+
+                const descuento = parseFloat(fila.querySelector('.descuento').value);
+                const subtotal = (nuevaCantidad * precio) * (1 - descuento / 100);
+                fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
+                fila.querySelector('input[name="cantidades[]"]').value = nuevaCantidad;
+                fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
+             } else {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
                     <td>${nombre}</td>
@@ -149,22 +183,14 @@
                     <input type="hidden" name="cantidades[]" value="1">
                     <input type="hidden" name="descuentos[]" value="0">
                     <input type="hidden" name="subtotales[]" value="${precio}">
-                    
+                    <td><button type="button" class="btn btn-danger eliminar-producto">Eliminar</button></td>
                 `;
-
-                // Añadir la fila a la tabla
                 tablaVenta.appendChild(fila);
 
-                // Actualizar el total de la venta
-                actualizarTotal();
-
-                // Evento para recalcular subtotal cuando cambia la cantidad o el descuento
                 fila.querySelector('.cantidad').addEventListener('input', function () {
                     const cantidad = parseFloat(this.value);
                     const descuento = parseFloat(fila.querySelector('.descuento').value);
-
                     const subtotal = (cantidad * precio) * (1 - descuento / 100);
-
                     fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
                     fila.querySelector('input[name="cantidades[]"]').value = cantidad;
                     fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
@@ -180,8 +206,19 @@
                     fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
                     actualizarTotal();
                 });
-            });
+
+                // Añadir el evento para eliminar la fila
+                fila.querySelector('.eliminar-producto').addEventListener('click', function () {
+                    fila.remove(); // Eliminar la fila del DOM
+                    actualizarTotal(); // Actualizar el total después de eliminar el producto
+                });
+            }
+
+            actualizarTotal();
         });
     });
+});
+
+
 </script>
 {% endblock %}

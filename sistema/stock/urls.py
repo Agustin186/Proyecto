@@ -56,4 +56,5 @@ urlpatterns = [
     path("crear_venta",views.crear_venta, name="crear_venta"),
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),
     path('detalle_venta/pdf/<int:id_venta>/', views.GenerarPdf, name='generar_pdf'),
+    path("historial_ventas", views.historial_ventas, name="historial_ventas"),
 ]
