@@ -7,60 +7,62 @@ body {
     padding: 20px;
 }
 
-
-.contenedor{
+.contenedor {
     display: flex;
     justify-content: space-between;
     gap: 20px;
     width: 100%;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
-.caja_venta {
-    width: 65%;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(173, 17, 17, 0.1);
-    border-radius: 10px;
-}
-
-.caja_productos{
-    width: 35%; 
+/* Caja de venta y productos */
+.caja_venta, .caja_productos {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Caja de Venta */
+.caja_venta {
+    width: 60%;
+}
+
+/* Caja de Productos */
+.caja_productos {
+    width: 30%;
+}
+
 /* Encabezado */
-.header {
+.Encabezado {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.header h1 {
+.Encabezado h1 {
     font-size: 2rem;
     color: #007bff;
 }
 
 /* Estilos de los formularios */
-
-.form-group label {
+.grupo_formularios label {
     font-weight: bold;
-    color: #333;
+    color: #121111;
 }
 
-.form-group input, .form-group select {
+.grupo_formularios input, .grupo_formularios select {
     width: 100%;
     padding: 10px;
     font-size: 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid #030303;
     border-radius: 5px;
 }
 
-.form-group input[type="date"] {
+.grupo_formularios input[type="date"] {
     max-width: 300px;
 }
 
+/* Tabla */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -95,11 +97,11 @@ table td input {
 .total input {
     font-size: 1.5rem;
     border: none;
-    color: #007bff;
+    color: #000000;
     font-weight: bold;
 }
 
-/* Estilos para los botones */
+/* Botones */
 .buttons {
     margin-top: 20px;
     display: flex;
@@ -115,17 +117,83 @@ button {
 }
 
 button[type="submit"] {
-    background-color: #007bff;
+    background-color: #0a6412;
     color: white;
 }
 
 button[type="button"] {
-    background-color: #6c757d;
+    background-color: #ae1414;
     color: white;
 }
 
-/* Hover effects */
 button:hover {
     opacity: 0.9;
+}
+
+/* ------------------ Estilos Responsivos ------------------ */
+
+/* Para pantallas pequeñas (tablets y móviles) */
+@media (max-width: 768px) {
+    .contenedor {
+        flex-wrap: wrap;
+    }
+
+    .caja_venta, .caja_productos {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .Encabezado h1 {
+        font-size: 1.5rem;
+    }
+
+    .grupo_formularios input, .grupo_formularios select {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .total {
+        font-size: 1rem;
+    }
+
+    .total input {
+        font-size: 1.2rem;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 8px 15px;
+    }
+
+    table th, table td {
+        font-size: 0.9rem;
+    }
+}
+
+/* Para pantallas muy pequeñas (móviles en orientación vertical) */
+@media (max-width: 480px) {
+    .grupo_formularios input, .grupo_formularios select {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+
+    table th, table td {
+        font-size: 0.8rem;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
 }
 

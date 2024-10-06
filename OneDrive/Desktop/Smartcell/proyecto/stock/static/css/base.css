@@ -1,0 +1,159 @@
+html, body {
+    height: 100%; /* Asegura que ocupen toda la altura */
+    margin: 0; /* Elimina márgenes por defecto */
+    background-image: url("{% static 'imagenes/FONDODEPANTALLA.jpg' %}"); /* Asegúrate de que la ruta sea correcta */
+    background-size: cover; /* La imagen cubrirá todo el fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center; /* Centra la imagen */
+    background-attachment: fixed; /* Fija la imagen para que no se desplace con el contenido */
+}
+
+/*-------------------------------------------------------------------*/
+
+/* Estilos para la barra superior */
+.top-bar {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: calc(100% - 48px); /* Ajusta el ancho para considerar la barra lateral */
+    height: 58px; /* Altura de la barra superior */
+    background-color: #0a3099; /* Azul oscuro */
+    display: flex;
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: center; /* Centra horizontalmente los elementos */
+    padding: 0 380px; /* Ajuste para hacer espacio al botón */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    gap: 20px; /* Espaciado entre elementos */
+}
+
+/*-----------------------------------------------------------------*/
+
+/* Ajusta la posición del contenedor principal SMARTCELL */
+.container {
+    margin-top: 10px; /* Espacio suficiente para la barra superior */
+    margin-left: 10px; /* Mueve el contenido para que no se superponga con la barra de navegación */
+    padding: 100px;
+    background-color: rgb(250, 244, 244); /* Color de fondo claro */
+}
+
+nav {
+    background-color: #0a3099; /* Azul más oscuro */
+    padding: 20px;
+    width: 98px; /* Ancho fijo */
+    height: calc(100vh - 50px); /* Altura completa menos la altura de la barra superior */
+    position: fixed; /* Fijar la barra en la parte izquierda */
+    top: 50px; /* Ajusta para que esté debajo de la barra superior */
+    left: 0;
+    display: flex;
+    flex-direction: column; /* Colocar los elementos en una columna */
+    box-shadow: 2px 0 5px rgba(251, 253, 255, 0.949); /* Sombra suave */
+}
+
+/*----------------------------------------------------------------*/
+
+/* BARRA LATERAL IZQUIERDO */
+.nav {
+    display: flex;
+    flex-direction: column; /* Los elementos estarán en una columna */
+    list-style-type: none;
+    padding-left: 0;
+    gap: 50px; /* Espaciado entre elementos */
+    
+}
+
+/*----------------------------------------------------------------*/
+
+/* BOTONES DE LA BARRA DE TAREA (INICIO ETC..) */
+.nav-item {
+    text-decoration: none;
+    color: rgb(243, 243, 243); /* Color blanco para los enlaces */
+    font-weight: bold;
+    padding: 12px 10px;
+    background-color: #186fb1; /* Azul más claro para los botones */
+    border-radius: 11px; /* Bordes redondeados */
+    text-align: center;
+    box-shadow: 0 3px 6px rgb(127, 174, 189); /* Sombra en los botones */
+    transition: transform 0.3s ease; /* Animación al hacer hover */
+}
+
+/*--------------------------------------------------------------*/
+
+/* SOMBRA PARA TODOS LOS BOTONES ) */
+.nav-item:hover {
+    background-color: #46b3c6; /* Color más oscuro al hacer hover */
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño al hacer hover */
+}
+
+/*-------------------------------------------------------------*/
+
+/* Estilos para el contenedor principal de SMARTCELL "AQUI PUEDES ENCONTRAR" ajustado a la barra de navegación */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Espaciado entre filas */
+    
+}
+
+.col-12 {
+    flex: 1;
+    padding: 100px;
+    background-color: rgb(254, 254, 254);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(60, 50, 124, 0.819); /* Sombra */
+}
+
+/*---------------------------------------------------------------*/
+
+
+/* Columna */
+.col-12 {
+    padding: 20px; /* Ajusta según sea necesario */
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semi-transparente si lo deseas */
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(60, 50, 124, 0.819); /* Sombra */
+}
+
+
+/* Estilo de la barra de tareas inferior */
+.taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 120px; /* Ajusta la posición a la derecha de la barra lateral */
+    width: calc(100% - 120px); /* Ajusta el ancho para que considere la barra lateral */
+    background-color: #0a3099; /* Azul oscuro */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/*-----------------------------------------------------------------*/
+
+
+/* Estilos para el menú desplegable */
+.dropdown {
+    position: relative; /* Necesario para la posición absoluta del menú */
+}
+
+.dropdown-menu {
+    display: none; /* Oculta el menú por defecto */
+    position: fixed;
+    background-color: white; /* Cambia según tu diseño */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block; /* Muestra el menú al pasar el mouse */
+}
+
+.dropdown-item {
+    padding: 10px 15px; /* Espaciado para los elementos del menú */
+    color: #fe0707; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+}
