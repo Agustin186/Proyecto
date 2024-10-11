@@ -1,0 +1,194 @@
+/* Contenedor principal de la vista de ventas */
+.contenedor_ventas {
+    display: flex;
+    justify-content: space-between; /* Mover las cajas a los extremos */
+    padding: 30px;
+    height: calc(100vh - 100px); /* Altura máxima para evitar scroll en la página completa */
+}
+
+/* Caja de Venta */
+.caja_venta {
+    width: 60%;
+    background-color: #f8f9fa;
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-right: 10px; /* Separación con la caja de productos */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Evitar scroll en toda la caja */
+}
+
+/* Encabezado de la caja de venta */
+.Encabezado_venta h1 {
+    text-align: center;
+    color: #007bff;
+    margin-top: 10px;
+}
+
+/* Grupo de formularios */
+.grupo_formularios {
+    margin-bottom: 15px;
+}
+
+.grupo_formularios label {
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="date"],
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+}
+
+/* Contenedor con scroll para la tabla de productos seleccionados */
+.tabla-productos-contenedor {
+    max-height: 250px; /* Altura máxima del contenedor */
+    overflow-y: auto; /* Scroll vertical */
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Estilo de la tabla dentro del contenedor */
+#tabla-venta {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabla-venta th,
+#tabla-venta td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Total de la venta */
+.total {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.total label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Botones de Acción */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Caja de Productos */
+.caja_productos {
+    width: 35%;
+    background-color: #f8f9fa;
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Barra de búsqueda */
+#buscarProducto {
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+}
+
+/* Contenedor con scroll para la lista de productos disponibles */
+.contenedor-lista-productos {
+    max-height: 300px; /* Limitar la altura de la caja de productos */
+    overflow-y: auto; /* Scroll vertical */
+    border: 1px solid #007bff;
+    border-radius: 5px;
+}
+
+/* Estilo de la tabla dentro de la caja de productos */
+.table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.table th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Estilo de scroll personalizado */
+.tabla-productos-contenedor::-webkit-scrollbar,
+.contenedor-lista-productos::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tabla-productos-contenedor::-webkit-scrollbar-thumb,
+.contenedor-lista-productos::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 5px;
+}
+
+.tabla-productos-contenedor::-webkit-scrollbar-track,
+.contenedor-lista-productos::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+    .contenedor_ventas {
+        flex-direction: column; /* Hacer que las cajas se apilen verticalmente */
+        align-items: center;
+    }
+
+    .caja_venta,
+    .caja_productos {
+        width: 90%; /* Ancho adaptado */
+        margin-bottom: 20px;
+    }
+
+    .tabla-productos-contenedor {
+        max-height: 200px; /* Limitar la altura en pantallas pequeñas */
+    }
+
+    .contenedor-lista-productos {
+        max-height: 200px; /* Limitar la altura en pantallas pequeñas */
+    }
+}

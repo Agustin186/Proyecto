@@ -3,21 +3,23 @@
 {% block titulo %}Inicio{% endblock %}
 
 {% block contenido %}
-<div class="contenedor">
+<div class="contenedor_ventas">
+    <!-- Caja de Venta -->
     <div class="caja_venta">
-        <div class="Encabezado">
+        <div class="Encabezado_venta">
             <h1>Nueva Venta</h1>
         </div>
 
         <form action="{% url 'crear_venta' %}" method="POST">
             {% csrf_token %}
-            <!--FECHA DEL DIA-->
+            
+            <!-- FECHA DEL DÍA -->
             <div class="grupo_formularios">
                 <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha_hs" name="fecha_hs" >
+                <input type="date" id="fecha_hs" name="fecha_hs" readonly>
             </div>
 
-            <!-- SELECCION DEL VENDEDOR -->
+            <!-- SELECCIÓN DEL VENDEDOR -->
             <div class="grupo_formularios">
                 <label for="vendedor">Vendedor:</label>
                 <select name="vendedor" id="vendedor">
@@ -27,56 +29,65 @@
                 </select>
             </div>
         
-            <!-- SELECCION DEL CLIENTE -->
+            <!-- SELECCIÓN DEL CLIENTE -->
             <div class="grupo_formularios">
                 <label>Cliente:</label>
-                <select name="cliente" id="cliente" >
+                <select name="cliente" id="cliente">
                     <option value=""></option>
                     {% for cliente in clientes %}
-                    <option value="{{ cliente.id_cli }}" >{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
+                    <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
                     {% endfor %}
                 </select>
             </div>
+            
+            <!-- Contenedor con scroll para la tabla de productos agregados -->
+            <div class="tabla-productos-contenedor">
+                <table id="tabla-venta">
+                    <thead>
+                        <tr>
+                            <th>Descripcion</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Descuento %</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán los productos seleccionados para la venta -->
+                    </tbody>
+                </table>
+            </div>
         
-            <table id="tabla-venta">
-                <thead>
-                    <tr>
-                        <th>Descripcion</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Descuento %</th>
-                        <th>Subtotal</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- AQUI SE CARGAN LOS PRODUCTOS -->
-                </tbody>
-            </table>
-        
+            <!-- Total de la Venta -->
             <div class="total">
                 <label for="total">Total:</label>
                 <input type="number" id="total" name="total" readonly value="0">
             </div>
+            
+            <!-- Botones de Acción -->
             <div class="buttons">
                 <button class="btn btn-success" type="submit" value="Guardar" onclick="return ConfirmarVenta()">Aceptar</button>
                 <button type="button" onclick=window.location.href='{% url 'inicio' %}'>Salir</button>
             </div>
         </form>
-        
     </div>
 
+    <!-- Caja de Productos -->
     <div class="caja_productos">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Productos</h4>
+                
                 <!-- Barra de búsqueda -->
                 <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto...">
-                <div class="table-responsive">
+
+                <!-- Contenedor con scroll para la lista de productos disponibles -->
+                <div class="contenedor-lista-productos">
                     <table class="table table-primary">
                         <thead>
                             <tr>
-                                <th scope="col">Codigo</th>
+                                <th scope="col">Código</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Precio</th>
                                 <th scope="col">Acciones</th>
@@ -105,59 +116,49 @@
             </div>
         </div>
     </div>
-    
+</div>
+
 <script>
-        //Confirmacion de la venta
-        function ConfirmarVenta(){
-            return confirm("¿Esta seguro de confirmar la venta?");
-        }
+//Confirmación de la venta
+function ConfirmarVenta(){
+    return confirm("¿Está seguro de confirmar la venta?");
+}
 
-        document.addEventListener('DOMContentLoaded', function () {
-     // Seleccionar la barra de búsqueda y la lista de productos
-     const buscarProducto = document.getElementById('buscarProducto');
-     const listaProductos = document.getElementById('lista-productos');
+// Filtrado de productos por búsqueda
+document.addEventListener('DOMContentLoaded', function () {
+    const buscarProducto = document.getElementById('buscarProducto');
+    const listaProductos = document.getElementById('lista-productos');
 
-    // Filtrar productos en tiempo real según el texto ingresado
     buscarProducto.addEventListener('keyup', function () {
         const texto = buscarProducto.value.toLowerCase();
         const filas = listaProductos.querySelectorAll('tr');
 
         filas.forEach(fila => {
             const nombreProducto = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
-
-            if (nombreProducto.includes(texto)) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
+            fila.style.display = nombreProducto.includes(texto) ? '' : 'none';
         });
     });
 });
 
+// Configuración y cálculo de la venta
+document.addEventListener('DOMContentLoaded', function () {
+    const tablaVenta = document.querySelector('#tabla-venta tbody');
+    const totalInput = document.getElementById('total');
 
-
-
-     document.addEventListener('DOMContentLoaded', function () {
-     var hoy = new Date().toISOString("en-CA").split('T')[0];
-     document.getElementById('fecha_hs').value = hoy;
-
-     const tablaVenta = document.querySelector('#tabla-venta tbody');
-
-     function actualizarTotal() {
+    function actualizarTotal() {
         const subtotales = document.querySelectorAll('.subtotal');
         let total = 0;
         subtotales.forEach(subtotal => {
-            total += parseFloat(subtotal.textContent);
+            total += parseFloat(subtotal.textContent) || 0;
         });
-        document.getElementById('total').value = total.toFixed(2);
-     }
+        totalInput.value = total.toFixed(2);
+    }
 
-     document.querySelectorAll('.agregar-producto').forEach(button => {
+    document.querySelectorAll('.agregar-producto').forEach(button => {
         button.addEventListener('click', function () {
             const id = this.dataset.id;
             const nombre = this.dataset.nombre;
             const precio = parseFloat(this.dataset.precio).toFixed(2);
-
             const filaExistente = Array.from(tablaVenta.querySelectorAll('input[name="productos[]"]')).find(input => input.value === id);
 
             if (filaExistente) {
@@ -169,9 +170,7 @@
                 const descuento = parseFloat(fila.querySelector('.descuento').value);
                 const subtotal = (nuevaCantidad * precio) * (1 - descuento / 100);
                 fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                fila.querySelector('input[name="cantidades[]"]').value = nuevaCantidad;
-                fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-             } else {
+            } else {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
                     <td>${nombre}</td>
@@ -179,46 +178,20 @@
                     <td><input type="number" class="cantidad" value="1" min="1"></td>
                     <td><input type="number" class="descuento" value="0" min="0" max="100"></td>
                     <td class="subtotal">${precio}</td>
-                    <input type="hidden" name="productos[]" value="${id}">
-                    <input type="hidden" name="cantidades[]" value="1">
-                    <input type="hidden" name="descuentos[]" value="0">
-                    <input type="hidden" name="subtotales[]" value="${precio}">
                     <td><button type="button" class="btn btn-danger eliminar-producto">Eliminar</button></td>
                 `;
                 tablaVenta.appendChild(fila);
 
-                fila.querySelector('.cantidad').addEventListener('input', function () {
-                    const cantidad = parseFloat(this.value);
-                    const descuento = parseFloat(fila.querySelector('.descuento').value);
-                    const subtotal = (cantidad * precio) * (1 - descuento / 100);
-                    fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                    fila.querySelector('input[name="cantidades[]"]').value = cantidad;
-                    fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-                    actualizarTotal();
-                });
-
-                fila.querySelector('.descuento').addEventListener('input', function () {
-                    const cantidad = parseFloat(fila.querySelector('.cantidad').value);
-                    const descuento = parseFloat(this.value);
-                    const subtotal = (cantidad * precio) * (1 - descuento / 100);
-                    fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                    fila.querySelector('input[name="descuentos[]"]').value = descuento;
-                    fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-                    actualizarTotal();
-                });
-
-                // Añadir el evento para eliminar la fila
+                fila.querySelector('.cantidad, .descuento').addEventListener('input', actualizarTotal);
                 fila.querySelector('.eliminar-producto').addEventListener('click', function () {
-                    fila.remove(); // Eliminar la fila del DOM
-                    actualizarTotal(); // Actualizar el total después de eliminar el producto
+                    fila.remove();
+                    actualizarTotal();
                 });
             }
-
             actualizarTotal();
         });
     });
 });
-
-
 </script>
 {% endblock %}
+

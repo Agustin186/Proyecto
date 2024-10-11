@@ -8,11 +8,11 @@ urlpatterns = [
     path('procesar_login/', views.procesar_login, name='login'),
     path('', RedirectView.as_view(url='procesar_login/', permanent=True)),
 
-    ##Apertura caja
-    path('apertura_caja/', views.apertura_caja, name='apertura_caja'),
-    ##Cierre caja
-    path("cierre_caja", views.cierre_caja, name="cierre_caja"),
-
+   ##CAJA
+    path('apertura/', views.apertura_arqueo, name='apertura_arqueo'),
+    path('historial/', views.historial_arqueo, name='historial_arqueo'),
+    path('cerrar/<int:id_caja>/', views.cerrar_arqueo, name='cerrar_arqueo'),
+    
     ##Inicio
     path('inicio/', views.inicio, name='inicio'),
 
@@ -57,4 +57,11 @@ urlpatterns = [
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),
     path('detalle_venta/pdf/<int:id_venta>/', views.GenerarPdf, name='generar_pdf'),
     path("historial_ventas", views.historial_ventas, name="historial_ventas"),
+
+
+
+
+    path('registrar_ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
+    path('registrar_egreso/', views.registrar_egreso, name='registrar_egreso'),
+
 ]

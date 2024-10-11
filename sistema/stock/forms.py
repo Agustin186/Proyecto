@@ -13,33 +13,38 @@ class ClientesForm(forms.ModelForm):
         fields="__all__"
 
 class EmpleadosForm(forms.ModelForm):
-    username = forms.CharField(max_length=150, required=False)
-    password = forms.CharField(widget=forms.PasswordInput, required=False)
+    username = forms.CharField(max_length=150, required=False)  # No requerido al editar
+    password = forms.CharField(widget=forms.PasswordInput, required=False)  # No requerido al editar
 
     class Meta:
         model = Empleados
         fields = ['nombre_emplead', 'apellido_emplead', 'dni_emplead', 'direcc_emplead',
-                  'tel_emplead', 'correo_emplead', 'sueldo_emplead', 'fecha_inicio', 'fecha_fin']
+                'tel_emplead', 'correo_emplead', 'sueldo_emplead', 'fecha_inicio', 'fecha_fin']
 
-    def __init__(self, *args, **kwargs):
-        # We use this to get the instance of the existing empleado during the edit
-        self.instance = kwargs.get('instance', None)
-        if self.instance and self.instance.user:
-            initial = kwargs.setdefault('initial', {})
-            initial['username'] = self.instance.user.username
-        super().__init__(*args, **kwargs)
+    def save(self, commit=True):
+        empleado = super().save(commit=False)
+        
+        # Si estamos creando un nuevo empleado, creamos el usuario
+        if not empleado.user:
+            user = User.objects.create_user(
+                username=self.cleaned_data['username'],
+                password=self.cleaned_data['password'],
+                email=self.cleaned_data['correo_emplead']
+            )
+            empleado.user = user
+        else:
+            # Si estamos editando un empleado, actualizamos el usuario solo si hay cambios
+            user = empleado.user
+            if self.cleaned_data['username']:
+                user.username = self.cleaned_data['username']
+            if self.cleaned_data['password']:
+                user.set_password(self.cleaned_data['password'])
+            user.save()
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if username:
-            # Check for existing username, excluding the current user's username
-            user_query = User.objects.filter(username=username)
-            if self.instance and self.instance.user:
-                user_query = user_query.exclude(id=self.instance.user.id)
+        if commit:
+            empleado.save()
+        return empleado
 
-            if user_query.exists():
-                raise forms.ValidationError("Este nombre de usuario ya está en uso.")
-        return username
 
     def save(self, commit=True):
         empleado = super().save(commit=False)
@@ -91,6 +96,7 @@ class ProductosForm(forms.ModelForm):
             raise forms.ValidationError("El stock mínimo no puede ser negativo.")
         return stock_min
 
+
     def clean_stock_max(self):
         stock_max = self.cleaned_data.get('stock_max')
         if stock_max is not None and stock_max < 0:
@@ -113,3 +119,28 @@ class VentasForm(forms.ModelForm):
     class Meta:
         model = Ventas
         fields=["id_caja","id_cli", "total_venta", "fecha_hs"]
+
+class ArqueoCajaForm(forms.ModelForm):
+    class Meta:
+        model = ArqueoCaja
+        fields = ['id_emplead', 'monto_inicial']
+
+
+class CerrarArqueoForm(forms.ModelForm):
+    class Meta:
+        model = ArqueoCaja
+        fields = []
+        
+
+
+
+class IngresoForm(forms.ModelForm):
+    class Meta:
+        model = Ingreso
+        fields = ['descripcion', 'monto']
+
+class EgresoForm(forms.ModelForm):
+    class Meta:
+        model = Egreso
+        fields = ['descripcion', 'monto']
+

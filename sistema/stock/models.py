@@ -64,24 +64,41 @@ class Productos(models.Model):
     def __str__(self):
         return self.nombre_prod
     
-class Cajas(models.Model):
-    id_caja=models.AutoField(primary_key=True, verbose_name="caja")
-    id_emplead=models.ForeignKey(Empleados,on_delete=models.SET_NULL, null= True, related_name="cajas")
-    fecha_hs_apertura=models.DateTimeField(verbose_name="Fecha y hora de apertura", null=False)
-    fecha_hs_cierre=models.DateTimeField(verbose_name="Fecha y hora de cierre", null=False)
-    saldo_caja=models.DecimalField(max_digits=10, decimal_places=2,verbose_name="Saldo", null=True, blank=True)
-    monto_inicial=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto inicial", null=True, blank=True)
-    total_ingreso=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Ingreso total del dia", null=False)
-    total_egreso=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Gastos del dia", null=True, blank=True)
-    abierto_caja=models.BooleanField(default=False)
+class ArqueoCaja(models.Model):
+    id_caja = models.AutoField(primary_key=True)
+    id_emplead = models.ForeignKey('Empleados', on_delete=models.SET_NULL, null=True, related_name="cajas")
+    fecha_hs_apertura = models.DateTimeField(verbose_name="Fecha y hora de apertura", null=False)
+    fecha_hs_cierre = models.DateTimeField(verbose_name="Fecha y hora de cierre", null=True, blank=True) 
+    monto_inicial = models.DecimalField(max_digits=10, decimal_places=2)
+    monto_final = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    total_ingreso = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Ingreso total del día", null=True, blank=True)
+    total_egreso = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Gastos del día", null=True, blank=True)
+    cerrado = models.BooleanField(default=False)
+
+    def calcular_montos(self):
+        """Calcula los totales de ingreso y egreso."""
+        self.total_ingreso = sum(ingreso.monto for ingreso in self.ingresos.all())
+        self.total_egreso = sum(egreso.monto for egreso in self.egresos.all())
+        self.save()
+
+   
+    def cerrar_caja(self):
+        self.total_ingreso = sum(ingreso.monto for ingreso in self.ingresos.all())
+        self.total_egreso = sum(egreso.monto for egreso in self.egresos.all())
+        self.monto_final = self.monto_inicial + self.total_ingreso - self.total_egreso
+        self.cerrado = True
+        self.fecha_hs_cierre = timezone.now()
+        self.save()
+
     def __str__(self):
-        return f"compra: {self.id_caja}"
+        return f"Caja {self.id_caja} - {self.fecha_hs_apertura}"
+
 
      
 class Compras(models.Model):
     id_compra=models.AutoField(primary_key=True)
     id_prov=models.ForeignKey(Proveedores, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
-    id_caja=models.ForeignKey(Cajas, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
+    id_caja=models.ForeignKey(ArqueoCaja, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
     fecha_compra=models.DateField(verbose_name="Fecha de compra", null=False)
     total_compra=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total de la compra", null=False)
     descrip_compra=models.CharField(max_length=150, verbose_name="Agregue un comentario", null=True, blank=True)
@@ -103,7 +120,7 @@ class det_compras(models.Model):
 
 class Ventas(models.Model):
     id_venta=models.AutoField(primary_key=True)
-    id_caja=models.ForeignKey(Cajas, on_delete=models.SET_NULL, null=True, related_name="ventas")
+    id_caja=models.ForeignKey(ArqueoCaja, on_delete=models.SET_NULL, null=True, related_name="ventas")
     id_cli=models.ForeignKey(Clientes, on_delete=models.SET_NULL, null=True, related_name="ventas")
     fecha_hs=models.DateTimeField(null=False)
     total_venta=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total de la venta",null=False)
@@ -122,3 +139,24 @@ class det_ventas(models.Model):
     def __str__(self):
         return f"det_venta: {self.id_det_venta}"
     
+
+
+class Ingreso(models.Model):
+    id_ingreso = models.AutoField(primary_key=True)
+    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='ingresos')
+    descripcion = models.CharField(max_length=255)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_ingreso = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Ingreso {self.id_ingreso} - {self.descripcion}"
+
+class Egreso(models.Model):
+    id_egreso = models.AutoField(primary_key=True)
+    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='egresos')
+    descripcion = models.CharField(max_length=255)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_egreso = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Egreso {self.id_egreso} - {self.descripcion}"

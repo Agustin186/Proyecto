@@ -3,6 +3,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 
+from .models import ArqueoCaja
+admin.site.register (ArqueoCaja)
+
 #Proveedores
 from .models import Proveedores
 admin.site.register(Proveedores)
@@ -36,9 +39,7 @@ admin.site.register(User, UserAdmin)
 from .models import Ventas
 admin.site.register(Ventas)
 
-#Cajas
-from .models import Cajas
-admin.site.register(Cajas)
+
 
 #det_venta
 from .models import det_ventas
