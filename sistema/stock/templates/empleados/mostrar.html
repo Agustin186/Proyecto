@@ -3,8 +3,7 @@
 {% block titulo %} Lista de empleados {% endblock %}
 
 {% block contenido %}
-
-<div class="card">
+<div class="box_principal">
   <div class="card-header">Listar empleados</div>
   <div class="card-body">
     <h4 class="card-title">Empleados</h4>
@@ -39,11 +38,10 @@
     </div>
 
   </div>
-</div><br>
-<a
+  <a
   name="agregar" class="btn btn-success" href="{% url "crear_empleados" %}" role="button">Agregar empleado</a
 >
-
+</div>
 </div>
 
 
