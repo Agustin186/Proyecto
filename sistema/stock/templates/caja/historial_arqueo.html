@@ -36,7 +36,7 @@
                     <td>{{ arqueo.fecha_hs_apertura }}</td>
                     <td>{% if arqueo.fecha_hs_cierre %}{{ arqueo.fecha_hs_cierre }}{% else %}-{% endif %}</td>
                     <td>${{ arqueo.monto_inicial }}</td>
-                    <td>{% if arqueo.monto_final %} ${{ arqueo.monto_final }} {% else %}-{% endif %}</td>
+                    <td id="monto-final-{{ arqueo.id_caja }}">${{ arqueo.monto_final }}</td>
                     <td>${{ arqueo.total_ingreso|floatformat:"2"|default_if_none:"-" }}</td>
                     <td>${{ arqueo.total_egreso|floatformat:"2"|default_if_none:"-" }}</td>
                     <td>
@@ -59,4 +59,23 @@
         </table>
     </div>
 </div>
+
+<script>
+function actualizarMontos(id_caja) {
+    fetch(`/obtener_monto_final/${id_caja}/`)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById(`monto-final-${id_caja}`).innerText = `$${data.monto_final}`;
+    });
+}
+
+// Actualiza los montos cada 10 segundos
+setInterval(() => {
+    document.querySelectorAll('[id^="monto-final-"]').forEach(element => {
+        const id_caja = element.id.split('-')[2];
+        actualizarMontos(id_caja);
+    });
+}, 10000);
+</script>
+
 {% endblock %}

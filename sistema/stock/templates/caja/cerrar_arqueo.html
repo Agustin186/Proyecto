@@ -5,7 +5,7 @@
 <div class="contenedor_cierre_caja">
     <!-- Título de la sección -->
     <h2 class="text-center">Cerrar Caja</h2>
-    
+    <h3 class="text-center">Segun el sistema</h3>
     <!-- Mensaje de confirmación con ícono de advertencia -->
     <p class="text-center confirmacion-cierre">
         <span class="icono-advertencia">&#9888;</span> 
@@ -36,12 +36,39 @@
         </tr>
         <tr>
             <th>Monto Final Estimado</th>
-            <td><strong>${{ arqueo.monto_final|default_if_none:"-" }}</strong></td>
+            <td><strong id="monto_final_sistema">${{ arqueo.monto_final|floatformat:"2"|default_if_none:"-" }}</strong></td>
         </tr>
     </table>
 
+    <h3 class="text-center">Segun el usuario</h3>
+    <form class="formulario-usuario" method="post" onsubmit="return validarMontos();">
+        {% csrf_token %}
+        <table class="tabla_cierre_caja">
+            <tr>
+                <th><label for="monto_inicial_usuario">Monto Inicial</label></th>
+                <td><input type="number" id="monto_inicial_usuario" name="monto_inicial_usuario" step="0.01" min="0"></td>
+            </tr>
+            <tr>
+                <th><label for="total_ingreso_usuario">Ingreso</label></th>
+                <td><input type="number" id="total_ingreso_usuario" name="total_ingreso_usuario" step="0.01" min="0"></td>
+            </tr>
+            <tr>
+                <th><label for="total_egreso_usuario">Egreso</label></th>
+                <td><input type="number" id="total_egreso_usuario" name="total_egreso_usuario" step="0.01" min="0"></td>
+            </tr>
+            <tr>
+                <th><label for="monto_final_usuario">Monto Final</label></th>
+                <td><input type="number" id="monto_final_usuario" name="monto_final_usuario" step="0.01" min="0"></td>
+            </tr>
+            <tr>
+                <th><label>Total:</label></th>
+                <td><strong id="monto_final_usuario_td">${{ arqueo.monto_final|floatformat:"2"|default_if_none:"-" }}</strong></td>
+            </tr>
+        </table>
+    </form>
+
     <!-- Formulario de confirmación -->
-    <form method="post" class="formulario-cierre text-center">
+    <form method="post" class="formulario-cierre text-center" onsubmit="return validarMontos();">
         {% csrf_token %}
         
         <!-- Campo opcional para comentarios al cerrar la caja -->
@@ -63,5 +90,25 @@
         </div>
     </form>
 </div>
-{% endblock %}
 
+<script>
+function validarMontos() {
+    var montoSistema = parseFloat(document.getElementById('monto_final_sistema').innerText.replace('$', '').replace(',', '').trim());
+    var montoUsuario = parseFloat(document.getElementById('monto_final_usuario').value.trim());
+
+    alert("Monto Sistema: " + montoSistema + "\nMonto Usuario: " + montoUsuario); // Línea de depuración
+
+    if (isNaN(montoSistema) || isNaN(montoUsuario)) {
+        alert('Por favor, ingrese valores válidos.');
+        return false;
+    }
+
+    if (Math.abs(montoSistema - montoUsuario) > 0.01) {
+        alert('El monto final según el sistema no coincide con el monto final según el usuario. Por favor, verifica los valores.');
+        return false;
+    }
+
+    return true;
+}
+</script>
+{% endblock %}

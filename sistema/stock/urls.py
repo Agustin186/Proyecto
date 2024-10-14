@@ -12,6 +12,7 @@ urlpatterns = [
     path('apertura/', views.apertura_arqueo, name='apertura_arqueo'),
     path('historial/', views.historial_arqueo, name='historial_arqueo'),
     path('cerrar/<int:id_caja>/', views.cerrar_arqueo, name='cerrar_arqueo'),
+    path('obtener_monto_final/<int:id_caja>/', views.obtener_monto_final, name='obtener_monto_final'),
     
     ##Inicio
     path('inicio/', views.inicio, name='inicio'),
@@ -51,16 +52,13 @@ urlpatterns = [
     ##Borrado_empleados
     path("eliminar_empleados/<int:id_emplead>",views.eliminar_empleados, name="eliminar_empleados"),
     ##Compras
-    path("mostrar_compras",views.mostrar_compras,name="mostrar_compras"),
+    path("crear_compra",views.crear_compra,name="crear_compra"),
     ##Ventas
     path("crear_venta",views.crear_venta, name="crear_venta"),
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),
     path('detalle_venta/pdf/<int:id_venta>/', views.GenerarPdf, name='generar_pdf'),
     path("historial_ventas", views.historial_ventas, name="historial_ventas"),
-
-
-
-
+    #Ingresos_egresos
     path('registrar_ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
     path('registrar_egreso/', views.registrar_egreso, name='registrar_egreso'),
 

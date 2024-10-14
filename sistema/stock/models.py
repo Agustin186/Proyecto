@@ -76,9 +76,10 @@ class ArqueoCaja(models.Model):
     cerrado = models.BooleanField(default=False)
 
     def calcular_montos(self):
-        """Calcula los totales de ingreso y egreso."""
+        """Calcula los totales de ingreso y egreso y actualiza el monto final."""
         self.total_ingreso = sum(ingreso.monto for ingreso in self.ingresos.all())
         self.total_egreso = sum(egreso.monto for egreso in self.egresos.all())
+        self.monto_final = self.monto_inicial + self.total_ingreso - self.total_egreso
         self.save()
 
    

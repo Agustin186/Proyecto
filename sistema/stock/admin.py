@@ -21,7 +21,6 @@ from .models import Productos
 admin.site.register(Productos)
 
 
-
 class EmpleadosInline(admin.StackedInline):
     model = Empleados
     can_delete = False
@@ -39,8 +38,14 @@ admin.site.register(User, UserAdmin)
 from .models import Ventas
 admin.site.register(Ventas)
 
-
-
 #det_venta
 from .models import det_ventas
 admin.site.register(det_ventas)
+
+#Compras
+from .models import Compras
+admin.site.register(Compras)
+
+#det_compras
+from .models import det_compras
+admin.site.register(det_compras)

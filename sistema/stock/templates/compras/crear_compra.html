@@ -3,8 +3,8 @@
 {% block titulo %}Inicio{% endblock %}
 
 {% block contenido %}
-<div class="contenedor">
-    <div class="caja_venta">
+<div class="contenedor_compras">
+    <div class="caja_compras">
         <div class="header">
             <h1>Nueva Compra</h1>
         </div>
@@ -17,10 +17,10 @@
                 <input type="date" id="fecha_hs" name="fecha_hs" >
             </div>
 
-            <!-- SELECCION DEL VENDEDOR -->
-            <div class="form-group">
-                <label for="vendedor">Vendedor:</label>
-                <select name="vendedor" id="vendedor">
+            <!-- SELECCION DEL PROVEEDOR -->
+            <div class="compras_proveedor">
+                <label for="vendedor">Proveedor:</label>
+                <select name="proveedor" id="proveedor">
                     {% for empleado in empleados %}
                     <option value="{{ empleado.id_emplead }}">{{ empleado.nombre_emplead }}</option>
                     {% endfor %}
@@ -58,7 +58,7 @@
                 <input type="number" id="total" name="total" readonly value="0">
             </div>
             <div class="buttons">
-                <button class="btn btn-success" type="submit" value="Guardar" onclick="return ConfirmarVenta()">Aceptar</button>
+                <button class="btn btn-success" type="submit" value="Guardar">Aceptar</button>
                 <button type="button" onclick=window.location.href='{% url 'inicio' %}'>Salir</button>
             </div>
         </form>
@@ -106,93 +106,5 @@
     </div>
 </div>
 
-<script>
-        //Confirmacion de la venta
-        function ConfirmarVenta(){
-            return confirm("¿Esta seguro de confirmar la venta?");
-        }
-        document.addEventListener('DOMContentLoaded', function () {
-    var hoy = new Date().toISOString("en-CA").split('T')[0];
-    document.getElementById('fecha_hs').value = hoy;
 
-    const tablaVenta = document.querySelector('#tabla-venta tbody');
-
-    function actualizarTotal() {
-        const subtotales = document.querySelectorAll('.subtotal');
-        let total = 0;
-        subtotales.forEach(subtotal => {
-            total += parseFloat(subtotal.textContent);
-        });
-        document.getElementById('total').value = total.toFixed(2);
-    }
-
-    document.querySelectorAll('.agregar-producto').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const nombre = this.dataset.nombre;
-            const precio = parseFloat(this.dataset.precio).toFixed(2);
-
-            const filaExistente = Array.from(tablaVenta.querySelectorAll('input[name="productos[]"]')).find(input => input.value === id);
-
-            if (filaExistente) {
-                const fila = filaExistente.closest('tr');
-                const cantidadInput = fila.querySelector('.cantidad');
-                const nuevaCantidad = parseInt(cantidadInput.value) + 1;
-                cantidadInput.value = nuevaCantidad;
-
-                const descuento = parseFloat(fila.querySelector('.descuento').value);
-                const subtotal = (nuevaCantidad * precio) * (1 - descuento / 100);
-                fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                fila.querySelector('input[name="cantidades[]"]').value = nuevaCantidad;
-                fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-            } else {
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${nombre}</td>
-                    <td>${precio}</td>
-                    <td><input type="number" class="cantidad" value="1" min="1"></td>
-                    <td><input type="number" class="descuento" value="0" min="0" max="100"></td>
-                    <td class="subtotal">${precio}</td>
-                    <input type="hidden" name="productos[]" value="${id}">
-                    <input type="hidden" name="cantidades[]" value="1">
-                    <input type="hidden" name="descuentos[]" value="0">
-                    <input type="hidden" name="subtotales[]" value="${precio}">
-                    <td><button type="button" class="btn btn-danger eliminar-producto">Eliminar</button></td>
-                `;
-                tablaVenta.appendChild(fila);
-
-                fila.querySelector('.cantidad').addEventListener('input', function () {
-                    const cantidad = parseFloat(this.value);
-                    const descuento = parseFloat(fila.querySelector('.descuento').value);
-                    const subtotal = (cantidad * precio) * (1 - descuento / 100);
-                    fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                    fila.querySelector('input[name="cantidades[]"]').value = cantidad;
-                    fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-                    actualizarTotal();
-                });
-
-                fila.querySelector('.descuento').addEventListener('input', function () {
-                    const cantidad = parseFloat(fila.querySelector('.cantidad').value);
-                    const descuento = parseFloat(this.value);
-                    const subtotal = (cantidad * precio) * (1 - descuento / 100);
-                    fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-                    fila.querySelector('input[name="descuentos[]"]').value = descuento;
-                    fila.querySelector('input[name="subtotales[]"]').value = subtotal.toFixed(2);
-                    actualizarTotal();
-                });
-
-                // Añadir el evento para eliminar la fila
-                fila.querySelector('.eliminar-producto').addEventListener('click', function () {
-                    fila.remove(); // Eliminar la fila del DOM
-                    actualizarTotal(); // Actualizar el total después de eliminar el producto
-                });
-            }
-
-            actualizarTotal();
-        });
-    });
-});
-
-
-</script>
 {% endblock %}

@@ -12,34 +12,39 @@
 
         <form action="{% url 'crear_venta' %}" method="POST">
             {% csrf_token %}
-            
-            <!-- FECHA DEL DÍA -->
-            <div class="grupo_formularios">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha_hs" name="fecha_hs" readonly>
-            </div>
+            <div class="contenedor_formulario">
 
-            <!-- SELECCIÓN DEL VENDEDOR -->
-            <div class="grupo_formularios">
-                <label for="vendedor">Vendedor:</label>
-                <select name="vendedor" id="vendedor">
-                    {% for empleado in empleados %}
-                    <option value="{{ empleado.id_emplead }}">{{ empleado.nombre_emplead }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        
-            <!-- SELECCIÓN DEL CLIENTE -->
-            <div class="grupo_formularios">
-                <label>Cliente:</label>
-                <select name="cliente" id="cliente">
-                    <option value=""></option>
-                    {% for cliente in clientes %}
-                    <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                <!-- Grupo de Fecha y Vendedor -->
+                <div class="grupo_superior">
+                    <!-- FECHA -->
+                    <div class="grupo_formularios">
+                        <label for="fecha">Fecha:</label>
+                        <input type="date" id="fecha_hs" name="fecha_hs">
+                    </div>
             
+                    <!-- SELECCIÓN DEL VENDEDOR -->
+                    <div class="grupo_formularios">
+                        <label for="vendedor">Vendedor:</label>
+                        <select name="vendedor" id="vendedor">
+                            {% for empleado in empleados %}
+                            <option value="{{ empleado.id_emplead }}">{{ empleado.nombre_emplead }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            
+                <!-- SELECCIÓN DEL CLIENTE -->
+                <div class="grupo_formularios">
+                    <label>Cliente:</label>
+                    <select name="cliente" id="cliente">
+                        <option value=""></option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+            </div>
             <!-- Contenedor con scroll para la tabla de productos agregados -->
             <div class="tabla-productos-contenedor">
                 <table id="tabla-venta">
@@ -118,80 +123,5 @@
     </div>
 </div>
 
-<script>
-//Confirmación de la venta
-function ConfirmarVenta(){
-    return confirm("¿Está seguro de confirmar la venta?");
-}
-
-// Filtrado de productos por búsqueda
-document.addEventListener('DOMContentLoaded', function () {
-    const buscarProducto = document.getElementById('buscarProducto');
-    const listaProductos = document.getElementById('lista-productos');
-
-    buscarProducto.addEventListener('keyup', function () {
-        const texto = buscarProducto.value.toLowerCase();
-        const filas = listaProductos.querySelectorAll('tr');
-
-        filas.forEach(fila => {
-            const nombreProducto = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            fila.style.display = nombreProducto.includes(texto) ? '' : 'none';
-        });
-    });
-});
-
-// Configuración y cálculo de la venta
-document.addEventListener('DOMContentLoaded', function () {
-    const tablaVenta = document.querySelector('#tabla-venta tbody');
-    const totalInput = document.getElementById('total');
-
-    function actualizarTotal() {
-        const subtotales = document.querySelectorAll('.subtotal');
-        let total = 0;
-        subtotales.forEach(subtotal => {
-            total += parseFloat(subtotal.textContent) || 0;
-        });
-        totalInput.value = total.toFixed(2);
-    }
-
-    document.querySelectorAll('.agregar-producto').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const nombre = this.dataset.nombre;
-            const precio = parseFloat(this.dataset.precio).toFixed(2);
-            const filaExistente = Array.from(tablaVenta.querySelectorAll('input[name="productos[]"]')).find(input => input.value === id);
-
-            if (filaExistente) {
-                const fila = filaExistente.closest('tr');
-                const cantidadInput = fila.querySelector('.cantidad');
-                const nuevaCantidad = parseInt(cantidadInput.value) + 1;
-                cantidadInput.value = nuevaCantidad;
-
-                const descuento = parseFloat(fila.querySelector('.descuento').value);
-                const subtotal = (nuevaCantidad * precio) * (1 - descuento / 100);
-                fila.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-            } else {
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${nombre}</td>
-                    <td>${precio}</td>
-                    <td><input type="number" class="cantidad" value="1" min="1"></td>
-                    <td><input type="number" class="descuento" value="0" min="0" max="100"></td>
-                    <td class="subtotal">${precio}</td>
-                    <td><button type="button" class="btn btn-danger eliminar-producto">Eliminar</button></td>
-                `;
-                tablaVenta.appendChild(fila);
-
-                fila.querySelector('.cantidad, .descuento').addEventListener('input', actualizarTotal);
-                fila.querySelector('.eliminar-producto').addEventListener('click', function () {
-                    fila.remove();
-                    actualizarTotal();
-                });
-            }
-            actualizarTotal();
-        });
-    });
-});
-</script>
+<script src="static/scripts/crear_venta.js"></script>
 {% endblock %}
-

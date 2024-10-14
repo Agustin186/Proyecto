@@ -6,8 +6,14 @@
 
 <div class="contenedor_apertura_caja">
   <div class="apertura_ap_caka"></div>
-   <div class="body__apcaja">
+  <div class="body__apcaja">
     <h4 class="titulo_ap_caja">Apertura de Caja</h4>
+
+    {% if error_message %}
+        <script>
+            alert("{{ error_message }}");
+        </script>
+    {% endif %}
 
     <form method="post">
       {% csrf_token %}
@@ -20,4 +26,5 @@
 </div>
 
 {% endblock %}
+
 

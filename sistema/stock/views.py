@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
@@ -25,9 +25,15 @@ def procesar_login(request):
             messages.error(request, "Usuario o contraseña incorrecta")  
     return render(request, "procesar_login.html")
 
-
+#Caja
 @login_required
 def apertura_arqueo(request):
+    # Verificar si hay una caja abierta
+    if ArqueoCaja.objects.filter(cerrado=False).exists():
+        # Si hay una caja abierta, renderizar el formulario con un mensaje de error
+        error_message = "Ya hay una caja abierta. No puedes abrir otra hasta que la actual esté cerrada."
+        return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
+
     if request.method == 'POST':
         form = ArqueoCajaForm(request.POST)
         if form.is_valid():
@@ -40,8 +46,8 @@ def apertura_arqueo(request):
             return redirect('historial_arqueo')
     else:
         form = ArqueoCajaForm()
-    return render(request, 'caja/apertura_arqueo.html', {'form': form})
 
+    return render(request, 'caja/apertura_arqueo.html', {'form': form})
 
 def cerrar_arqueo(request, id_caja):
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
@@ -57,15 +63,60 @@ def cerrar_arqueo(request, id_caja):
 
     return render(request, 'caja/cerrar_arqueo.html', {'form': form, 'arqueo': arqueo})
 
-
 def historial_arqueo(request):
-    arqueos = ArqueoCaja.objects.all()
+    arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
 
     # Recalcular montos para todos los arqueos (opcional)
     for arqueo in arqueos:
         arqueo.calcular_montos()
 
-    return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos})
+    return render(request, 'caja/historial_arqueo.html', {'arqueos':arqueos})
+
+#Ingresos y Egresos
+def registrar_ingreso(request):
+    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
+    if not arqueo_abierto:
+        # Si no hay ninguna caja abierta, redirigir con un mensaje
+        return redirect('historial_arqueo')
+
+    if request.method == 'POST':
+        form = IngresoForm(request.POST)
+        if form.is_valid():
+            ingreso = form.save(commit=False)
+            ingreso.id_caja = arqueo_abierto
+            ingreso.save()
+            return redirect('historial_arqueo')
+    else:
+        form = IngresoForm(initial={'id_caja': arqueo_abierto})
+    return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+
+
+def registrar_egreso(request):
+    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
+    if not arqueo_abierto:
+        return redirect('historial_arqueo')
+
+    if request.method == 'POST':
+        form = EgresoForm(request.POST)
+        if form.is_valid():
+            egreso = form.save(commit=False)
+            egreso.id_caja = arqueo_abierto
+            egreso.save()
+            arqueo_abierto.calcular_montos()  # Recalcula los montos cada vez que se registra un egreso
+            return redirect('historial_arqueo')
+    else:
+        form = EgresoForm()
+    return render(request, 'transacciones/registrar_egreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+
+def obtener_monto_final(request, id_caja):
+    arqueo = ArqueoCaja.objects.get(id=id_caja)
+    arqueo.calcular_montos()
+    return JsonResponse({
+        'monto_final': arqueo.monto_final,
+        'total_ingreso': arqueo.total_ingreso,
+        'total_egreso': arqueo.total_egreso,
+    })
+
 
 @login_required
 def inicio(request):
@@ -74,7 +125,7 @@ def inicio(request):
 
 
 
-
+@login_required
 def cerrar_sesion(request):
     if ArqueoCaja.objects.filter(cerrado=False).exists():
         arqueo_abierto = get_object_or_404(ArqueoCaja, cerrado=False)
@@ -84,7 +135,7 @@ def cerrar_sesion(request):
     return redirect('procesar_login')
 
 
-
+@login_required
 ##CRUD Articulos
 def mostrar_articulos(request):
     producto=Productos.objects.all()
@@ -102,7 +153,7 @@ def editar_articulos(request,id_prod):
             return redirect('mostrar_articulos') 
 
     return render(request, "articulos/editar.html", {"formulario": formulario})
-
+@login_required
 def crear_articulos(request):
     formulario = ProductosForm(request.POST or None)
     if request.method == 'POST':  # 
@@ -174,8 +225,6 @@ def editar_empleados(request, id_emplead):
     return render(request, "empleados/editar.html", {"formulario": formulario, "empleado": empleado})
 
 
-
-
 @permission_required('stock.view_empleado')
 def crear_empleados(request):
     formulario = EmpleadosForm(request.POST or None)
@@ -226,20 +275,13 @@ def eliminar_proveedores(request,id_prov):
     proveedor.delete()
     return redirect("mostrar_proveedores")
 
-##Compras
-def mostrar_compras(request):
-    return render(request,"compras/crear_compra.html")
-
-
-
-
+#Ventas
 def crear_venta(request):
     producto = Productos.objects.all()
     empleado = Empleados.objects.all()
     cliente = Clientes.objects.all()
-
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()  # Buscar el arqueo abierto
-    
+
     if not arqueo_abierto:
         # Si no hay arqueo abierto, redirigir con mensaje
         return redirect('historial_arqueo')
@@ -299,11 +341,7 @@ def crear_venta(request):
         "productos": producto,
         "formulario": formulario
     }
-
     return render(request, "ventas/crear_venta.html", context)
-
-
-
 
 def det_venta(request, id_venta):
     venta = get_object_or_404(Ventas, id_venta=id_venta)
@@ -313,9 +351,7 @@ def det_venta(request, id_venta):
         'venta': venta,
         'detalles': detalles
     }
-
     return render(request, 'ventas/detalle_ventas.html', context)
-
 
 def GenerarPdf(request,id_venta ):
     venta=Ventas.objects.get(id_venta=id_venta)
@@ -345,45 +381,14 @@ def historial_ventas(request):
 
     return render (request, "ventas/historial_ventas.html", context)
 
+#Compras
+def crear_compra(request):
+    compra=Compras.objects.all()
+    return render(request, "compras/crear_compra.html",{"compras":compra})
+
+def det_compra(request):
+    pass
+def historial_compra(request):
+    pass
 
 
-
-
-
-from django.shortcuts import get_object_or_404
-from .models import ArqueoCaja, Ingreso, Egreso
-
-def registrar_ingreso(request):
-    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
-    if not arqueo_abierto:
-        # Si no hay ninguna caja abierta, redirigir con un mensaje
-        return redirect('historial_arqueo')
-
-    if request.method == 'POST':
-        form = IngresoForm(request.POST)
-        if form.is_valid():
-            ingreso = form.save(commit=False)
-            ingreso.id_caja = arqueo_abierto
-            ingreso.save()
-            return redirect('historial_arqueo')
-    else:
-        form = IngresoForm(initial={'id_caja': arqueo_abierto})
-    return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
-
-
-def registrar_egreso(request):
-    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
-    if not arqueo_abierto:
-        return redirect('historial_arqueo')
-
-    if request.method == 'POST':
-        form = EgresoForm(request.POST)
-        if form.is_valid():
-            egreso = form.save(commit=False)
-            egreso.id_caja = arqueo_abierto
-            egreso.save()
-            arqueo_abierto.calcular_montos()  # Recalcula los montos cada vez que se registra un egreso
-            return redirect('historial_arqueo')
-    else:
-        form = EgresoForm()
-    return render(request, 'transacciones/registrar_egreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})

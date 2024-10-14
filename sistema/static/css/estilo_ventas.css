@@ -2,8 +2,8 @@
 .contenedor_ventas {
     display: flex;
     justify-content: space-between; /* Mover las cajas a los extremos */
-    padding: 30px;
-    height: calc(100vh - 100px); /* Altura máxima para evitar scroll en la página completa */
+    margin: 1px auto;
+    height: calc(88vh - 100px); /* Altura máxima para evitar scroll en la página completa */
 }
 
 /* Caja de Venta */
@@ -12,13 +12,44 @@
     background-color: #f8f9fa;
     border: 1px solid #007bff;
     border-radius: 10px;
-    padding: 20px;
     margin-right: 10px; /* Separación con la caja de productos */
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Evitar scroll en toda la caja */
+    margin: 1px auto;
+}
+/* Contenedor fecha_cliente_vendedor */
+.fecha_vend_cli {
+    width: 100%; /* Asegura que ocupe el 100% del contenedor padre */
+    margin-bottom: 20px;
 }
 
+/* Estilo para la parte superior: Fecha y Vendedor */
+.grupo_superior {
+    display: flex;
+    justify-content: space-between; /* Alinea los elementos a los lados */
+    gap: 20px; /* Espacio entre los elementos */
+    margin-bottom: 0px;
+}
+
+/* Ajusta el tamaño de los formularios individuales */
+.grupo_formularios {
+    flex: 1; /* Hacer que los formularios tomen el mismo espacio */
+}
+
+.grupo_formularios label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.grupo_formularios input,
+.grupo_formularios select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+}
 /* Encabezado de la caja de venta */
 .Encabezado_venta h1 {
     text-align: center;
@@ -39,7 +70,7 @@
 input[type="date"],
 select {
     width: 100%;
-    padding: 8px;
+    padding: 4px;
     border: 1px solid #007bff;
     border-radius: 5px;
 }
@@ -51,12 +82,19 @@ select {
     border: 1px solid #007bff;
     border-radius: 5px;
     margin-bottom: 20px;
+    overflow-x: hidden;
+    margin: 1px auto;
+    
 }
+/* Estilo para las filas cargadas de productos*/
+
 
 /* Estilo de la tabla dentro del contenedor */
 #tabla-venta {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
+    ;
 }
 
 #tabla-venta th,
@@ -64,6 +102,7 @@ select {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
+    font-size: small;
 }
 
 /* Total de la venta */
@@ -114,7 +153,6 @@ button {
     background-color: #f8f9fa;
     border: 1px solid #007bff;
     border-radius: 10px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -133,6 +171,7 @@ button {
     overflow-y: auto; /* Scroll vertical */
     border: 1px solid #007bff;
     border-radius: 5px;
+    overflow-x: hidden;
 }
 
 /* Estilo de la tabla dentro de la caja de productos */

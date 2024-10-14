@@ -58,12 +58,23 @@
     padding: 10px;
     text-align: center;
     text-decoration: none;
-    background-color: #007bff;
+    background-color: #c93716;
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
 
 #pa_btn_volver:hover {
+    background-color: #c93716;
+}
+
+#btn_imprimir{
+    display: block;
+    width: 100px;
     background-color: #0056b3;
+    margin: 20px auto;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
 }
