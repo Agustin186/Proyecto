@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}{% endblock %}</title>
+    <!-- Enlace a la hoja de estilos base.css -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    
+</head>
+<body>
+    <div class="top-bar">
+        <a class="nav-item" href="{% url 'mostrar_articulos' %}">Artículos</a>
+        <a class="nav-item" href="{% url 'mostrar_proveedores' %}">Proveedores</a>
+        <a class="nav-item" href="{% url 'mostrar_compras' %}">Compras</a>
+        <a class="nav-item" href="{% url 'mostrar_ventas' %}">Ventas</a>
+        <a class="nav-item" href="{% url 'mostrar_empleados' %}">Empleados</a>
+        <a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a>
+    
+        <!-- Botón Caja con menú desplegable -->
+        <div class="dropdown">
+            <a class="nav-link" href="#" role="button" id="dropdownCaja">
+                Caja
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownCaja">
+                <a class="dropdown-item" href="{% url 'apertura_caja' %}" onclick="seleccionarOpcion('abrir')">Abrir Caja</a>
+                <a class="dropdown-item" href="{% url 'cierre_caja' %}" onclick="seleccionarOpcion('cerrar')">Cerrar Caja</a>
+            </div>
+        </div>
+    
+        <!-- Botón para cerrar sesión -->
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-secondary">Cerrar sesión</button>
+        </form>
+    </div>
+    
+
+    <nav>
+        <ul class="nav">
+            <li><a class="nav-item" href="{% url 'inicio' %}">Inicio</a></li>
+            <li><a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <div class="row">
+            <div class="col-10">
+                {% block contenido %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de tareas inferior -->
+    <div class="taskbar">
+        SmartCell 
+    </div>
+</body>
+</html>

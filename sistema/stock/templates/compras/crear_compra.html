@@ -1,92 +1,100 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Compra</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> <!-- Vinculación del archivo CSS -->
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Registrar Compra</h5>
-                        <form method="POST" action="{% url 'crear_compra' %}">
-                        
-                            <div class="form-group">
-                                <label for="proveedor">Proveedor:</label>
-                                <input type="text" class="form-control" id="proveedor" name="proveedor" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="producto">Producto:</label>
-                                <input type="text" class="form-control" id="producto" name="producto" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="cantidad">Cantidad:</label>
-                                <input type="number" class="form-control" id="cantidad" name="cantidad" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="precio">Precio Unitario:</label>
-                                <input type="number" class="form-control" id="precio" name="precio" required>
-                            </div>
-                            <button type="button" class="btn btn-primary btn-block" onclick="agregarProducto()">Agregar Producto</button>
-                            <hr>
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Inicio{% endblock %}
 
-                            <!-- Tabla de productos agregados -->
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Unitario</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="detalle-compras">
-                                    <!-- Aquí se agregarán los productos -->
-                                </tbody>
-                            </table>
+{% block contenido %}
+<div class="contenedor_compras">
+    <div class="caja_compras">
+        <div class="header">
+            <h1>Nueva Compra</h1>
+        </div>
 
-                            <div class="form-group">
-                                <label for="total">Total:</label>
-                                <input type="number" class="form-control" id="total" name="total" readonly>
-                            </div>
+        <form action="{% url 'crear_compra' %}" method="POST">
+            {% csrf_token %}
+            <!--FECHA DEL DIA-->
+            <div class="compras_fecha">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha_hs" name="fecha_hs" readonly >
+            </div>
 
-                            <button type="submit" class="btn btn-primary btn-block">Registrar Compra</button>
-                        </form>
-                    </div>
+            <!-- SELECCION DEL PROVEEDOR -->
+            <div class="compras_proveedor">
+                <label for="proveedor">Proveedor:</label>
+                <select name="proveedor" id="proveedor">
+                    {% for proveedor in proveedores %}
+                    <option value="{{ proveedor.id_prov }}">{{ proveedor.nombre_prov }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+        
+            <table id="tabla_compras">
+                <thead>
+                    <tr>
+                        <th>Descripcion</th>
+                        <th>Precio Costo</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- AQUI SE CARGAN LOS PRODUCTOS -->
+                </tbody>
+            </table>
+        
+            <div class="total_compra">
+                <label for="total">Total:</label>
+                <input type="number" id="total" name="total" readonly value="0">
+            </div>
+            <div class="botones">
+                <button class="btn-aceptar_compra" type="submit" value="Guardar">Aceptar</button>
+                <button class="btn nueva_compra" type="button" onclick=window.location.href='{% url 'crear_compra' %}'>Nueva compra</button>
+            </div>
+        </form>
+        
+    </div>
+
+    <!-- CAJA DE PRODUCTOS -->
+    <div class="caja_productos">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Productos</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-primary">
+                        <thead>
+                            <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos %}
+                            <tr>
+                                <td>{{ producto.id_prod }}</td>
+                                <td>{{ producto.nombre_prod }}</td>
+                                <td>{{ producto.precio_prod }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-success agregar-producto" data-id="{{ producto.id_prod }}" data-nombre="{{ producto.nombre_prod }}" data-precio="{{ producto.precio_prod }}">
+                                        Añadir
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No hay artículos disponibles.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<script src="static/scripts/crear_compra.js"></script>
 
-    <!-- Script para manejar la tabla de productos -->
-    <script>
-        function agregarProducto() {
-            const producto = document.getElementById('producto').value;
-            const cantidad = document.getElementById('cantidad').value;
-            const precio = document.getElementById('precio').value;
-            const subtotal = cantidad * precio;
-
-            const table = document.getElementById('detalle-compras');
-            const row = table.insertRow();
-            row.innerHTML = `<td>${producto}</td><td>${cantidad}</td><td>${precio}</td><td>${subtotal.toFixed(2)}</td>`;
-
-            calcularTotal();
-        }
-
-        function calcularTotal() {
-            let total = 0;
-            const filas = document.querySelectorAll('#detalle-compras tr');
-            filas.forEach(fila => {
-                const subtotal = parseFloat(fila.cells[3].innerText);
-                total += subtotal;
-            });
-            document.getElementById('total').value = total.toFixed(2);
-        }
-    </script>
-</body>
-</html>
+{% endblock %}

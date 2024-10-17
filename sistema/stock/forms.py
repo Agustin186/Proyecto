@@ -1,6 +1,9 @@
 from django import forms
 from .models import *
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+import string
+import secrets
 
 class ProveedoresForm(forms.ModelForm):
     class Meta:
@@ -14,7 +17,6 @@ class ClientesForm(forms.ModelForm):
 
 class EmpleadosForm(forms.ModelForm):
     username = forms.CharField(max_length=150, required=False)
-    password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     class Meta:
         model = Empleados
@@ -22,7 +24,6 @@ class EmpleadosForm(forms.ModelForm):
                   'tel_emplead', 'correo_emplead', 'sueldo_emplead', 'fecha_inicio', 'fecha_fin']
 
     def __init__(self, *args, **kwargs):
-        # We use this to get the instance of the existing empleado during the edit
         self.instance = kwargs.get('instance', None)
         if self.instance and self.instance.user:
             initial = kwargs.setdefault('initial', {})
@@ -32,7 +33,6 @@ class EmpleadosForm(forms.ModelForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if username:
-            # Check for existing username, excluding the current user's username
             user_query = User.objects.filter(username=username)
             if self.instance and self.instance.user:
                 user_query = user_query.exclude(id=self.instance.user.id)
@@ -41,20 +41,28 @@ class EmpleadosForm(forms.ModelForm):
                 raise forms.ValidationError("Este nombre de usuario ya está en uso.")
         return username
 
+    def generar_clave_aleatoria(self, longitud=12):
+        caracteres = string.digits
+        clave_aleatoria = ''.join(secrets.choice(caracteres) for _ in range(longitud))
+        return clave_aleatoria
+
     def save(self, commit=True):
         empleado = super().save(commit=False)
 
+        # Generar clave aleatoria
+        password = self.generar_clave_aleatoria()
+
         if self.cleaned_data.get('username'):
-            if self.instance.user:
-                user = self.instance.user  # Update existing user
+            if self.instance and self.instance.user:
+                # Actualizar usuario existente
+                user = self.instance.user
                 user.username = self.cleaned_data['username']
-                if self.cleaned_data['password']:
-                    user.set_password(self.cleaned_data['password'])  # Update password only if provided
+                user.set_password(password)  
             else:
-                # Create a new user if one doesn't exist
+                
                 user = User.objects.create_user(
                     username=self.cleaned_data['username'],
-                    password=self.cleaned_data['password'],
+                    password=password,
                     email=self.cleaned_data['correo_emplead']
                 )
             user.save()
@@ -62,11 +70,20 @@ class EmpleadosForm(forms.ModelForm):
 
         if commit:
             empleado.save()
+
+        
+        send_mail(
+            'Tu nueva cuenta ha sido registrada',
+            f'Tu usuario y clave de acceso es:{user} {password}',
+            'rabatrix_bp@outlook.es',  
+            [self.cleaned_data['correo_emplead']],
+            fail_silently=False,
+        )
+
         return empleado
 
 
-from django import forms
-from .models import Productos  # Asegúrate de que la ruta sea correcta
+
 
 class ProductosForm(forms.ModelForm):
     class Meta:
@@ -91,6 +108,7 @@ class ProductosForm(forms.ModelForm):
             raise forms.ValidationError("El stock mínimo no puede ser negativo.")
         return stock_min
 
+
     def clean_stock_max(self):
         stock_max = self.cleaned_data.get('stock_max')
         if stock_max is not None and stock_max < 0:
@@ -108,8 +126,31 @@ class ProductosForm(forms.ModelForm):
         if punto_reposicion is not None and punto_reposicion < 0:
             raise forms.ValidationError("El punto de reposición no puede ser negativo.")
         return punto_reposicion
-
+##VENTAS
 class VentasForm(forms.ModelForm):
     class Meta:
         model = Ventas
         fields=["id_caja","id_cli", "total_venta", "fecha_hs"]
+##COMPRAS
+class ComprasForm(forms.ModelForm):
+    class Meta:
+        model = Compras
+        fields=["id_compra","id_prov","id_caja","fecha_compra","total_compra"]
+##CAJA
+class ArqueoCajaForm(forms.ModelForm):
+    class Meta:
+        model = ArqueoCaja
+        fields = ['id_emplead', 'monto_inicial']
+class CerrarArqueoForm(forms.ModelForm):
+    class Meta:
+        model = ArqueoCaja
+        fields = []
+class IngresoForm(forms.ModelForm):
+    class Meta:
+        model = Ingreso
+        fields = ['descripcion', 'monto']
+class EgresoForm(forms.ModelForm):
+    class Meta:
+        model = Egreso
+        fields = ['descripcion', 'monto']
+

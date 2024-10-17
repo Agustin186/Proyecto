@@ -4,24 +4,20 @@
 {% block titulo %}Inicio{% endblock %}
 
 {% block contenido %}
-    <div class="container mt-4">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Artículos</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for producto in productos %}
-                            <li class="list-group-item">
-                                {{ producto.nombre_prod }} - ${{ producto.precio_prod }}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">No hay artículos disponibles.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+    
+    <div id="articulos-view"> <!-- Cambié la clase a un ID para personalizar estilos -->
+        <h3>Artículos</h3>
+        <div class="table-container">
+            <ul class="productos-list">
+                {% for producto in productos %}
+                    <li class="productos-item">
+                        {{ producto.nombre_prod }} - ${{ producto.precio_prod }}
+                    </li>
+                {% empty %}
+                    <li class="productos-item no-data">No hay artículos disponibles.</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
+
 {% endblock %}
