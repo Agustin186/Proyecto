@@ -56,7 +56,6 @@ body, html {
 /* Barra lateral */
 .barra_lateral {
     position: fixed;
-    top: 60px; /* Debajo de la barra superior */
     left: 0;
     width: 250px;
     height: calc(100vh - 60px); /* Llenar el espacio restante */
@@ -82,28 +81,61 @@ body, html {
     border-radius: 5px;
 }
 
+/* Mostrar el menú desplegable al pasar el ratón */
 .dropdown:hover .dropdown-menu {
     display: block;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease-in-out;
 }
 
+/* Estilo del menú desplegable */
 .dropdown-menu {
     display: none;
-    position: absolute;
-    left: 250px;
+    position: inherit;
+    left: 250px; /* Ajustar la distancia con respecto al botón */
     background-color: #343a40;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(10px); /* Para animación */
+    transition: all 0.3s ease-in-out;
+    min-width: 180px; /* Ajustar el ancho mínimo del menú */
+    padding: 10px; /* Espaciado interior del menú */
 }
 
+/* Estilo de los elementos del menú */
 .dropdown-menu .dropdown-item {
-    padding: 10px 15px;
+    padding: 12px 20px;
     color: white;
+    font-size: 20px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    white-space: nowrap; /* Evitar que los textos se dividan en varias líneas */
 }
 
+/* Estilo del hover en los items del menú */
 .dropdown-menu .dropdown-item:hover {
-    background-color: #495057;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+
 }
 
+/* Cambios en el enlace principal del botón "Ventas" */
+.dropdown-toggle {
+    color: white;
+    font-size: 16px;
+}
+
+.dropdown-toggle:hover {
+    color: #007bff;
+}
+
+.fas.fa-shopping-cart {
+    margin-right: 5px;
+}
 /* Contenedor principal */
 .contenedor_base {
     margin-left: 270px;

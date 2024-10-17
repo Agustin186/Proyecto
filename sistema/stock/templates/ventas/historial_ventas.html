@@ -29,18 +29,18 @@
                 </tr>
             </thead>
             <tbody>
-                {% for venta in ventas %}
+                {% for compra in compras %}
                 <tr>
                     <td>{{ venta.fecha_hs }}</td>
                     <td>{{ venta.id_cli.nombre_cli }} {{ venta.id_cli.apellido_cli }}</td>
                     <td>${{ venta.total_venta }}</td>
                     <td>{{ venta.metodo_pago }}</td>
                     <td>{{ venta.estado }}</td>
-                    <td><a href="{% url 'det_venta' venta.id_venta %}" id="pa_btn_detalle" class="btn">Ver Detalle</a></td>
+                    <td><a href="{% url 'det_venta' venta.id_venta %}" id="btn_detalle_compras" class="btn">Ver Detalle</a></td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" id="pa_no_ventas">No hay ventas registradas.</td>
+                    <td colspan="6" id="no_compras">No hay compras registradas.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -231,7 +231,8 @@ def crear_empleados(request):
     if formulario.is_valid():
         formulario.save()
         return redirect("mostrar_empleados")
-    return render(request, "empleados/crear.html",{"formulario": formulario})
+    return render(request, "empleados/crear.html", {"formulario": formulario})
+
 
 @permission_required('stock.view_empleado')
 def eliminar_empleados(request, id_emplead):
@@ -383,12 +384,36 @@ def historial_ventas(request):
 
 #Compras
 def crear_compra(request):
-    compra=Compras.objects.all()
-    return render(request, "compras/crear_compra.html",{"compras":compra})
+    proveedor=Proveedores.objects.all()
+    producto=Productos.objects.all()
+
+    if request.method=="POST":
+     id_prov=request.POST.get("proveedor"),
+     total_compra=request.POST.get("total")
+     nueva_compra=Compras(
+         id_compra=nueva_compra,
+         id_prov=Proveedores.objects.get(id_prov=id_prov),
+         fecha_compra=timezone.now(),
+         total_compra=total_compra
+
+         )
+     nueva_compra.save()
+
+    context={
+         "proveedor":proveedor,
+         "producto":producto
+     }
+
+    return render(request, "compras/crear_compra.html", context)
 
 def det_compra(request):
     pass
 def historial_compra(request):
-    pass
+    ##compras=Compras.objects.all().order_by("-fecha_hs")
 
+    ##context={
+    ##    "compras":compras
+    ##}
+
+    return render(request, "compras/historial_compras.html")
 

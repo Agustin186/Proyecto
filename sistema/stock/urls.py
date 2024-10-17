@@ -53,6 +53,7 @@ urlpatterns = [
     path("eliminar_empleados/<int:id_emplead>",views.eliminar_empleados, name="eliminar_empleados"),
     ##Compras
     path("crear_compra",views.crear_compra,name="crear_compra"),
+    path ("historial_compras", views.historial_compra, name="historial_compras"),
     ##Ventas
     path("crear_venta",views.crear_venta, name="crear_venta"),
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),

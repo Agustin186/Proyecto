@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}SmartCell{% endblock %}</title>
-
     <!-- Estilos CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/estilo_prov_cli_empl.css' %}">
@@ -16,10 +15,9 @@
     <link rel="stylesheet" href="{% static 'css/estilo_cierre_caja.css' %}">
     <link rel="stylesheet" href="{% static 'css/estilo_productos.css' %}">
     <link rel="stylesheet" href="{% static 'css/estilo_apertura_caja.css' %}">
-    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="{% static 'css/estilo_compras.css' %}">
+    <!--INCONOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-
 
 </head>
 <body>
@@ -60,7 +58,18 @@
                     <li><a class="dropdown-item" href="{% url 'historial_ventas' %}">Historial de ventas</a></li>
                 </ul>
             </li>
-            <li><a class="nav-item" href="{% url 'crear_compra' %}"><i class="fas fa-shopping-bag"></i> Compras</a></li>
+            <!--Menu desplegable de compras-->
+            <li class="dropdown">
+                <a  href="" class="dropdown-toggle nav-item">
+                    <i class="fas fa-shopping-cart"></i>Compras
+                </a>
+                <ul class="dropdown-menu">
+                   <li><a class="dropdown-item" href="{% url 'crear_compra' %}"> Nueva compra</a></li>
+                   <li><a class="dropdown-item" href="{% url 'historial_compras' %}">Historial de compras</a></li>
+                </ul>
+            </li>
+
+            <!--Boton caja-->
             <li><a class="nav-item" href="{% url 'historial_arqueo' %}"><i class="fas fa-cash-register"></i> Caja</a></li>
         </ul>
     </nav>

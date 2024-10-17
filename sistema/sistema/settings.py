@@ -141,3 +141,12 @@ LOGIN_URL = '/inicio/'  # Ajusta esta URL según tu configuración de la página
 
 # settings.py
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rabatrixnelson@gmail.com'  # Tu correo de Gmail
+EMAIL_HOST_PASSWORD = 'mrtgpdwfwiasfvuw'
+DEFAULT_FROM_EMAIL = 'rabatrix_bp@outlook.es'
