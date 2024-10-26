@@ -40,42 +40,13 @@
         </tr>
     </table>
 
-    <h3 class="text-center">Segun el usuario</h3>
-    <form class="formulario-usuario" method="post" onsubmit="return validarMontos();">
-        {% csrf_token %}
-        <table class="tabla_cierre_caja">
-            <tr>
-                <th><label for="monto_inicial_usuario">Monto Inicial</label></th>
-                <td><input type="number" id="monto_inicial_usuario" name="monto_inicial_usuario" step="0.01" min="0"></td>
-            </tr>
-            <tr>
-                <th><label for="total_ingreso_usuario">Ingreso</label></th>
-                <td><input type="number" id="total_ingreso_usuario" name="total_ingreso_usuario" step="0.01" min="0"></td>
-            </tr>
-            <tr>
-                <th><label for="total_egreso_usuario">Egreso</label></th>
-                <td><input type="number" id="total_egreso_usuario" name="total_egreso_usuario" step="0.01" min="0"></td>
-            </tr>
-            <tr>
-                <th><label for="monto_final_usuario">Monto Final</label></th>
-                <td><input type="number" id="monto_final_usuario" name="monto_final_usuario" step="0.01" min="0"></td>
-            </tr>
-            <tr>
-                <th><label>Total:</label></th>
-                <td><strong id="monto_final_usuario_td">${{ arqueo.monto_final|floatformat:"2"|default_if_none:"-" }}</strong></td>
-            </tr>
-        </table>
-    </form>
+  
 
     <!-- Formulario de confirmación -->
     <form method="post" class="formulario-cierre text-center" onsubmit="return validarMontos();">
         {% csrf_token %}
         
-        <!-- Campo opcional para comentarios al cerrar la caja -->
-        <div class="form-group">
-            <label for="comentarios">Comentarios (opcional):</label><br>
-            <textarea id="comentarios" name="comentarios" rows="4" placeholder="Agrega cualquier comentario sobre el cierre de caja" class="comentarios-textarea"></textarea>
-        </div>
+       
 
         <!-- Botones de acción: Cerrar y Cancelar -->
         <div class="botones-accion">

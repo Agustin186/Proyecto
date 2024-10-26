@@ -87,34 +87,61 @@ tfoot td {
     text-decoration: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
-.btn-primary {
-    background-color: #007bff;
+.btn-primary  {
+    background-color: green;
     color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
 }
+
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #253e25;
 }
 
-.btn-secondary {
+.btn-i {
     background-color: #6c757d;
     color: white;
 }
 
-.btn-secondary:hover {
+.btn-i:hover {
     background-color: #5a6268;
 }
 
-.btn-danger {
-    background-color: #dc3545;
+.btn-e {
+    background-color: #6c757d;
     color: white;
 }
 
-.btn-danger:hover {
-    background-color: #c82333;
+.btn-e:hover {
+    background-color: #6c757d;
 }
 
+.btn-m {
+    background-color: #6c757d;
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn-m:hover {
+    background-color: #6c757d;
+}
+
+.red-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.red-btn:hover {
+    background-color: #6a1d1d;
+}
 /* Scroll personalizado para la tabla */
 .table-container::-webkit-scrollbar {
     width: 10px;
@@ -145,3 +172,7 @@ tfoot td {
         font-size: 0.9em;
     }
 }
+
+
+
+

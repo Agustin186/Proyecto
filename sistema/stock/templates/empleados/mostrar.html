@@ -24,6 +24,7 @@
                         <td>
                             <a class="btn-editar" href="{% url 'editar_empleados' empleado.id_emplead %}">Editar</a>
                             <a class="btn-borrar" href="{% url 'eliminar_empleados' empleado.id_emplead %}">Borrar</a>
+                            <a href="{% url 'ver_acciones_empleados' empleado.id_emplead %}">ver acciones</a>
                         </td>
                     </tr>
                 {% empty %}

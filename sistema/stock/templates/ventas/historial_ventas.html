@@ -29,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for compra in compras %}
+                {% for venta in ventas %}
                 <tr>
                     <td>{{ venta.fecha_hs }}</td>
                     <td>{{ venta.id_cli.nombre_cli }} {{ venta.id_cli.apellido_cli }}</td>
@@ -40,7 +40,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" id="no_compras">No hay compras registradas.</td>
+                    <td colspan="6" id="no_compras">No hay ventas registradas.</td>
                 </tr>
                 {% endfor %}
             </tbody>

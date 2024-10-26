@@ -62,5 +62,8 @@ urlpatterns = [
     #Ingresos_egresos
     path('registrar_ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
     path('registrar_egreso/', views.registrar_egreso, name='registrar_egreso'),
+    path("auditoria/empleado/<int:empleado_id>/", views.ver_acciones_empleado, name="ver_acciones_empleados"),
 
+    path('ventas_del-mes/', views.ventas_del_mes, name='ventas_del_mes'),
+     path('movimiento_caja', views.movimientos_caja, name="movimientos_caja"),
 ]

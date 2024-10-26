@@ -76,6 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 document.addEventListener('DOMContentLoaded', function () {
-     var hoy = new Date().toISOString("en-CA").split('T')[0];
+     let hoy = new Date().toISOString("en-CA").split('T')[0];
      document.getElementById('fecha_hs').value = hoy;
 })

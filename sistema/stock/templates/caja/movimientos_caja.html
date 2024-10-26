@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Movimientos de Caja{% endblock %}
+{% block contenido %}
+<div id="pa_contenedor_movimientos">
+    <h2>Movimientos de Caja</h2>
+    <div class="table-container">
+        {% for movimiento in movimientos %}
+            <h3>Caja {{ movimiento.arqueo.id_caja }} - {{ movimiento.arqueo.fecha_hs_apertura }}</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Hora</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ingreso in movimiento.ingresos %}
+                        {% if ingreso.tipo == 'venta' %}
+                            <tr>
+                                <td>Venta</td>
+                                <td>${{ ingreso.monto }}</td>
+                                <td>{{ ingreso.fecha_ingreso|time }}</td>
+                                <td>{{ ingreso.descripcion }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td>Ingreso</td>
+                                <td>${{ ingreso.monto }}</td>
+                                <td>{{ ingreso.fecha_ingreso|time }}</td>
+                                <td>{{ ingreso.descripcion }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    {% for egreso in movimiento.egresos %}
+                        <tr>
+                            <td>Egreso</td>
+                            <td>${{ egreso.monto }}</td>
+                            <td>{{ egreso.fecha_egreso|time }}</td>
+                            <td>{{ egreso.descripcion }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% for compra in movimiento.compras %}
+                        <tr>
+                            <td>Compra</td>
+                            <td>${{ compra.total_compra }}</td>
+                            <td>{{ compra.fecha_compra|time }}</td>
+                            <td>{{ compra.descripcion }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

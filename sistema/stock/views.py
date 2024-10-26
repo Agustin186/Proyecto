@@ -12,7 +12,9 @@ from .models import *
 from .forms import *
 from django.utils import timezone
 from django.template.loader import get_template
-    
+from datetime import date
+from django.db.models import Sum
+from datetime import datetime
 def procesar_login(request):    
     if request.method == 'POST':
         username = request.POST['username']
@@ -28,16 +30,21 @@ def procesar_login(request):
 #Caja
 @login_required
 def apertura_arqueo(request):
-    # Verificar si hay una caja abierta
     if ArqueoCaja.objects.filter(cerrado=False).exists():
-        # Si hay una caja abierta, renderizar el formulario con un mensaje de error
         error_message = "Ya hay una caja abierta. No puedes abrir otra hasta que la actual esté cerrada."
+        return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
+
+    try:
+        empleado = request.user.empleado
+    except Empleados.DoesNotExist:
+        error_message = "El usuario no tiene un empleado asociado."
         return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
 
     if request.method == 'POST':
         form = ArqueoCajaForm(request.POST)
         if form.is_valid():
             arqueo = form.save(commit=False)
+            arqueo.id_emplead = empleado  # Asignar el empleado
             arqueo.fecha_hs_apertura = timezone.now()
             arqueo.monto_final = 0
             arqueo.total_ingreso = 0
@@ -45,9 +52,10 @@ def apertura_arqueo(request):
             arqueo.save()
             return redirect('historial_arqueo')
     else:
-        form = ArqueoCajaForm()
+        form = ArqueoCajaForm(initial={'id_emplead': empleado})
 
     return render(request, 'caja/apertura_arqueo.html', {'form': form})
+
 
 def cerrar_arqueo(request, id_caja):
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
@@ -64,13 +72,21 @@ def cerrar_arqueo(request, id_caja):
     return render(request, 'caja/cerrar_arqueo.html', {'form': form, 'arqueo': arqueo})
 
 def historial_arqueo(request):
-    arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
-
+    fecha = request.GET.get('fecha')
+    if fecha:
+        try:
+            fecha_datetime = datetime.strptime(fecha, '%Y-%m-%d').date()
+            arqueos = ArqueoCaja.objects.filter(fecha_hs_apertura__date=fecha_datetime).order_by('-fecha_hs_apertura')
+        except ValueError:
+            arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
+    else:
+        arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
+    
     # Recalcular montos para todos los arqueos (opcional)
     for arqueo in arqueos:
         arqueo.calcular_montos()
-
-    return render(request, 'caja/historial_arqueo.html', {'arqueos':arqueos})
+    
+    return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha': fecha})
 
 #Ingresos y Egresos
 def registrar_ingreso(request):
@@ -299,6 +315,10 @@ def crear_venta(request):
         )
         nueva_venta.save()
 
+        empleado_actual = Empleados.objects.get(user=request.user)
+
+        registrar_accion(empleado_actual, f"Creación de venta {nueva_venta.id_venta}")
+
         productos_ids = request.POST.getlist('productos[]')
         cantidades = request.POST.getlist('cantidades[]')
         subtotales = request.POST.getlist('subtotales[]')
@@ -317,6 +337,9 @@ def crear_venta(request):
             )
             nuevo_detalle.save()
 
+            registrar_accion(empleado_actual, f"Creación de detalle de venta para producto {producto.nombre_prod}")
+
+
             producto.stock_actual -= cantidad
             producto.save()
 
@@ -328,8 +351,15 @@ def crear_venta(request):
         )
         nuevo_ingreso.save()
 
+        registrar_accion(empleado_actual, f"Registro de ingreso en arqueo para venta {nueva_venta.id_venta}")
+
+
         # Actualizar los montos en el arqueo de caja
         arqueo_abierto.calcular_montos()
+
+
+        registrar_accion(empleado_actual, f"Actualización de montos en arqueo de caja {arqueo_abierto.id_caja}")
+
 
         return redirect('det_venta', id_venta=nueva_venta.id_venta)
 
@@ -343,6 +373,7 @@ def crear_venta(request):
         "formulario": formulario
     }
     return render(request, "ventas/crear_venta.html", context)
+
 
 def det_venta(request, id_venta):
     venta = get_object_or_404(Ventas, id_venta=id_venta)
@@ -404,10 +435,12 @@ def crear_compra(request):
          "producto":producto
      }
 
+
     return render(request, "compras/crear_compra.html", context)
 
 def det_compra(request):
     pass
+
 def historial_compra(request):
     ##compras=Compras.objects.all().order_by("-fecha_hs")
 
@@ -417,3 +450,70 @@ def historial_compra(request):
 
     return render(request, "compras/historial_compras.html")
 
+
+
+def ver_acciones_empleado(request, empleado_id):
+    # Obtener el empleado especificado
+    empleado = get_object_or_404(Empleados, id_emplead=empleado_id)
+    # Filtrar las acciones de auditoría para este empleado
+    acciones = AuditoriaEmpleado.objects.filter(empleado=empleado).order_by('-fecha_hora')
+
+    context = {
+        'empleado': empleado,
+        'acciones': acciones
+    }
+    return render(request, 'ver_acciones.html', context)
+
+
+
+def registrar_accion(empleado, proceso):
+    AuditoriaEmpleado.objects.create(
+        empleado=empleado,
+        nombre_empleado=f"{empleado.nombre_emplead} {empleado.apellido_emplead}",
+        proceso=proceso,
+        fecha_hora=timezone.now()
+    )
+
+def ventas_del_mes(request):
+    ventas = (
+        Ventas.objects
+        .filter(fecha_hs__month=date.today().month, fecha_hs__year=date.today().year)  # Cambiado a fecha_hs
+        .values('fecha_hs')  # Cambiado a fecha_hs
+        .annotate(total=Sum('total_venta'))
+        .order_by('fecha_hs') 
+    )
+
+    labels = [venta['fecha_hs'].strftime('%d-%m') for venta in ventas]  # Cambiado a fecha_hs
+    data = [venta['total_venta'] for venta in ventas]
+
+    return JsonResponse({'labels': labels, 'data': data})
+
+
+@login_required
+def movimientos_caja(request):
+    query = request.GET.get('q')
+    arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
+
+    if query:
+        fecha = parse_date(query)
+        if fecha:
+            arqueos = arqueos.filter(fecha_hs_apertura__date=fecha)
+
+    movimientos = []
+    for arqueo in arqueos:
+        ingresos = Ingreso.objects.filter(id_caja=arqueo.id_caja)
+        egresos = Egreso.objects.filter(id_caja=arqueo.id_caja)
+        ventas = Ventas.objects.filter(id_caja=arqueo.id_caja)
+        compras = Compras.objects.filter(id_caja=arqueo.id_caja)
+        movimientos.append({
+            'arqueo': arqueo,
+            'ingresos': ingresos,
+            'egresos': egresos,
+            'ventas': ventas,
+            'compras': compras,
+        })
+    
+    return render(request, 'caja/movimientos_caja.html', {
+        'movimientos': movimientos,
+        'selected_date': query  # Guardar la fecha seleccionada
+    })

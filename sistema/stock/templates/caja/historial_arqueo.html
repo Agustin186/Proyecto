@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block titulo %}Historial de Caja{% endblock %}
-
 {% block contenido %}
 <div id="pa_contenedor_historial">
     <h2>Historial de Caja</h2>
-
+    
     <!-- Barra de botones para registrar acciones -->
     <div class="button-container">
         <a href="{% url 'apertura_arqueo' %}" class="btn btn-primary custom-btn">Apertura de Caja</a>
-        <a href="{% url 'registrar_ingreso' %}" class="btn btn-secondary custom-btn">Registrar Ingreso</a>
-        <a href="{% url 'registrar_egreso' %}" class="btn btn-danger custom-btn">Registrar Egreso</a>
+        <a href="{% url 'registrar_ingreso' %}" class="btn btn-i custom-btn">Registrar Ingreso</a>
+        <a href="{% url 'registrar_egreso' %}" class="btn btn-e custom-btn">Registrar Egreso</a>
+        <a href="{% url 'movimientos_caja' %}" class="btn btn-m custom-btn">Ver Movimientos</a> <!-- Aquí se agrega el nuevo enlace -->
     </div>
 
     <!-- Contenedor de la tabla con scroll -->
@@ -43,7 +42,7 @@
                         {% if arqueo.fecha_hs_cierre %}
                             Cerrada
                         {% else %}
-                            <a href="{% url 'cerrar_arqueo' arqueo.id_caja %}" class="cerrar-caja">Cerrar</a>
+                            <a href="{% url 'cerrar_arqueo' arqueo.id_caja %}" class="red-btn">Cerrar</a>
                         {% endif %}
                     </td>
                 </tr>
@@ -54,7 +53,6 @@
                 {% endfor %}
             </tbody>
             {% if arqueos %}
-
             {% endif %}
         </table>
     </div>
@@ -77,5 +75,4 @@ setInterval(() => {
     });
 }, 10000);
 </script>
-
 {% endblock %}

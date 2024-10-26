@@ -95,6 +95,7 @@ class ArqueoCaja(models.Model):
         return f"Caja {self.id_caja} - {self.fecha_hs_apertura}"
 
 
+
      
 class Compras(models.Model):
     id_compra=models.AutoField(primary_key=True)
@@ -161,3 +162,15 @@ class Egreso(models.Model):
 
     def __str__(self):
         return f"Egreso {self.id_egreso} - {self.descripcion}"
+
+
+class AuditoriaEmpleado(models.Model):
+    empleado = models.ForeignKey(Empleados, on_delete=models.CASCADE)
+    nombre_empleado = models.CharField(max_length=255)
+    proceso = models.CharField(max_length=255)
+    fecha_hora = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.nombre_empleado} - {self.proceso} - {self.fecha_hora}"
+
+

@@ -141,7 +141,20 @@ class ArqueoCajaForm(forms.ModelForm):
     class Meta:
         model = ArqueoCaja
         fields = ['id_emplead', 'monto_inicial']
+
+    def __init__(self, *args, **kwargs):
+        super(ArqueoCajaForm, self).__init__(*args, **kwargs)
+        self.fields['id_emplead'].widget = forms.HiddenInput()
+
+    def clean_monto_inicial(self):
+        monto_inicial = self.cleaned_data.get('monto_inicial')
+        if monto_inicial < 0:
+            raise forms.ValidationError("El monto inicial no puede ser negativo.")
+        return monto_inicial
+    
 class CerrarArqueoForm(forms.ModelForm):
+
+    
     class Meta:
         model = ArqueoCaja
         fields = []

@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{% static 'css/estilo_compras.css' %}">
     <!--INCONOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+    
 </head>
 <body>
     <!-- Barra superior con logo y opciones de usuario -->
@@ -85,5 +85,32 @@
     <footer class="logo_abajo">
         SmartCell © 2024
     </footer>
+
+    
+<form id="logoutForm" method="POST" action="{% url 'logout' %}">
+    {% csrf_token %}
+</form>
+<script>
+
+    let tiempoInactividadPermitido = 500000;
+    let temporizador;
+
+    function resetearTemporizador() {
+        clearTimeout(temporizador);
+        temporizador = setTimeout(cerrarSesionPorInactividad, tiempoInactividadPermitido);
+    }
+
+    function cerrarSesionPorInactividad() {
+
+        document.getElementById('logoutForm').submit();
+    }
+
+
+    window.onload = resetearTemporizador;
+    document.onmousemove = resetearTemporizador;
+    document.onkeypress = resetearTemporizador;
+    document.onclick = resetearTemporizador;
+    document.onscroll = resetearTemporizador;
+</script>
 </body>
 </html>

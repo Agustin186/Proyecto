@@ -7,7 +7,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 90%; /* Ancho del contenedor */
     max-width: 1200px; /* Ancho máximo */
-    height: 80vh; /* Altura fija para todo el contenedor */
+    height: 75vh; /* Altura fija para todo el contenedor */
     display: flex;
     flex-direction: column;
 }
