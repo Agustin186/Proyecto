@@ -92,7 +92,7 @@
                     <table class="table table-primary">
                         <thead>
                             <tr>
-                                <th scope="col">Código</th>
+                                <th scope="col">Stock</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Precio</th>
                                 <th scope="col">Acciones</th>
@@ -101,7 +101,7 @@
                         <tbody id="lista-productos">
                             {% for producto in productos %}
                             <tr>
-                                <td>{{ producto.id_prod }}</td>
+                                <td>{{ producto.stock_actual }}</td>
                                 <td>{{ producto.nombre_prod }}</td>
                                 <td>{{ producto.precio_prod }}</td>
                                 <td>

@@ -428,15 +428,17 @@ def crear_compra(request):
          total_compra=total_compra
 
          )
+     
      nueva_compra.save()
 
     context={
-         "proveedor":proveedor,
-         "producto":producto
+         "proveedores":proveedor,
+         "productos":producto
      }
 
 
     return render(request, "compras/crear_compra.html", context)
+
 
 def det_compra(request):
     pass

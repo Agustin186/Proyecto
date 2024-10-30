@@ -1,14 +1,13 @@
 /* Contenedor principal de la vista de productos */
 #productos-view {
-    width: 90%;
-    
+    width: 100%;
     padding: 2px;
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #f8f9fa;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden; /* Prevenir overflow en el contenedor */
-    height: calc(100vh - 160px); /* Altura fija para ocupar la mayor parte de la pantalla */
+    height: calc(90vh - 160px); /* Altura fija para ocupar la mayor parte de la pantalla */
     display: flex;
     flex-direction: column;
 }

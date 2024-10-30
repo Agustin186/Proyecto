@@ -27,7 +27,6 @@
                 </select>
             </div>
     
-        
             <table id="tabla_compras">
                 <thead>
                     <tr>
@@ -60,23 +59,26 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Productos</h4>
+                
+                <!-- Barra de busqueda -->
+                <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto...">
 
-                <div class="table-responsive">
+                <!-- Contenedor con scroll para la lista de productos  -->
+                <div class="contenedor-lista-productos">
                     <table class="table table-primary">
                         <thead>
                             <tr>
-                                <th scope="col">Codigo</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Precio</th>
+                                <th scope="col">Stock Actual</th>
+                                <th scope="col">Descripcion</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="lista-productos">
                             {% for producto in productos %}
                             <tr>
-                                <td>{{ producto.id_prod }}</td>
+                                <td>{{ producto.stock_actual }}</td>
                                 <td>{{ producto.nombre_prod }}</td>
-                                <td>{{ producto.precio_prod }}</td>
+                                
                                 <td>
                                     <button type="button" class="btn btn-success agregar-producto" data-id="{{ producto.id_prod }}" data-nombre="{{ producto.nombre_prod }}" data-precio="{{ producto.precio_prod }}">
                                         Añadir
