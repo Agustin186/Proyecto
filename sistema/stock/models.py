@@ -55,6 +55,7 @@ class Productos(models.Model):
     id_prod= models.AutoField(primary_key=True)
     id_prov=models.ForeignKey(Proveedores, on_delete=models.SET_NULL, null=True, blank=True, related_name="productos")
     nombre_prod=models.CharField(max_length=100, verbose_name="Nombre del Articulo", null=False)
+    precio_costo=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio de costo", null=True, blank=True)
     precio_prod=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio", null=False)
     stock_min=models.IntegerField(null=True, blank=True)
     stock_max=models.IntegerField(null=True, blank=True)

@@ -54,6 +54,7 @@ urlpatterns = [
     ##Compras
     path("crear_compra",views.crear_compra,name="crear_compra"),
     path ("historial_compras", views.historial_compra, name="historial_compras"),
+    path('compras/detalle/<int:id_compra>/', views.det_compra, name='det_compra'),
     ##Ventas
     path("crear_venta",views.crear_venta, name="crear_venta"),
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),

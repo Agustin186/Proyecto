@@ -1,13 +1,15 @@
 /* Contenedor principal */
 .contenedor_cierre_caja {
-    width: 70%;
-    margin: 50px auto;
-    padding: 30px;
+    background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    margin: 2px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
+    width: 90%;
+    max-width: 1200px;
+    height: 73vh; /* Altura del contenedor principal */
+    display: flex;
+    flex-direction: column;
 }
 
 /* Título principal */

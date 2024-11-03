@@ -7,10 +7,10 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 90%;
     max-width: 1200px;
-    height: 80vh; /* Limitar la altura del contenedor principal */
+    height: 73vh; /* Altura del contenedor principal */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Evitar que el contenedor general tenga scroll */
+   
 }
 
 /* Título del historial */

@@ -41,7 +41,7 @@ class EmpleadosForm(forms.ModelForm):
                 raise forms.ValidationError("Este nombre de usuario ya está en uso.")
         return username
 
-    def generar_clave_aleatoria(self, longitud=12):
+    def generar_clave_aleatoria(self, longitud=5):
         caracteres = string.digits
         clave_aleatoria = ''.join(secrets.choice(caracteres) for _ in range(longitud))
         return clave_aleatoria

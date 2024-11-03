@@ -139,6 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/procesar_login/'  # Ajusta esta URL según tu configuración de la página de login
 LOGIN_URL = '/inicio/'  # Ajusta esta URL según tu configuración de la página de login
 
+
 # settings.py
 LOGOUT_REDIRECT_URL = '/'
 

@@ -1,76 +1,63 @@
 document.addEventListener('DOMContentLoaded', function () {
-
-    // Set current date in the Argentina timezone
     function setCurrentDate() {
-        const argentinaTimezoneOffset = -3; // Argentina timezone offset (-3 hours from UTC)
         const today = new Date();
-        today.setHours(today.getHours() + argentinaTimezoneOffset);
         const dateString = today.toISOString().split('T')[0];
         document.getElementById('fecha_hs').value = dateString;
     }
     setCurrentDate();
 
-    // Variables to store total
-    let totalCompra = 0;
-
-    // Function to update the total value
-    function actualizarTotal() {
+    const actualizarTotal = () => {
         let total = 0;
-        const filas = document.querySelectorAll('#tabla_compras tbody tr');
-        filas.forEach(function(fila) {
-            const subtotal = parseFloat(fila.querySelector('.subtotal').innerText);
-            total += isNaN(subtotal) ? 0 : subtotal;
+        document.querySelectorAll('#tabla_compras .subtotal').forEach(subtotal => {
+            total += parseFloat(subtotal.innerText);
         });
         document.getElementById('total').value = total.toFixed(2);
-    }
+    };
 
-    // Add event listener to "Agregar Producto" buttons
-    const botonesAgregar = document.querySelectorAll('.agregar-producto');
-    botonesAgregar.forEach(function(boton) {
-        boton.addEventListener('click', function() {
-            const idProducto = this.getAttribute('data-id');
-            const nombreProducto = this.getAttribute('data-nombre');
-            const precioProducto = parseFloat(this.getAttribute('data-precio'));
+    document.querySelectorAll('.agregar-producto').forEach(button => {
+        button.addEventListener('click', function () {
+            const idProducto = this.dataset.id;
+            const nombreProducto = this.dataset.nombre;
+            const precioCosto = parseFloat(this.dataset.precio).toFixed(2);
+            const tbody = document.querySelector('#tabla_compras tbody');
 
-            agregarProductoATabla(idProducto, nombreProducto, precioProducto);
+            // Verificar si el producto ya está en la tabla
+            let filaExistente = Array.from(tbody.querySelectorAll('input[name="producto_ids[]"]')).find(input => input.value === idProducto);
+            if (filaExistente) {
+                const fila = filaExistente.closest('tr');
+                const cantidadInput = fila.querySelector('.cantidad');
+                cantidadInput.value = parseInt(cantidadInput.value) + 1;
+                fila.querySelector('.subtotal').innerText = (cantidadInput.value * precioCosto).toFixed(2);
+                actualizarTotal();
+                return;
+            }
+
+            // Crear una nueva fila de producto
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${nombreProducto} <input type="hidden" name="producto_ids[]" value="${idProducto}"></td>
+                <td><input type="number" name="precios_costos[]" value="${precioCosto}" step="0.01" class="precio-costo"></td>
+                <td><input type="number" name="cantidades[]" value="1" min="1" class="cantidad"></td>
+                <td class="subtotal">${precioCosto}</td>
+                <td><button type="button" class="btn btn-danger eliminar-producto">Eliminar</button></td>
+            `;
+            tbody.appendChild(fila);
+
+            // Eventos para actualizar subtotal y total
+            fila.querySelector('.cantidad').addEventListener('change', () => actualizarSubtotal(fila));
+            fila.querySelector('.precio-costo').addEventListener('change', () => actualizarSubtotal(fila));
+            fila.querySelector('.eliminar-producto').addEventListener('click', () => { fila.remove(); actualizarTotal(); });
+
+            actualizarTotal();
         });
     });
 
-    // Function to add product to the table
-    function agregarProductoATabla(id, nombre, precio) {
-        const tbody = document.querySelector('#tabla_compras tbody');
-
-        // Create a new row
-        const fila = document.createElement('tr');
-
-        fila.innerHTML = `
-            <td>${nombre}</td>
-            <td>${precio.toFixed(2)}</td>
-            <td><input type="number" value="1" min="1" class="cantidad" style="width: 60px;"></td>
-            <td class="subtotal">${precio.toFixed(2)}</td>
-            <td><button class="btn btn-danger eliminar-producto">Eliminar</button></td>
-        `;
-
-        // Add event listener to quantity change
-        const cantidadInput = fila.querySelector('.cantidad');
-        cantidadInput.addEventListener('change', function() {
-            const cantidad = parseInt(this.value);
-            const subtotal = precio * cantidad;
-            fila.querySelector('.subtotal').innerText = subtotal.toFixed(2);
-            actualizarTotal();
-        });
-
-        // Add event listener to "Eliminar" button
-        const botonEliminar = fila.querySelector('.eliminar-producto');
-        botonEliminar.addEventListener('click', function() {
-            fila.remove();
-            actualizarTotal();
-        });
-
-        // Append the row to the table body
-        tbody.appendChild(fila);
-
-        // Update the total
+    const actualizarSubtotal = fila => {
+        const cantidad = parseInt(fila.querySelector('.cantidad').value);
+        const precioCosto = parseFloat(fila.querySelector('.precio-costo').value);
+        const subtotal = cantidad * precioCosto;
+        fila.querySelector('.subtotal').innerText = subtotal.toFixed(2);
         actualizarTotal();
-    }
+    };
 });
+

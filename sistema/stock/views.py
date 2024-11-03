@@ -56,7 +56,7 @@ def apertura_arqueo(request):
 
     return render(request, 'caja/apertura_arqueo.html', {'form': form})
 
-
+@login_required
 def cerrar_arqueo(request, id_caja):
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
 
@@ -70,7 +70,7 @@ def cerrar_arqueo(request, id_caja):
         form = CerrarArqueoForm(instance=arqueo)
 
     return render(request, 'caja/cerrar_arqueo.html', {'form': form, 'arqueo': arqueo})
-
+@login_required
 def historial_arqueo(request):
     fecha = request.GET.get('fecha')
     if fecha:
@@ -89,6 +89,7 @@ def historial_arqueo(request):
     return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha': fecha})
 
 #Ingresos y Egresos
+@login_required
 def registrar_ingreso(request):
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
     if not arqueo_abierto:
@@ -105,8 +106,7 @@ def registrar_ingreso(request):
     else:
         form = IngresoForm(initial={'id_caja': arqueo_abierto})
     return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
-
-
+@login_required
 def registrar_egreso(request):
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
     if not arqueo_abierto:
@@ -123,7 +123,7 @@ def registrar_egreso(request):
     else:
         form = EgresoForm()
     return render(request, 'transacciones/registrar_egreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
-
+@login_required
 def obtener_monto_final(request, id_caja):
     arqueo = ArqueoCaja.objects.get(id=id_caja)
     arqueo.calcular_montos()
@@ -139,8 +139,6 @@ def inicio(request):
     producto=Productos.objects.all()
     return render (request, "inicio.html",{"productos":producto})
 
-
-
 @login_required
 def cerrar_sesion(request):
     if ArqueoCaja.objects.filter(cerrado=False).exists():
@@ -152,7 +150,7 @@ def cerrar_sesion(request):
 
 
 @login_required
-##CRUD Articulos
+##PRODUCTOS
 def mostrar_articulos(request):
     producto=Productos.objects.all()
     return render(request, "articulos/mostrar.html",{"productos":producto})
@@ -177,7 +175,6 @@ def crear_articulos(request):
             formulario.save()
             return redirect("mostrar_articulos")
     return render(request, "articulos/crear.html", {"formulario": formulario})
-
 
 @permission_required('stock.view_articulo')
 def eliminar_productos(request,id_prod):
@@ -219,6 +216,8 @@ def eliminar_clientes(request, id_cli):
 
 
 ##CRUD Empleados
+@login_required
+@permission_required("stock.view_empelado")
 def mostrar_empleados(request):
     empleado=Empleados.objects.all()
     return render(request,"empleados/mostrar.html",{"empleados":empleado})
@@ -258,10 +257,12 @@ def eliminar_empleados(request, id_emplead):
     return redirect("mostrar_empleados")
 
 ##CRUD Proveedores
+@login_required
+@permission_required("stock.view_empleado")
 def mostrar_proveedores(request):
     proveedor= Proveedores.objects.all()
     return render(request, "proveedores/mostrar.html",{"proveedores": proveedor})
-
+@login_required
 @permission_required('stock.view_empleado')
 def editar_proveedores(request, id_prov):
    
@@ -293,6 +294,7 @@ def eliminar_proveedores(request,id_prov):
     return redirect("mostrar_proveedores")
 
 #Ventas
+@login_required
 def crear_venta(request):
     producto = Productos.objects.all()
     empleado = Empleados.objects.all()
@@ -373,8 +375,7 @@ def crear_venta(request):
         "formulario": formulario
     }
     return render(request, "ventas/crear_venta.html", context)
-
-
+@login_required
 def det_venta(request, id_venta):
     venta = get_object_or_404(Ventas, id_venta=id_venta)
     detalles = det_ventas.objects.filter(id_venta=venta)
@@ -384,11 +385,11 @@ def det_venta(request, id_venta):
         'detalles': detalles
     }
     return render(request, 'ventas/detalle_ventas.html', context)
-
+##GENERAR PDF VENTAS
+@login_required
 def GenerarPdf(request,id_venta ):
     venta=Ventas.objects.get(id_venta=id_venta)
     detalles=det_ventas.objects.filter(id_venta=venta)
-
     context={
         "venta":venta,
         "detalles":detalles,
@@ -404,56 +405,91 @@ def GenerarPdf(request,id_venta ):
     if pisa_status.err:
         return HttpResponse(f"error: {pisa_status.err}")
     return response
-
+##HISTORIAL DE VENTAS
+@login_required
 def historial_ventas(request):
     ventas=Ventas.objects.all().order_by("-fecha_hs")
     context={
         "ventas": ventas
     }
-
     return render (request, "ventas/historial_ventas.html", context)
 
-#Compras
+#Compras    
+@login_required
 def crear_compra(request):
-    proveedor=Proveedores.objects.all()
-    producto=Productos.objects.all()
+    proveedores = Proveedores.objects.all()
+    productos = Productos.objects.all()
 
-    if request.method=="POST":
-     id_prov=request.POST.get("proveedor"),
-     total_compra=request.POST.get("total")
-     nueva_compra=Compras(
-         id_compra=nueva_compra,
-         id_prov=Proveedores.objects.get(id_prov=id_prov),
-         fecha_compra=timezone.now(),
-         total_compra=total_compra
+    if request.method == "POST":
+        id_prov = request.POST.get("proveedor")
+        total_compra = request.POST.get("total")
+        proveedor = get_object_or_404(Proveedores, id_prov=id_prov)
+        
+        # Crear la compra principal
+        nueva_compra = Compras(
+            id_prov=proveedor,
+            fecha_compra=timezone.now(),
+            total_compra=total_compra,
+            descrip_compra=request.POST.get("descrip_compra")
+        )
+        nueva_compra.save()
 
-         )
-     
-     nueva_compra.save()
+        # Procesar los detalles de la compra
+        producto_ids = request.POST.getlist('producto_ids[]')
+        cantidades = request.POST.getlist('cantidades[]')
+        precios_costos = request.POST.getlist('precios_costos[]')
 
-    context={
-         "proveedores":proveedor,
-         "productos":producto
-     }
+        for i in range(len(producto_ids)):
+            id_producto = producto_ids[i]
+            cantidad = int(cantidades[i])
+            precio_costo = float(precios_costos[i])
+            subtotal = cantidad * precio_costo
 
+            producto = get_object_or_404(Productos, id_prod=id_producto)
+            producto.precio_costo = precio_costo
+            producto.save()
+
+            det_compra = det_compras(
+                id_compra=nueva_compra,
+                id_prod=producto,
+                cant_comprada=cantidad,
+                precio_unitario=precio_costo,
+                subtotal_compra=subtotal
+            )
+            det_compra.save()
+
+        return redirect('det_compra', id_compra=nueva_compra.id_compra)
+
+    context = {
+        "proveedores": proveedores,
+        "productos": productos
+    }
 
     return render(request, "compras/crear_compra.html", context)
+@login_required
+def det_compra(request, id_compra):
+    # Obtener la compra específica
+    compra = get_object_or_404(Compras, id_compra=id_compra)
+    # Obtener todos los detalles de productos asociados a esta compra
+    detalles = det_compras.objects.filter(id_compra=compra)
 
-
-def det_compra(request):
-    pass
-
+    context = {
+        'compra': compra,
+        'detalles': detalles,
+    }
+    return render(request, 'compras/det_compras.html', context)
+@login_required
 def historial_compra(request):
-    ##compras=Compras.objects.all().order_by("-fecha_hs")
+    # Obtener todas las compras ordenadas por fecha (la más reciente primero)
+    compras = Compras.objects.all().order_by('-fecha_compra')
 
-    ##context={
-    ##    "compras":compras
-    ##}
-
-    return render(request, "compras/historial_compras.html")
-
+    context = {
+        'compras': compras,
+    }
+    return render(request, 'compras/historial_compras.html', context)
 
 
+@login_required 
 def ver_acciones_empleado(request, empleado_id):
     # Obtener el empleado especificado
     empleado = get_object_or_404(Empleados, id_emplead=empleado_id)
@@ -466,8 +502,7 @@ def ver_acciones_empleado(request, empleado_id):
     }
     return render(request, 'ver_acciones.html', context)
 
-
-
+@login_required
 def registrar_accion(empleado, proceso):
     AuditoriaEmpleado.objects.create(
         empleado=empleado,
@@ -475,7 +510,7 @@ def registrar_accion(empleado, proceso):
         proceso=proceso,
         fecha_hora=timezone.now()
     )
-
+@login_required
 def ventas_del_mes(request):
     ventas = (
         Ventas.objects
@@ -489,7 +524,6 @@ def ventas_del_mes(request):
     data = [venta['total_venta'] for venta in ventas]
 
     return JsonResponse({'labels': labels, 'data': data})
-
 
 @login_required
 def movimientos_caja(request):
