@@ -4,17 +4,17 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 import string
 import secrets
-
+##PROVEEDORES
 class ProveedoresForm(forms.ModelForm):
     class Meta:
         model = Proveedores
         fields = "__all__"
-
+##CLIENTES
 class ClientesForm(forms.ModelForm):
     class Meta:
         model = Clientes
         fields="__all__"
-
+##EMPLEADOS
 class EmpleadosForm(forms.ModelForm):
     username = forms.CharField(max_length=150, required=False)
 
@@ -81,10 +81,7 @@ class EmpleadosForm(forms.ModelForm):
         )
 
         return empleado
-
-
-
-
+##PRODUCTOS
 class ProductosForm(forms.ModelForm):
     class Meta:
         model = Productos
@@ -153,8 +150,6 @@ class ArqueoCajaForm(forms.ModelForm):
         return monto_inicial
     
 class CerrarArqueoForm(forms.ModelForm):
-
-    
     class Meta:
         model = ArqueoCaja
         fields = []
@@ -162,8 +157,28 @@ class IngresoForm(forms.ModelForm):
     class Meta:
         model = Ingreso
         fields = ['descripcion', 'monto']
+        widgets = {
+            'descripcion': forms.TextInput(attrs={'style': 'width: 400px;'}),
+            'monto': forms.NumberInput(attrs={'style': 'width: 100px;'}),
+        }
+
+    def clean_monto(self):
+        monto = self.cleaned_data.get('monto')
+        if monto < 0:
+            raise forms.ValidationError("El monto no puede ser negativo.")
+        return monto
 class EgresoForm(forms.ModelForm):
     class Meta:
         model = Egreso
         fields = ['descripcion', 'monto']
+        widgets = {
+            'descripcion': forms.TextInput(attrs={'style': 'width: 400px;'}),
+            'monto': forms.NumberInput(attrs={'style': 'width: 100px;'}),
+        }
+
+    def clean_monto(self):
+        monto = self.cleaned_data.get('monto')
+        if monto < 0:
+            raise forms.ValidationError("El monto no puede ser negativo.")
+        return monto 
 

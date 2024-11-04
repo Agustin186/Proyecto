@@ -31,7 +31,7 @@
             <a class="nav-item" href="{% url 'mostrar_empleados' %}">Empleados</a>
             <a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a>
             <span class="user-name">
-                <i class="fas fa-user-circle"></i> Hola, {{ request.user.username }}
+                <i class="fas fa-user-circle"></i> Hola {{ request.user.username }}
             </span>
             
             <!-- Botón para cerrar sesión -->

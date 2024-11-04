@@ -30,15 +30,16 @@ def procesar_login(request):
 #Caja
 @login_required
 def apertura_arqueo(request):
-    if ArqueoCaja.objects.filter(cerrado=False).exists():
-        error_message = "Ya hay una caja abierta. No puedes abrir otra hasta que la actual esté cerrada."
-        return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
-
     try:
         empleado = request.user.empleado
     except Empleados.DoesNotExist:
         error_message = "El usuario no tiene un empleado asociado."
         return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
+
+    # Verificar si el empleado actual tiene una caja abierta
+    if ArqueoCaja.objects.filter(id_emplead=empleado, cerrado=False).exists():
+        messages.error(request, "Ya tienes una caja abierta. No puedes abrir otra hasta que la actual esté cerrada.")
+        return redirect('historial_arqueo')  # Redirigir al historial de arqueo si ya hay una caja abierta
 
     if request.method == 'POST':
         form = ArqueoCajaForm(request.POST)
@@ -53,12 +54,17 @@ def apertura_arqueo(request):
             return redirect('historial_arqueo')
     else:
         form = ArqueoCajaForm(initial={'id_emplead': empleado})
-
     return render(request, 'caja/apertura_arqueo.html', {'form': form})
-
 @login_required
+
 def cerrar_arqueo(request, id_caja):
+    # Obtener el registro de la caja o devolver un error 404 si no existe
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
+
+    # Verificar que la caja pertenece al empleado que está haciendo la solicitud
+    if arqueo.id_emplead != request.user.empleado:
+        messages.error(request, "No tienes permiso para cerrar esta caja.")
+        return redirect('historial_arqueo')
 
     if request.method == 'POST':
         form = CerrarArqueoForm(request.POST, instance=arqueo)
@@ -72,11 +78,11 @@ def cerrar_arqueo(request, id_caja):
     return render(request, 'caja/cerrar_arqueo.html', {'form': form, 'arqueo': arqueo})
 @login_required
 def historial_arqueo(request):
-    fecha = request.GET.get('fecha')
-    if fecha:
+    fecha_apertura = request.GET.get('fecha_apertura')
+    if fecha_apertura:
         try:
-            fecha_datetime = datetime.strptime(fecha, '%Y-%m-%d').date()
-            arqueos = ArqueoCaja.objects.filter(fecha_hs_apertura__date=fecha_datetime).order_by('-fecha_hs_apertura')
+            fecha_apertura_datetime = datetime.strptime(fecha_apertura, '%Y-%m-%d')
+            arqueos = ArqueoCaja.objects.filter(fecha_hs_apertura__date=fecha_apertura_datetime).order_by('-fecha_hs_apertura')
         except ValueError:
             arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
     else:
@@ -86,7 +92,7 @@ def historial_arqueo(request):
     for arqueo in arqueos:
         arqueo.calcular_montos()
     
-    return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha': fecha})
+    return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha_apertura': fecha_apertura})
 
 #Ingresos y Egresos
 @login_required
@@ -95,7 +101,6 @@ def registrar_ingreso(request):
     if not arqueo_abierto:
         # Si no hay ninguna caja abierta, redirigir con un mensaje
         return redirect('historial_arqueo')
-
     if request.method == 'POST':
         form = IngresoForm(request.POST)
         if form.is_valid():
@@ -106,12 +111,13 @@ def registrar_ingreso(request):
     else:
         form = IngresoForm(initial={'id_caja': arqueo_abierto})
     return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+
 @login_required
+
 def registrar_egreso(request):
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
     if not arqueo_abierto:
         return redirect('historial_arqueo')
-
     if request.method == 'POST':
         form = EgresoForm(request.POST)
         if form.is_valid():
@@ -147,7 +153,6 @@ def cerrar_sesion(request):
 
     logout(request)
     return redirect('procesar_login')
-
 
 @login_required
 ##PRODUCTOS
@@ -199,8 +204,6 @@ def editar_clientes(request, id_cli):
 
     return render(request, "clientes/editar.html", {"formulario": formulario})
 
-
-@permission_required('stock.view_cliente')
 def crear_clientes(request):
     formulario = ClientesForm(request.POST or None)
     if formulario.is_valid():
@@ -248,14 +251,12 @@ def crear_empleados(request):
         return redirect("mostrar_empleados")
     return render(request, "empleados/crear.html", {"formulario": formulario})
 
-
 @permission_required('stock.view_empleado')
 def eliminar_empleados(request, id_emplead):
     empleado = Empleados.objects.get(id_emplead=id_emplead)
     empleado.delete()
     messages.success(request, "Empleado y usuario eliminados correctamente.")
     return redirect("mostrar_empleados")
-
 ##CRUD Proveedores
 @login_required
 @permission_required("stock.view_empleado")
@@ -309,9 +310,11 @@ def crear_venta(request):
         id_cli = request.POST.get('cliente')    
         total_venta = request.POST.get('total') 
 
+        cliente_obj=Clientes.objects.get(id_cli=id_cli)if id_cli else None
+
         nueva_venta = Ventas(
             id_caja=arqueo_abierto,  # Asociar venta al arqueo de caja abierto
-            id_cli=Clientes.objects.get(id_cli=id_cli),  
+            id_cli=cliente_obj,  
             total_venta=total_venta,
             fecha_hs=timezone.now()
         )
@@ -413,9 +416,9 @@ def historial_ventas(request):
         "ventas": ventas
     }
     return render (request, "ventas/historial_ventas.html", context)
-
 #Compras    
 @login_required
+@permission_required("stock.view_empleado")
 def crear_compra(request):
     proveedores = Proveedores.objects.all()
     productos = Productos.objects.all()
@@ -467,6 +470,7 @@ def crear_compra(request):
 
     return render(request, "compras/crear_compra.html", context)
 @login_required
+@permission_required("stock.view_empleado")
 def det_compra(request, id_compra):
     # Obtener la compra específica
     compra = get_object_or_404(Compras, id_compra=id_compra)
@@ -479,6 +483,7 @@ def det_compra(request, id_compra):
     }
     return render(request, 'compras/det_compras.html', context)
 @login_required
+@permission_required("stock.view_empleado")
 def historial_compra(request):
     # Obtener todas las compras ordenadas por fecha (la más reciente primero)
     compras = Compras.objects.all().order_by('-fecha_compra')
@@ -487,7 +492,6 @@ def historial_compra(request):
         'compras': compras,
     }
     return render(request, 'compras/historial_compras.html', context)
-
 
 @login_required 
 def ver_acciones_empleado(request, empleado_id):
@@ -526,30 +530,9 @@ def ventas_del_mes(request):
     return JsonResponse({'labels': labels, 'data': data})
 
 @login_required
-def movimientos_caja(request):
-    query = request.GET.get('q')
-    arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
-
-    if query:
-        fecha = parse_date(query)
-        if fecha:
-            arqueos = arqueos.filter(fecha_hs_apertura__date=fecha)
-
-    movimientos = []
-    for arqueo in arqueos:
-        ingresos = Ingreso.objects.filter(id_caja=arqueo.id_caja)
-        egresos = Egreso.objects.filter(id_caja=arqueo.id_caja)
-        ventas = Ventas.objects.filter(id_caja=arqueo.id_caja)
-        compras = Compras.objects.filter(id_caja=arqueo.id_caja)
-        movimientos.append({
-            'arqueo': arqueo,
-            'ingresos': ingresos,
-            'egresos': egresos,
-            'ventas': ventas,
-            'compras': compras,
-        })
-    
-    return render(request, 'caja/movimientos_caja.html', {
-        'movimientos': movimientos,
-        'selected_date': query  # Guardar la fecha seleccionada
-    })
+def movimientos_caja(request, caja_id):
+    caja = get_object_or_404(ArqueoCaja, id_caja=caja_id)
+    ingresos = caja.ingresos.all().order_by('fecha_ingreso')  # Ordenar por fecha de ingreso
+    egresos = caja.egresos.all().order_by('fecha_egreso')  # Ordenar por fecha de egreso
+    return render(request, 'caja/movimientos_caja.html',
+    {'caja': caja, 'ingresos': ingresos, 'egresos': egresos,})

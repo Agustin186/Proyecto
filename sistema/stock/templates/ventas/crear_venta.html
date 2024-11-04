@@ -25,11 +25,7 @@
                     <!-- SELECCIÓN DEL VENDEDOR -->
                     <div class="grupo_formularios">
                         <label for="vendedor">Vendedor:</label>
-                        <select name="vendedor" id="vendedor">
-                            {% for empleado in empleados %}
-                            <option value="{{ empleado.id_emplead }}">{{ empleado.nombre_emplead }}</option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" value="{{ request.user.username }}" readonly>
                     </div>
                 </div>
             
@@ -37,7 +33,6 @@
                 <div class="grupo_formularios">
                     <label>Cliente:</label>
                     <select name="cliente" id="cliente">
-                        <option value=""></option>
                         {% for cliente in clientes %}
                         <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
                         {% endfor %}

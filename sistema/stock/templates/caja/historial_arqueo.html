@@ -4,15 +4,26 @@
 {% block contenido %}
 <div id="pa_contenedor_historial">
     <h2>Historial de Caja</h2>
-    
+    <!-- Mostrar mensajes de error en una ventana modal -->
+    {% if messages %}
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+                {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <!-- Formulario de búsqueda por fecha de apertura -->
+    <form method="GET" action="{% url 'historial_arqueo' %}">
+    </form>
     <!-- Barra de botones para registrar acciones -->
     <div class="button-container">
         <a href="{% url 'apertura_arqueo' %}" class="btn btn-primary custom-btn">Apertura de Caja</a>
         <a href="{% url 'registrar_ingreso' %}" class="btn btn-i custom-btn">Registrar Ingreso</a>
         <a href="{% url 'registrar_egreso' %}" class="btn btn-e custom-btn">Registrar Egreso</a>
-        <a href="{% url 'movimientos_caja' %}" class="btn btn-m custom-btn">Ver Movimientos</a> <!-- Aquí se agrega el nuevo enlace -->
     </div>
-
     <!-- Contenedor de la tabla con scroll -->
     <div class="table-container">
         <table>
@@ -26,6 +37,7 @@
                     <th>Total Ingreso</th>
                     <th>Total Egreso</th>
                     <th>Cerrar Caja</th>
+                    <th>Movimientos</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,15 +52,19 @@
                     <td>${{ arqueo.total_egreso|floatformat:"2"|default_if_none:"-" }}</td>
                     <td>
                         {% if arqueo.fecha_hs_cierre %}
-                            Cerrada
+                        Cerrada
                         {% else %}
-                            <a href="{% url 'cerrar_arqueo' arqueo.id_caja %}" class="red-btn">Cerrar</a>
+                        <a href="{% url 'cerrar_arqueo' arqueo.id_caja %}" class="red-btn">Cerrar</a>
                         {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'movimientos_caja' arqueo.id_caja %}" class="btn btn-m custom-btn">Ver
+                            Movimientos</a> <!-- Botón para ver movimientos -->
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="no-data">No hay registros de caja disponibles.</td>
+                    <td colspan="9" class="no-data">No hay registros de caja disponibles.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -57,22 +73,96 @@
         </table>
     </div>
 </div>
-
 <script>
-function actualizarMontos(id_caja) {
-    fetch(`/obtener_monto_final/${id_caja}/`)
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById(`monto-final-${id_caja}`).innerText = `$${data.monto_final}`;
-    });
-}
+    // Script para manejar la ventana modal
+    var modal = document.getElementById("modal");
+    var span = document.getElementsByClassName("close")[0];
 
-// Actualiza los montos cada 10 segundos
-setInterval(() => {
-    document.querySelectorAll('[id^="monto-final-"]').forEach(element => {
-        const id_caja = element.id.split('-')[2];
-        actualizarMontos(id_caja);
-    });
-}, 10000);
+    // Mostrar la ventana modal
+    if (modal) {
+        modal.style.display = "block";
+    }
+
+    // Cerrar la ventana modal cuando el usuario hace clic en <span> (x)
+    if (span) {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+
+    // Cerrar la ventana modal cuando el usuario hace clic fuera de la ventana modal
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function actualizarMontos(id_caja) {
+        fetch(`/obtener_monto_final/${id_caja}/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`monto-final-${id_caja}`).innerText = `$${data.monto_final}`;
+            });
+    }
+    // Actualiza los montos cada 10 segundos
+    setInterval(() => {
+        document.querySelectorAll('[id^="monto-final-"]').forEach(element => {
+            const id_caja = element.id.split('-')[2];
+            actualizarMontos(id_caja);
+        });
+    }, 10000);
 </script>
+<style>
+    .modal {
+        display: none;
+        /* Oculto por defecto */
+        position: fixed;
+        /* Fijo en la pantalla */
+        z-index: 1;
+        /* Por encima de otros elementos */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Ancho completo */
+        height: 100%;
+        /* Alto completo */
+        overflow: auto;
+        /* Habilitar scroll si es necesario */
+        background-color: rgb(0, 0, 0);
+        /* Color de fondo */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Fondo con opacidad */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        /* 15% desde la parte superior y centrado */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        /* Ancho de la ventana modal */
+        max-width: 600px;
+        /* Ancho máximo */
+        border-radius: 10px;
+        /* Bordes redondeados */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        /* Sombra */
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
 {% endblock %}

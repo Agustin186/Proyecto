@@ -7,19 +7,16 @@ urlpatterns = [
     ##Login
     path('procesar_login/', views.procesar_login, name='login'),
     path('', RedirectView.as_view(url='procesar_login/', permanent=True)),
-
    ##CAJA
     path('apertura/', views.apertura_arqueo, name='apertura_arqueo'),
     path('historial/', views.historial_arqueo, name='historial_arqueo'),
     path('cerrar/<int:id_caja>/', views.cerrar_arqueo, name='cerrar_arqueo'),
     path('obtener_monto_final/<int:id_caja>/', views.obtener_monto_final, name='obtener_monto_final'),
-    
+    path('movimiento/<int:caja_id>/', views.movimientos_caja, name="movimientos_caja"),
     ##Inicio
     path('inicio/', views.inicio, name='inicio'),
-
     ##Cierre sesion
     path('logout/', LogoutView.as_view(next_page="login"), name='logout'),
-
     ##CRUD Articulos
     path('mostrar_articulos/', views.mostrar_articulos, name='mostrar_articulos'),
     path("editar_articulos", views.editar_articulos, name="editar_articulos"),
@@ -34,7 +31,6 @@ urlpatterns = [
     path("crear_clientes", views.crear_clientes, name="crear_clientes"),
     ##Borrado_clientes
     path("eliminar_clientes/<int:id_cli>",views.eliminar_clientes, name="eliminar_clientes"),
-
 
     ##CRUD Proveedores
     path("mostrar_proveedores",views.mostrar_proveedores ,name="mostrar_proveedores"),
@@ -60,11 +56,12 @@ urlpatterns = [
     path('det_venta/<int:id_venta>/', views.det_venta, name='det_venta'),
     path('detalle_venta/pdf/<int:id_venta>/', views.GenerarPdf, name='generar_pdf'),
     path("historial_ventas", views.historial_ventas, name="historial_ventas"),
+    path('ventas_del-mes/', views.ventas_del_mes, name='ventas_del_mes'),
     #Ingresos_egresos
     path('registrar_ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
     path('registrar_egreso/', views.registrar_egreso, name='registrar_egreso'),
     path("auditoria/empleado/<int:empleado_id>/", views.ver_acciones_empleado, name="ver_acciones_empleados"),
 
-    path('ventas_del-mes/', views.ventas_del_mes, name='ventas_del_mes'),
-     path('movimiento_caja', views.movimientos_caja, name="movimientos_caja"),
+    
+    
 ]

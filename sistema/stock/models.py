@@ -83,7 +83,6 @@ class ArqueoCaja(models.Model):
         self.monto_final = self.monto_inicial + self.total_ingreso - self.total_egreso
         self.save()
 
-   
     def cerrar_caja(self):
         self.total_ingreso = sum(ingreso.monto for ingreso in self.ingresos.all())
         self.total_egreso = sum(egreso.monto for egreso in self.egresos.all())
@@ -95,9 +94,26 @@ class ArqueoCaja(models.Model):
     def __str__(self):
         return f"Caja {self.id_caja} - {self.fecha_hs_apertura}"
 
+class Ingreso(models.Model):
+    id_ingreso = models.AutoField(primary_key=True)
+    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='ingresos')
+    descripcion = models.CharField(max_length=255)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_ingreso = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Ingreso {self.id_ingreso} - {self.descripcion}"
 
-     
+class Egreso(models.Model):
+    id_egreso = models.AutoField(primary_key=True)
+    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='egresos')
+    descripcion = models.CharField(max_length=255)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_egreso = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Egreso {self.id_egreso} - {self.descripcion}"
+
 class Compras(models.Model):
     id_compra=models.AutoField(primary_key=True)
     id_prov=models.ForeignKey(Proveedores, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
@@ -124,7 +140,7 @@ class det_compras(models.Model):
 class Ventas(models.Model):
     id_venta=models.AutoField(primary_key=True)
     id_caja=models.ForeignKey(ArqueoCaja, on_delete=models.SET_NULL, null=True, related_name="ventas")
-    id_cli=models.ForeignKey(Clientes, on_delete=models.SET_NULL, null=True, related_name="ventas")
+    id_cli=models.ForeignKey(Clientes, on_delete=models.SET_NULL, null=True,blank=True, related_name="ventas")
     fecha_hs=models.DateTimeField(null=False)
     total_venta=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total de la venta",null=False)
 
@@ -143,28 +159,6 @@ class det_ventas(models.Model):
         return f"det_venta: {self.id_det_venta}"
     
 
-
-class Ingreso(models.Model):
-    id_ingreso = models.AutoField(primary_key=True)
-    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='ingresos')
-    descripcion = models.CharField(max_length=255)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
-    fecha_ingreso = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Ingreso {self.id_ingreso} - {self.descripcion}"
-
-class Egreso(models.Model):
-    id_egreso = models.AutoField(primary_key=True)
-    id_caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='egresos')
-    descripcion = models.CharField(max_length=255)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
-    fecha_egreso = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Egreso {self.id_egreso} - {self.descripcion}"
-
-
 class AuditoriaEmpleado(models.Model):
     empleado = models.ForeignKey(Empleados, on_delete=models.CASCADE)
     nombre_empleado = models.CharField(max_length=255)
@@ -174,4 +168,7 @@ class AuditoriaEmpleado(models.Model):
     def __str__(self):
         return f"{self.nombre_empleado} - {self.proceso} - {self.fecha_hora}"
 
-
+class Movimiento(models.Model):
+    caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='movimientos')
+    fecha = models.DateTimeField(auto_now_add=True)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
