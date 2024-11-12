@@ -52,11 +52,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
+
                     <td>${nombre}</td>
                     <td>${precio}</td>
                     <td><input type="number" class="cantidad" value="1" min="1"></td>
-                    <td><input type="number" class="descuento" value="0" min="0" max="100"></td>
+                    
                     <td class="subtotal">${precio}</td>
+                
                     <input type="hidden" name="productos[]" value="${id}">
                     <input type="hidden" name="cantidades[]" value="1">
                     <input type="hidden" name="descuentos[]" value="0">

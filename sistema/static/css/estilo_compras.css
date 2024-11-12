@@ -8,7 +8,7 @@ body {
 
 h1 {
     font-size: 2rem;
-    color: #333;
+    color: #184ee0;
 }
 
 .contenedor_compras {
@@ -32,7 +32,7 @@ h1 {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 35%;
+    width: 50%;
 }
 
 .header h1 {
@@ -61,7 +61,7 @@ label {
 input[type="date"],
 input[type="number"],
 select {
-    width: 100%;
+    width: 80%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -132,7 +132,7 @@ button {
 /* Product Card Styles */
 .card {
     background-color: white;
-    border: 1px solid #ddd;
+
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }

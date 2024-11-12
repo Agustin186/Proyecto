@@ -48,28 +48,31 @@
                             <th>Descripcion</th>
                             <th>Precio</th>
                             <th>Cantidad</th>
-                            <th>Descuento %</th>
                             <th>Subtotal</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
+                   
                     <tbody>
                         <!-- Aquí se agregarán los productos seleccionados para la venta -->
                     </tbody>
+                   
                 </table>
             </div>
-        
-            <!-- Total de la Venta -->
-            <div class="total">
-                <label for="total">Total:</label>
-                <input type="number" id="total" name="total" readonly value="0">
-            </div>
-            
-            <!-- Botones de Acción -->
-            <div class="buttons">
-                <button class="btn btn-success" type="submit" value="Guardar" onclick="return ConfirmarVenta()">Aceptar</button>
-                <button type="button" onclick=window.location.href='{% url 'inicio' %}'>Salir</button>
-            </div>
+          <div class="barra_baja">
+                <!-- Botones de Acción -->
+                <div class="buttons">
+                    <button class="btn_aceptar_venta" type="submit" value="Guardar" onclick="return ConfirmarVenta()">Aceptar</button>
+                    <button class="btn_salir" type="button" onclick=window.location.href='{% url 'inicio' %}'>Salir</button>
+                </div>
+               <!-- Total de la Venta -->
+                <div class="total">
+                 <label for="total">Total:</label>
+                  <input type="number" id="total" name="total" readonly value="0">
+                </div>
+                
+
+          </div>
         </form>
     </div>
 

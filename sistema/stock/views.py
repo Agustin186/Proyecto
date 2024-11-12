@@ -28,18 +28,23 @@ def procesar_login(request):
     return render(request, "procesar_login.html")
 
 #Caja
+
+
 @login_required
 def apertura_arqueo(request):
+    if request.user.username == 'user':
+        messages.error(request, "El administrador no puede abrir una caja.")
+        return redirect('historial_arqueo')
+
     try:
         empleado = request.user.empleado
     except Empleados.DoesNotExist:
-        error_message = "El usuario no tiene un empleado asociado."
-        return render(request, 'caja/apertura_arqueo.html', {'form': ArqueoCajaForm(), 'error_message': error_message})
+        messages.error(request, "El usuario no tiene un empleado asociado.")
+        return redirect('historial_arqueo')
 
-    # Verificar si el empleado actual tiene una caja abierta
     if ArqueoCaja.objects.filter(id_emplead=empleado, cerrado=False).exists():
         messages.error(request, "Ya tienes una caja abierta. No puedes abrir otra hasta que la actual esté cerrada.")
-        return redirect('historial_arqueo')  # Redirigir al historial de arqueo si ya hay una caja abierta
+        return redirect('historial_arqueo')
 
     if request.method == 'POST':
         form = ArqueoCajaForm(request.POST)
@@ -54,12 +59,23 @@ def apertura_arqueo(request):
             return redirect('historial_arqueo')
     else:
         form = ArqueoCajaForm(initial={'id_emplead': empleado})
-    return render(request, 'caja/apertura_arqueo.html', {'form': form})
-@login_required
 
+    return render(request, 'caja/apertura_arqueo.html', {'form': form})
+
+
+
+
+
+
+@login_required
 def cerrar_arqueo(request, id_caja):
     # Obtener el registro de la caja o devolver un error 404 si no existe
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
+
+    # Verificar que el usuario no sea el administrador "user"
+    if request.user.username == 'user':
+        messages.error(request, "El administrador no puede cerrar la caja de los empleados.")
+        return redirect('historial_arqueo')
 
     # Verificar que la caja pertenece al empleado que está haciendo la solicitud
     if arqueo.id_emplead != request.user.empleado:
@@ -76,6 +92,7 @@ def cerrar_arqueo(request, id_caja):
         form = CerrarArqueoForm(instance=arqueo)
 
     return render(request, 'caja/cerrar_arqueo.html', {'form': form, 'arqueo': arqueo})
+
 @login_required
 def historial_arqueo(request):
     fecha_apertura = request.GET.get('fecha_apertura')

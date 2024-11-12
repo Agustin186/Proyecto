@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="{% static 'css/estilo_productos.css' %}">
     <link rel="stylesheet" href="{% static 'css/estilo_apertura_caja.css' %}">
     <link rel="stylesheet" href="{% static 'css/estilo_compras.css' %}">
+    <link rel="stylesheet" href="{% static 'css/estilo_ver_acciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/estilo_crear_articulo.css' %}">
+
+
     <!--INCONOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
@@ -31,13 +35,13 @@
             <a class="nav-item" href="{% url 'mostrar_empleados' %}">Empleados</a>
             <a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a>
             <span class="user-name">
-                <i class="fas fa-user-circle"></i> Hola {{ request.user.username }}
+                <i class="fas fa-user-circle"></i> Hola, {{ request.user.username }}
             </span>
             
             <!-- Botón para cerrar sesión -->
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" class="boton_cierre_sesion"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+                <button type="submit" class="boton_cierre_sesion"><i class="fas fa-sign-out-alt"></i>Cerrar Sesion</button>
             </form>
         </nav>
     </header>

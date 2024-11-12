@@ -11,7 +11,7 @@
             <span class="close">&times;</span>
             {% for message in messages %}
             <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
-                {% endfor %}
+            {% endfor %}
         </div>
     </div>
     {% endif %}
@@ -73,6 +73,8 @@
         </table>
     </div>
 </div>
+
+  
 <script>
     // Script para manejar la ventana modal
     var modal = document.getElementById("modal");

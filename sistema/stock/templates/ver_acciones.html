@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block titulo %}Acciones del Empleado{% endblock %}
+
+{% block contenido %}
 <h2>Acciones del empleado: {{ empleado.nombre_emplead }} {{ empleado.apellido_emplead }}</h2>
 
 <table>
@@ -16,4 +21,4 @@
         {% endfor %}
     </tbody>
 </table>
-
+{% endblock %}
