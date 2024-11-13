@@ -61,3 +61,22 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const buscarProducto = document.getElementById('buscarProducto');
+    const listaProductos = document.getElementById('lista-productos');
+
+    buscarProducto.addEventListener('keyup', function () {
+        const texto = buscarProducto.value.toLowerCase();
+        const filas = listaProductos.querySelectorAll('tr');
+
+        filas.forEach(fila => {
+            const descripcionProducto = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            if (descripcionProducto.includes(texto)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+});
+

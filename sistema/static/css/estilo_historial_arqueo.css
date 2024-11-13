@@ -1,34 +1,35 @@
 /* Contenedor principal del historial */
 #pa_contenedor_historial {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin: 2px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 1200px;
-    height: 73vh; /* Altura del contenedor principal */
+    background-color: #f8f9fa; /* Fondo claro */
+    border: 1px solid #ddd; /* Borde sutil */
+    border-radius: 10px; /* Bordes redondeados */
+    margin: 20px auto; /* Margen superior e inferior ajustado */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+    width: 90%; /* Ancho dinámico */
+    max-width: 1200px; /* Ancho máximo */
+    height: 73vh; /* Altura adecuada */
     display: flex;
     flex-direction: column;
-   
+    padding: 20px; /* Relleno interno */
 }
 
 /* Título del historial */
 #pa_contenedor_historial h2 {
     text-align: center;
     font-size: 2em;
-    color: #333;
+    color: #007bff; /* Azul más destacable */
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #007bff;
+    border-bottom: 3px solid #007bff; /* Borde inferior más grueso */
 }
 
 /* Contenedor con scroll para la tabla */
 .table-container {
     flex-grow: 1;
-    overflow-y: auto; /* Habilitar scroll solo en la tabla */
+    overflow-y: auto; /* Scroll vertical */
     border: 1px solid #ddd;
     border-radius: 10px;
+    padding: 10px; /* Espaciado interno */
 }
 
 /* Tabla de historial */
@@ -36,7 +37,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
-    
 }
 
 table th, table td {
@@ -48,17 +48,17 @@ table th, table td {
 table th {
     background-color: #007bff;
     color: white;
-    
+    text-transform: uppercase;
+    font-size: 1em; /* Tamaño ligeramente más grande */
 }
 
-/* Estilo de filas */
 table tr.closed td {
     background-color: #e9ecef;
     color: #6c757d;
 }
 
 table tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
 }
 
 /* Fila de totales */
@@ -72,78 +72,81 @@ tfoot td {
     text-align: center;
     font-size: 1.2em;
     color: #999;
+    padding: 20px; /* Espaciado adicional */
 }
 
-/* Estilos manuales para los botones si no se carga Bootstrap */
+/* Botones personalizados para acciones */
 .btn {
     display: inline-block;
-    font-weight: 400;
+    font-weight: 500;
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    padding: 10px 15px;
-    font-size: 1rem;
+    padding: 8px 12px; /* Ajustamos el tamaño del botón */
+    font-size: 0.9rem; /* Tamaño de fuente reducido */
     border: 1px solid transparent;
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
-.btn-primary  {
-    background-color: green;
+
+.btn-m, .btn-a, .red-btn {
+    background-color: #6c757d; /* Color estándar */
     color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    text-decoration: none;
+}
+
+.btn-m:hover, .btn-a:hover, .red-btn:hover {
+    background-color: #5a6268; /* Color más oscuro al pasar el cursor */
+}
+
+/* Estilo para "Buscar" input y botón */
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Espaciado entre elementos */
+    margin-bottom: 20px; /* Margen inferior para separar del resto */
+}
+
+input[type="date"] {
+    padding: 5px 10px; /* Espaciado interno */
+    font-size: 0.9rem; /* Tamaño de fuente reducido */
+    border: 1px solid #ddd; /* Borde */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+    transition: border-color 0.3s ease;
+}
+
+input[type="date"]:focus {
+    border-color: #007bff; /* Borde azul al enfocar */
+    outline: none; /* Sin borde de enfoque predeterminado */
+}
+
+button[type="submit"] {
+    background-color: #007bff; /* Color azul */
+    color: white; /* Texto blanco */
+    padding: 5px 15px; /* Espaciado */
+    font-size: 0.9rem; /* Tamaño de fuente reducido */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de mano */
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Azul más oscuro al pasar el cursor */
 }
 
 
-.btn-primary:hover {
-    background-color: #253e25;
-}
-
-.btn-i {
+.btn-i, .btn-e, .btn-m {
     background-color: #6c757d;
     color: white;
 }
 
-.btn-i:hover {
+.btn-i:hover, .btn-e:hover, .btn-m:hover {
     background-color: #5a6268;
 }
-
-.btn-e {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-e:hover {
-    background-color: #6c757d;
-}
-
-.btn-m {
-    background-color: #6c757d;
-    color: rgb(255, 255, 255);
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    text-decoration: none;
-}
-.btn-m:hover {
-    background-color: #6c757d;
-}
-
-.red-btn {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    text-decoration: none;
-}
-.red-btn:hover {
-    background-color: #6a1d1d;
-}
-/* Scroll personalizado para la tabla */
+/* Scroll personalizado */
 .table-container::-webkit-scrollbar {
     width: 10px;
 }
@@ -161,19 +164,50 @@ tfoot td {
 @media (max-width: 768px) {
     #pa_contenedor_historial {
         width: 100%;
-        padding: 15px;
+        padding: 10px;
     }
 
     .table-container {
-        max-height: 50vh; /* Limitar altura en pantallas pequeñas */
+        max-height: 50vh;
     }
 
     table th, table td {
-        padding: 10px;
+        padding: 8px;
         font-size: 0.9em;
     }
 }
 
+/* Estilos para la ventana modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Opacidad ligeramente mejorada */
+}
 
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+}
 
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
 
+.close:hover,
+.close:focus {
+    color: #333;
+    cursor: pointer;
+}

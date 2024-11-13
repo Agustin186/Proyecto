@@ -5,6 +5,19 @@
 {% block contenido %}
 <div class="contenedor_historial_compras">
     <h1>Historial de Compras</h1>
+    <!--filtro por fecha-->
+    <div id="filtros_compras">
+        <form method="get" action="">
+            <label for="fecha_inicio">Fecha Inicio:</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio">
+    
+            <label for="fecha_fin">Fecha Fin:</label>
+            <input type="date" name="fecha_fin" id="fecha_fin">
+    
+            <button type="submit">Filtrar</button>
+            <button type="button" id="btn_limpiar_filtros">Limpiar Filtros</button>
+        </form>
+    </div>
 
     <!-- Tabla para mostrar el historial de compras -->
     <table class="table table-bordered table-hover">
@@ -35,4 +48,10 @@
         </tbody>
     </table>
 </div>
+<head>
+    <link rel="stylesheet" href="/static/css/estilo_historial_compras.css"> 
+</head>
+<body>
+    <script src="/static/scripts/historial_compras.js"></script>
+</body>
 {% endblock %}

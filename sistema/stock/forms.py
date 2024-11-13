@@ -21,7 +21,7 @@ class EmpleadosForm(forms.ModelForm):
     class Meta:
         model = Empleados
         fields = ['nombre_emplead', 'apellido_emplead', 'dni_emplead', 'direcc_emplead',
-                  'tel_emplead', 'correo_emplead', 'sueldo_emplead', 'fecha_inicio', 'fecha_fin']
+                  'tel_emplead', 'correo_emplead', 'sueldo_emplead', 'fecha_inicio']
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.get('instance', None)

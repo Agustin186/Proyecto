@@ -17,3 +17,5 @@ document.onmousemove = resetearTemporizador;
 document.onkeypress = resetearTemporizador;
 document.onclick = resetearTemporizador;
 document.onscroll = resetearTemporizador;
+
+

@@ -1,20 +1,25 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth import logout
-from .forms import EmpleadosForm
-from django.contrib.auth.models import User
-from django.utils.crypto import get_random_string
 from xhtml2pdf import pisa  ##hacer el pip install xhtml2pdf para que funcione
 from .models import *
 from .forms import *
 from django.utils import timezone
 from django.template.loader import get_template
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.db.models import Sum
-from datetime import datetime
+from itertools import chain
+from operator import attrgetter
+
+#INICIO
+@login_required
+def inicio(request):
+    producto=Productos.objects.all()
+    return render (request, "inicio.html",{"productos":producto})
+
+#SESIONES
 def procesar_login(request):    
     if request.method == 'POST':
         username = request.POST['username']
@@ -27,9 +32,16 @@ def procesar_login(request):
             messages.error(request, "Usuario o contraseña incorrecta")  
     return render(request, "procesar_login.html")
 
-#Caja
+@login_required
+def cerrar_sesion(request):
+    if ArqueoCaja.objects.filter(cerrado=False).exists():
+        arqueo_abierto = get_object_or_404(ArqueoCaja, cerrado=False)
+        return redirect('cerrar_arqueo', id_caja=arqueo_abierto.id_caja)
 
+    logout(request)
+    return redirect('procesar_login')
 
+#CAJA
 @login_required
 def apertura_arqueo(request):
     if request.user.username == 'user':
@@ -56,16 +68,20 @@ def apertura_arqueo(request):
             arqueo.total_ingreso = 0
             arqueo.total_egreso = 0
             arqueo.save()
+
+            # Registrar el movimiento de apertura
+            Movimiento.objects.create(
+                caja=arqueo,
+                tipo='APERTURA',
+                monto=arqueo.monto_inicial,
+                descripcion='Apertura de caja'
+            )
+
             return redirect('historial_arqueo')
     else:
         form = ArqueoCajaForm(initial={'id_emplead': empleado})
 
     return render(request, 'caja/apertura_arqueo.html', {'form': form})
-
-
-
-
-
 
 @login_required
 def cerrar_arqueo(request, id_caja):
@@ -96,22 +112,93 @@ def cerrar_arqueo(request, id_caja):
 @login_required
 def historial_arqueo(request):
     fecha_apertura = request.GET.get('fecha_apertura')
+    
     if fecha_apertura:
         try:
-            fecha_apertura_datetime = datetime.strptime(fecha_apertura, '%Y-%m-%d')
-            arqueos = ArqueoCaja.objects.filter(fecha_hs_apertura__date=fecha_apertura_datetime).order_by('-fecha_hs_apertura')
+            start_date = datetime.strptime(fecha_apertura, '%Y-%m-%d')
+            end_date = start_date + timedelta(days=1)
+            arqueos = ArqueoCaja.objects.filter(
+                fecha_hs_apertura__gte=start_date ,
+                fecha_hs_apertura__lt=end_date
+            ).order_by('-fecha_hs_apertura')
         except ValueError:
             arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
     else:
         arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
-    
-    # Recalcular montos para todos los arqueos (opcional)
-    for arqueo in arqueos:
-        arqueo.calcular_montos()
-    
+
     return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha_apertura': fecha_apertura})
 
-#Ingresos y Egresos
+@login_required
+def movimientos_arqueo(request, caja_id):
+    caja = get_object_or_404(ArqueoCaja, id_caja=caja_id)
+    
+    # Movimientos ya ordenados por fecha
+    movimientos = Movimiento.objects.filter(caja=caja).order_by('-fecha')
+    
+    # Unificar otros movimientos
+    ingresos = caja.ingresos.all().annotate(tipo_literal=models.Value('Ingreso', output_field=models.CharField())).order_by('-fecha_ingreso')
+    egresos = caja.egresos.all().annotate(tipo_literal=models.Value('Egreso', output_field=models.CharField())).order_by('-fecha_egreso')
+    ventas = caja.ventas.all().annotate(tipo_literal=models.Value('Venta', output_field=models.CharField())).order_by('-fecha_hs')
+
+    # Unimos y ordenamos
+    movimientos_unificados = sorted(
+        chain(
+            movimientos.annotate(tipo_literal=models.Value('Movimiento', output_field=models.CharField())),
+            ingresos.annotate(fecha=models.F('fecha_ingreso')),
+            egresos.annotate(fecha=models.F('fecha_egreso')),
+            ventas.annotate(fecha=models.F('fecha_hs'))
+        ),
+        key=attrgetter('fecha'),
+        reverse=True
+    )
+    
+    return render(request, 'caja/movimientos_arqueo.html', {
+        'caja': caja,
+        'movimientos': movimientos_unificados,
+    })
+
+@login_required
+def detalle_arqueo(request, id_caja):
+    arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
+
+    # Filtrar ingresos y egresos manuales
+    ingresos = arqueo.ingresos.filter(tipo='manual') 
+    egresos = arqueo.egresos.filter(tipo='manual')
+
+    # Acceder a ventas y compras asociadas al arqueo
+    ventas = arqueo.ventas.all()  
+    compras = arqueo.compras.all()  
+
+    # Calcular subtotales
+    subtotal_ingresos = sum(ingreso.monto for ingreso in ingresos)
+    subtotal_egresos = sum(egreso.monto for egreso in egresos)
+    subtotal_ventas = sum(venta.total_venta for venta in ventas)
+    subtotal_compras = sum(compra.total_compra for compra in compras)
+
+    return render(request, 'caja/detalle_arqueo.html', {
+        'caja': arqueo,
+        'ingresos': ingresos,
+        'egresos': egresos,
+        'ventas': ventas,
+        'compras': compras,
+        'subtotal_ingresos': subtotal_ingresos,
+        'subtotal_egresos': subtotal_egresos,
+        'subtotal_ventas': subtotal_ventas,
+        'subtotal_compras': subtotal_compras,
+        'saldo': arqueo.monto_final
+    })
+
+@login_required
+def obtener_monto_final(request, id_caja):
+    arqueo = ArqueoCaja.objects.get(id=id_caja)
+    arqueo.calcular_montos()
+    return JsonResponse({
+        'monto_final': arqueo.monto_final,
+        'total_ingreso': arqueo.total_ingreso,
+        'total_egreso': arqueo.total_egreso,
+    })
+
+#INGRESO Y EGRESO
 @login_required
 def registrar_ingreso(request):
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
@@ -123,6 +210,7 @@ def registrar_ingreso(request):
         if form.is_valid():
             ingreso = form.save(commit=False)
             ingreso.id_caja = arqueo_abierto
+            ingreso.tipo = 'manual'  # Establecer el valor por defecto
             ingreso.save()
             return redirect('historial_arqueo')
     else:
@@ -130,7 +218,6 @@ def registrar_ingreso(request):
     return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
 
 @login_required
-
 def registrar_egreso(request):
     arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
     if not arqueo_abierto:
@@ -140,39 +227,16 @@ def registrar_egreso(request):
         if form.is_valid():
             egreso = form.save(commit=False)
             egreso.id_caja = arqueo_abierto
+            egreso.tipo = 'manual'  # Establecer el valor por defecto
             egreso.save()
             arqueo_abierto.calcular_montos()  # Recalcula los montos cada vez que se registra un egreso
             return redirect('historial_arqueo')
     else:
         form = EgresoForm()
     return render(request, 'transacciones/registrar_egreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+
+#PRODUCTOS
 @login_required
-def obtener_monto_final(request, id_caja):
-    arqueo = ArqueoCaja.objects.get(id=id_caja)
-    arqueo.calcular_montos()
-    return JsonResponse({
-        'monto_final': arqueo.monto_final,
-        'total_ingreso': arqueo.total_ingreso,
-        'total_egreso': arqueo.total_egreso,
-    })
-
-
-@login_required
-def inicio(request):
-    producto=Productos.objects.all()
-    return render (request, "inicio.html",{"productos":producto})
-
-@login_required
-def cerrar_sesion(request):
-    if ArqueoCaja.objects.filter(cerrado=False).exists():
-        arqueo_abierto = get_object_or_404(ArqueoCaja, cerrado=False)
-        return redirect('cerrar_arqueo', id_caja=arqueo_abierto.id_caja)
-
-    logout(request)
-    return redirect('procesar_login')
-
-@login_required
-##PRODUCTOS
 def mostrar_articulos(request):
     producto=Productos.objects.all()
     return render(request, "articulos/mostrar.html",{"productos":producto})
@@ -189,6 +253,7 @@ def editar_articulos(request,id_prod):
             return redirect('mostrar_articulos') 
 
     return render(request, "articulos/editar.html", {"formulario": formulario})
+
 @login_required
 def crear_articulos(request):
     formulario = ProductosForm(request.POST or None)
@@ -203,7 +268,8 @@ def eliminar_productos(request,id_prod):
     producto = Productos.objects.get(id_prod=id_prod)
     producto.delete()
     return redirect("mostrar_articulos")
-##CRUD Clientes
+
+#CLIENTES
 def mostrar_clientes(request):
     cliente=Clientes.objects.all()
     return render(request, "clientes/mostrar.html",{"clientes":cliente})
@@ -227,15 +293,14 @@ def crear_clientes(request):
         formulario.save()
         return redirect("mostrar_clientes")
     return render(request,"clientes/crear.html",{"formulario": formulario})
-##Borrar_clientes
+
 @permission_required('stock.view_cliente')
 def eliminar_clientes(request, id_cli):
     cliente = Clientes.objects.get(id_cli=id_cli)
     cliente.delete()
     return redirect("mostrar_clientes")
 
-
-##CRUD Empleados
+#EMPLEADOS
 @login_required
 @permission_required("stock.view_empelado")
 def mostrar_empleados(request):
@@ -259,7 +324,6 @@ def editar_empleados(request, id_emplead):
     # Renderizamos la página de edición si es GET o el formulario no es válido
     return render(request, "empleados/editar.html", {"formulario": formulario, "empleado": empleado})
 
-
 @permission_required('stock.view_empleado')
 def crear_empleados(request):
     formulario = EmpleadosForm(request.POST or None)
@@ -274,12 +338,14 @@ def eliminar_empleados(request, id_emplead):
     empleado.delete()
     messages.success(request, "Empleado y usuario eliminados correctamente.")
     return redirect("mostrar_empleados")
-##CRUD Proveedores
+
+#PROVEDORES
 @login_required
 @permission_required("stock.view_empleado")
 def mostrar_proveedores(request):
     proveedor= Proveedores.objects.all()
     return render(request, "proveedores/mostrar.html",{"proveedores": proveedor})
+
 @login_required
 @permission_required('stock.view_empleado')
 def editar_proveedores(request, id_prov):
@@ -311,7 +377,7 @@ def eliminar_proveedores(request,id_prov):
     proveedor.delete()
     return redirect("mostrar_proveedores")
 
-#Ventas
+#VENTAS
 @login_required
 def crear_venta(request):
     producto = Productos.objects.all()
@@ -395,6 +461,7 @@ def crear_venta(request):
         "formulario": formulario
     }
     return render(request, "ventas/crear_venta.html", context)
+
 @login_required
 def det_venta(request, id_venta):
     venta = get_object_or_404(Ventas, id_venta=id_venta)
@@ -405,7 +472,7 @@ def det_venta(request, id_venta):
         'detalles': detalles
     }
     return render(request, 'ventas/detalle_ventas.html', context)
-##GENERAR PDF VENTAS
+
 @login_required
 def GenerarPdf(request,id_venta ):
     venta=Ventas.objects.get(id_venta=id_venta)
@@ -425,7 +492,7 @@ def GenerarPdf(request,id_venta ):
     if pisa_status.err:
         return HttpResponse(f"error: {pisa_status.err}")
     return response
-##HISTORIAL DE VENTAS
+
 @login_required
 def historial_ventas(request):
     ventas=Ventas.objects.all().order_by("-fecha_hs")
@@ -433,7 +500,8 @@ def historial_ventas(request):
         "ventas": ventas
     }
     return render (request, "ventas/historial_ventas.html", context)
-#Compras    
+
+#COMPRAS   
 @login_required
 @permission_required("stock.view_empleado")
 def crear_compra(request):
@@ -486,6 +554,7 @@ def crear_compra(request):
     }
 
     return render(request, "compras/crear_compra.html", context)
+
 @login_required
 @permission_required("stock.view_empleado")
 def det_compra(request, id_compra):
@@ -499,6 +568,7 @@ def det_compra(request, id_compra):
         'detalles': detalles,
     }
     return render(request, 'compras/det_compras.html', context)
+
 @login_required
 @permission_required("stock.view_empleado")
 def historial_compra(request):
@@ -531,6 +601,7 @@ def registrar_accion(empleado, proceso):
         proceso=proceso,
         fecha_hora=timezone.now()
     )
+
 @login_required
 def ventas_del_mes(request):
     ventas = (
@@ -546,10 +617,3 @@ def ventas_del_mes(request):
 
     return JsonResponse({'labels': labels, 'data': data})
 
-@login_required
-def movimientos_caja(request, caja_id):
-    caja = get_object_or_404(ArqueoCaja, id_caja=caja_id)
-    ingresos = caja.ingresos.all().order_by('fecha_ingreso')  # Ordenar por fecha de ingreso
-    egresos = caja.egresos.all().order_by('fecha_egreso')  # Ordenar por fecha de egreso
-    return render(request, 'caja/movimientos_caja.html',
-    {'caja': caja, 'ingresos': ingresos, 'egresos': egresos,})

@@ -27,7 +27,6 @@ class Clientes(models.Model):
     def __str__(self):
         return self.nombre_cli
     
-
 class Empleados(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='empleado', null=True, blank=True)
     id_emplead = models.AutoField(primary_key=True)
@@ -50,7 +49,15 @@ class Empleados(models.Model):
     def __str__(self):
         return f"{self.nombre_emplead} {self.apellido_emplead}"
 
+class AuditoriaEmpleado(models.Model):
+    empleado = models.ForeignKey(Empleados, on_delete=models.CASCADE)
+    nombre_empleado = models.CharField(max_length=255)
+    proceso = models.CharField(max_length=255)
+    fecha_hora = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f"{self.nombre_empleado} - {self.proceso} - {self.fecha_hora}"
+    
 class Productos(models.Model):
     id_prod= models.AutoField(primary_key=True)
     id_prov=models.ForeignKey(Proveedores, on_delete=models.SET_NULL, null=True, blank=True, related_name="productos")
@@ -100,7 +107,7 @@ class Ingreso(models.Model):
     descripcion = models.CharField(max_length=255)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
-
+    tipo = models.CharField(max_length=50, choices=[('manual', 'Manual'), ('venta', 'Venta')])
     def __str__(self):
         return f"Ingreso {self.id_ingreso} - {self.descripcion}"
 
@@ -110,14 +117,21 @@ class Egreso(models.Model):
     descripcion = models.CharField(max_length=255)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_egreso = models.DateTimeField(auto_now_add=True)
-
+    tipo = models.CharField(max_length=50, choices=[('manual', 'Manual'), ('compra', 'Compra')])
     def __str__(self):
         return f"Egreso {self.id_egreso} - {self.descripcion}"
+
+class Movimiento(models.Model):
+    caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='movimientos')
+    fecha = models.DateTimeField(auto_now_add=True)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo = models.CharField(max_length=50)  # Nuevo campo para el tipo de movimiento
+    descripcion = models.CharField(max_length=255, null=True, blank=True)  # Campo opcional para la descripción
 
 class Compras(models.Model):
     id_compra=models.AutoField(primary_key=True)
     id_prov=models.ForeignKey(Proveedores, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
-    id_caja=models.ForeignKey(ArqueoCaja, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras")
+    id_caja=models.ForeignKey(ArqueoCaja, on_delete=models.SET_NULL, null=True, related_name="compras")
     fecha_compra=models.DateField(verbose_name="Fecha de compra", null=False)
     total_compra=models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total de la compra", null=False)
     descrip_compra=models.CharField(max_length=150, verbose_name="Agregue un comentario", null=True, blank=True)
@@ -135,7 +149,6 @@ class det_compras(models.Model):
     
     def __str__(self):
         return f"det_venta: {self.id_det_compra}"
-
 
 class Ventas(models.Model):
     id_venta=models.AutoField(primary_key=True)
@@ -159,16 +172,5 @@ class det_ventas(models.Model):
         return f"det_venta: {self.id_det_venta}"
     
 
-class AuditoriaEmpleado(models.Model):
-    empleado = models.ForeignKey(Empleados, on_delete=models.CASCADE)
-    nombre_empleado = models.CharField(max_length=255)
-    proceso = models.CharField(max_length=255)
-    fecha_hora = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return f"{self.nombre_empleado} - {self.proceso} - {self.fecha_hora}"
 
-class Movimiento(models.Model):
-    caja = models.ForeignKey(ArqueoCaja, on_delete=models.CASCADE, related_name='movimientos')
-    fecha = models.DateTimeField(auto_now_add=True)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)

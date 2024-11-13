@@ -1,29 +1,22 @@
+
 {% load static %}
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}SmartCell{% endblock %}</title>
     <!-- Estilos CSS -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_prov_cli_empl.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_detalle_ventas.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_historial_ventas.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_ventas.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_historial_arqueo.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_cierre_caja.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_productos.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_apertura_caja.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_compras.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_ver_acciones.css' %}">
-    <link rel="stylesheet" href="{% static 'css/estilo_crear_articulo.css' %}">
-
-
+    <link rel="stylesheet" href="/static/css/base.css"> 
+    <link rel="stylesheet" href="/static/css/estilo_crear_articulo.css"> 
+    <link rel="stylesheet" href="/static/css/estilo_productos.css"> 
+    <link rel="stylesheet" href="/static/css/estilo_prov_cli_empl.css"> 
     <!--INCONOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
+
 </head>
+
 <body>
     <!-- Barra superior con logo y opciones de usuario -->
     <header class="barra_superior">
@@ -35,13 +28,14 @@
             <a class="nav-item" href="{% url 'mostrar_empleados' %}">Empleados</a>
             <a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a>
             <span class="user-name">
-                <i class="fas fa-user-circle"></i> Hola, {{ request.user.username }}
+                <i class="fas fa-user-circle"></i> Hola {{ request.user.username }}
             </span>
-            
+
             <!-- Botón para cerrar sesión -->
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" class="boton_cierre_sesion"><i class="fas fa-sign-out-alt"></i>Cerrar Sesion</button>
+                <button type="submit" class="boton_cierre_sesion"><i class="fas fa-sign-out-alt"></i> Cerrar
+                    sesión</button>
             </form>
         </nav>
     </header>
@@ -64,17 +58,26 @@
             </li>
             <!--Menu desplegable de compras-->
             <li class="dropdown">
-                <a  href="" class="dropdown-toggle nav-item">
+                <a href="" class="dropdown-toggle nav-item">
                     <i class="fas fa-shopping-cart"></i>Compras
                 </a>
                 <ul class="dropdown-menu">
-                   <li><a class="dropdown-item" href="{% url 'crear_compra' %}"> Nueva compra</a></li>
-                   <li><a class="dropdown-item" href="{% url 'historial_compras' %}">Historial de compras</a></li>
+                    <li><a class="dropdown-item" href="{% url 'crear_compra' %}"> Nueva compra</a></li>
+                    <li><a class="dropdown-item" href="{% url 'historial_compras' %}">Historial de compras</a></li>
                 </ul>
             </li>
 
             <!--Boton caja-->
-            <li><a class="nav-item" href="{% url 'historial_arqueo' %}"><i class="fas fa-cash-register"></i> Caja</a></li>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle nav-item">
+                    <i class="fas fa-shopping-cart"></i>Caja
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'apertura_arqueo' %}"> Apertura de Caja</a></li>
+                    <li><a class="dropdown-item" href="{% url 'historial_arqueo' %}">Historial de Caja</a></li>
+                </ul>
+            </li>
+
         </ul>
     </nav>
 
@@ -90,31 +93,16 @@
         SmartCell © 2024
     </footer>
 
-    
-<form id="logoutForm" method="POST" action="{% url 'logout' %}">
-    {% csrf_token %}
-</form>
-<script>
 
-    let tiempoInactividadPermitido = 500000;
-    let temporizador;
+    <form id="logoutForm" method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+    </form>
 
-    function resetearTemporizador() {
-        clearTimeout(temporizador);
-        temporizador = setTimeout(cerrarSesionPorInactividad, tiempoInactividadPermitido);
-    }
-
-    function cerrarSesionPorInactividad() {
-
-        document.getElementById('logoutForm').submit();
-    }
-
-
-    window.onload = resetearTemporizador;
-    document.onmousemove = resetearTemporizador;
-    document.onkeypress = resetearTemporizador;
-    document.onclick = resetearTemporizador;
-    document.onscroll = resetearTemporizador;
-</script>
 </body>
+
+
+<body>
+    <script src="/static/scripts/base.js"></script>
+</body>
+
 </html>

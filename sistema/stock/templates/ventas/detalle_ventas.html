@@ -36,4 +36,7 @@
     <a href="{% url 'crear_venta' %}" id="pa_btn_volver" class="btn btn-primary">Nueva venta</a>
     <a href="{% url 'generar_pdf' venta.id_venta %}" id="btn_imprimir" class="btn-primary">Imprimir</a>
 </div>
+<head>
+    <link rel="stylesheet" href="/static/css/estilo_detalle_ventas.css"> 
+</head>
 {% endblock %}

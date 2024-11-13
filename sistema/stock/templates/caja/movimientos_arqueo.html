@@ -15,6 +15,14 @@
                 </tr>
             </thead>
             <tbody>
+                {% for movimiento in movimientos %}
+                <tr>
+                    <td>{{ movimiento.tipo_literal }}</td>
+                    <td>${{ movimiento.monto }}</td>
+                    <td>{{ movimiento.fecha|time }}</td>
+                    <td>{{ movimiento.descripcion }}</td>
+                </tr>
+                {% endfor %}
                 {% for ingreso in ingresos %}
                 <tr>
                     <td>Ingreso</td>
@@ -31,8 +39,19 @@
                     <td>{{ egreso.descripcion }}</td>
                 </tr>
                 {% endfor %}
+                {% for venta in ventas %}
+                <tr>
+                    <td>Venta</td>
+                    <td>${{ venta.total_venta }}</td>
+                    <td>{{ venta.fecha_hs|time }}</td>
+                    <td>{{ venta.descripcion }}</td>
+                </tr>
+                {% endfor %}
+
             </tbody>
         </table>
     </div>
 </div>
+
+<link rel="stylesheet" href="/static/css/estilo_movimiento_arqueo.css"> 
 {% endblock %}
