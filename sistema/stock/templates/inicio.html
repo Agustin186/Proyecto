@@ -4,24 +4,42 @@
 {% block titulo %}Inicio{% endblock %}
 
 {% block contenido %}
-    <div class="container mt-4">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Artículos</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for producto in productos %}
-                            <li class="list-group-item">
-                                {{ producto.nombre_prod }} - ${{ producto.precio_prod }}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">No hay artículos disponibles.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+    
+<div id="ventasChartContainer" class="chart-container">
+    <div class="chart-label">Ventas del Mes</div>
+    <canvas id="ventasChart"></canvas>
+</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch para obtener los datos desde la vista de Django
+            fetch("{% url 'ventas_del_mes' %}")
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('ventasChart').getContext('2d');
+                    const ventasChart = new Chart(ctx, {
+                        type: 'bar',  
+                        data: {
+                            labels: data.labels,  
+                            datasets: [{
+                                label: 'Ventas',
+                                data: data.data,  
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderWidth: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error al cargar los datos:', error));
+        });
+    </script>
+
 {% endblock %}

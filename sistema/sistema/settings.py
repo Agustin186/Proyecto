@@ -112,9 +112,9 @@ LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
-USE_I18N = True  # Asegúrate de que la internacionalización esté habilitada
+USE_I18N = True  
 
-USE_L10N = True  # Habilita la localización para fechas y números
+USE_L10N = True 
 
 USE_TZ = True
 
@@ -122,11 +122,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# settings.py
 STATIC_URL = '/static/'
-if DEBUG:
-    STATICFILES_DIRS = [
-        BASE_DIR / "stock/static",
-    ]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -138,5 +139,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/procesar_login/'  # Ajusta esta URL según tu configuración de la página de login
 LOGIN_URL = '/inicio/'  # Ajusta esta URL según tu configuración de la página de login
 
+
 # settings.py
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rabatrixnelson@gmail.com'  # Tu correo de Gmail
+EMAIL_HOST_PASSWORD = 'mrtgpdwfwiasfvuw'
+DEFAULT_FROM_EMAIL = 'rabatrix_bp@outlook.es'
