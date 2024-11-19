@@ -7,55 +7,54 @@ body {
 }
 
 h1, h4 {
-    color: #007bff;
+    color: #0056b3;
     text-align: center;
     margin-bottom: 10px;
 }
 
+/* Contenedor de Ventas */
 .contenedor_ventas {
     display: flex;
-    justify-content: space-between; /* Espaciado uniforme entre cajas */
-    gap: 20px; /* Ajustar el espacio entre contenedores */
+    justify-content: space-between;
+    gap: 20px;
     margin: 20px auto;
-    padding: 0 20px; /* Añadir un pequeño padding lateral */
-    max-width: 1200px; /* Limitar ancho máximo en pantallas grandes */
-    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+    padding: 0 20px;
+    max-width: 1200px;
+    box-sizing: border-box;
     height: 500px;
 }
 
-.caja_venta{
+.caja_venta,
+.caja_productos {
     background-color: #ffffff;
     border: 1px solid #007bff;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.932);
     height: 500px;
-    width: 55%;
-
-}
-.caja_productos{
-    background-color: #ffffff;
-    border: 1px solid #007bff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    height: 500px;
-    width: 35%;
 }
 
-.grupo_superior{
+.caja_venta {
+    width: 59%;
+}
+
+.caja_productos {
+    width: 34%;
+}
+
+/* Grupo superior */
+.grupo_superior {
     height: 80px;
     display: flex;
     justify-content: space-between;
-
 }
-.barra_baja{
+
+.barra_baja {
     display: flex;
     justify-content: space-between;
     height: 60px;
     flex-wrap: wrap;
 }
-
 
 /* Encabezado de Venta */
 .Encabezado_venta h1 {
@@ -65,11 +64,7 @@ h1, h4 {
 
 /* Formularios */
 .contenedor_formulario {
-    margin-bottom: 20px;    
-}
-
-#grupo_superior{
-    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .grupo_formularios {
@@ -125,9 +120,9 @@ h1, h4 {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #ddd;
-    justify-content: space-between;
     display: flex;
-    height: 15px;
+    justify-content: space-between;
+    height: auto;
 }
 
 /* Botones */
@@ -179,18 +174,18 @@ button {
     width: 70%;
     padding: 10px;
     margin-bottom: 14px;
-    margin-left: 15%; /* Ajusta este valor para mover el elemento hacia la derecha */
-    border: 1px solid #007bff;
+    margin-left: 15%;
+    border: 2px solid #007bff;
     border-radius: 5px;
 }
-
 
 /* Tabla de productos disponibles */
 .contenedor-lista-productos {
     max-height: 350px;
     overflow-y: auto;
-    border: 1px solid #007bff;
+    border: 2px solid #007bff;
     border-radius: 5px;
+    width: auto; /* Por defecto se adapta al contenido */
 }
 
 .table {
@@ -200,7 +195,7 @@ button {
 
 .table th, 
 .table td {
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     padding: 10px;
     text-align: center;
 }
@@ -211,8 +206,6 @@ button {
 }
 
 /* Scroll personalizado */
-
-
 .tabla-productos-contenedor::-webkit-scrollbar-thumb,
 .contenedor-lista-productos::-webkit-scrollbar-thumb {
     background: #007bff;

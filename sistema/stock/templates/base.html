@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}SmartCell{% endblock %}</title>
     <!-- Estilos CSS -->
-    <link rel="stylesheet" href="/static/css/base.css"> 
-    <link rel="stylesheet" href="/static/css/estilo_crear_articulo.css"> 
-    <link rel="stylesheet" href="/static/css/estilo_productos.css"> 
-    <link rel="stylesheet" href="/static/css/estilo_prov_cli_empl.css"> 
+    <link rel="stylesheet" href="/static/css/base.css">  
+    <link rel="stylesheet" href="/static/css//estilo_CRUD.css">  
+    <link rel="stylesheet" href="/static/css/estilo_crear_productos.css"> 
+    <link rel="stylesheet" href="/static/css/estilo_crear_compra.css"> 
     <!--INCONOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
@@ -28,7 +28,7 @@
             <a class="nav-item" href="{% url 'mostrar_empleados' %}">Empleados</a>
             <a class="nav-item" href="{% url 'mostrar_clientes' %}">Clientes</a>
             <span class="user-name">
-                <i class="fas fa-user-circle"></i> Hola {{ request.user.username }}
+                <i class="fas fa-user-circle"></i> ! Hola {{ request.user.username }} ! :D
             </span>
 
             <!-- Botón para cerrar sesión -->

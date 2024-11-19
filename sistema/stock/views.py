@@ -3,21 +3,29 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required, permission_required
-from xhtml2pdf import pisa  ##hacer el pip install xhtml2pdf para que funcione
-from .models import *
-from .forms import *
 from django.utils import timezone
 from django.template.loader import get_template
+from django.db.models import Sum, Value, CharField, F, Case, When, ExpressionWrapper, Func
+from .models import *
+from .forms import *
 from datetime import date, datetime, timedelta
-from django.db.models import Sum
+from xhtml2pdf import pisa 
 from itertools import chain
 from operator import attrgetter
 
 #INICIO
-@login_required
 def inicio(request):
-    producto=Productos.objects.all()
-    return render (request, "inicio.html",{"productos":producto})
+    # Obtén las últimas 10 ventas ordenadas por fecha
+    ventas_recientes = list(Ventas.objects.order_by('-fecha_hs')[:10])
+
+    # Calcula cuántas filas vacías se necesitan para llegar a 10
+    filas_vacias = 10 - len(ventas_recientes)
+
+    return render(request, "inicio.html", {
+        "ventas_recientes": ventas_recientes,
+        "filas_vacias": range(filas_vacias),
+    })
+
 
 #SESIONES
 def procesar_login(request):    
@@ -44,14 +52,14 @@ def cerrar_sesion(request):
 #CAJA
 @login_required
 def apertura_arqueo(request):
-    if request.user.username == 'user':
-        messages.error(request, "El administrador no puede abrir una caja.")
+    if request.user.is_staff:  # Verifica si el usuario tiene permisos de administrador
+        messages.error(request, "No tienes un empleado asociado para abrir una caja.")
         return redirect('historial_arqueo')
 
     try:
         empleado = request.user.empleado
     except Empleados.DoesNotExist:
-        messages.error(request, "El usuario no tiene un empleado asociado.")
+        messages.error(request, "No tienes un empleado asociado para abrir una caja.")
         return redirect('historial_arqueo')
 
     if ArqueoCaja.objects.filter(id_emplead=empleado, cerrado=False).exists():
@@ -62,20 +70,25 @@ def apertura_arqueo(request):
         form = ArqueoCajaForm(request.POST)
         if form.is_valid():
             arqueo = form.save(commit=False)
-            arqueo.id_emplead = empleado  # Asignar el empleado
+            arqueo.id_emplead = empleado
             arqueo.fecha_hs_apertura = timezone.now()
-            arqueo.monto_final = 0
+            arqueo.monto_final = 0  # Inicialmente 0
             arqueo.total_ingreso = 0
             arqueo.total_egreso = 0
+            
+            # Guarda el arqueo para asignar un ID antes de operaciones relacionadas
             arqueo.save()
 
-            # Registrar el movimiento de apertura
+            # **Registrar el movimiento de apertura para el arqueo**
             Movimiento.objects.create(
-                caja=arqueo,
+                caja=arqueo,  # Relacionado con el arqueo
                 tipo='APERTURA',
-                monto=arqueo.monto_inicial,
+                monto=arqueo.monto_inicial,  # El monto de apertura
                 descripcion='Apertura de caja'
             )
+            
+            # Recalcular montos por seguridad (si hay algún ingreso/egreso inicial)
+            arqueo.calcular_montos()
 
             return redirect('historial_arqueo')
     else:
@@ -88,10 +101,10 @@ def cerrar_arqueo(request, id_caja):
     # Obtener el registro de la caja o devolver un error 404 si no existe
     arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
 
-    # Verificar que el usuario no sea el administrador "user"
-    if request.user.username == 'user':
-        messages.error(request, "El administrador no puede cerrar la caja de los empleados.")
-        return redirect('historial_arqueo')
+    # Validar si el usuario tiene un empleado relacionado o es superusuario
+    if request.user.is_superuser:
+            messages.error(request, "No tienes un empleado asociado para cerrar esta caja.")
+            return redirect('historial_arqueo')
 
     # Verificar que la caja pertenece al empleado que está haciendo la solicitud
     if arqueo.id_emplead != request.user.empleado:
@@ -112,19 +125,23 @@ def cerrar_arqueo(request, id_caja):
 @login_required
 def historial_arqueo(request):
     fecha_apertura = request.GET.get('fecha_apertura')
-    
+
     if fecha_apertura:
         try:
             start_date = datetime.strptime(fecha_apertura, '%Y-%m-%d')
             end_date = start_date + timedelta(days=1)
             arqueos = ArqueoCaja.objects.filter(
-                fecha_hs_apertura__gte=start_date ,
+                fecha_hs_apertura__gte=start_date,
                 fecha_hs_apertura__lt=end_date
             ).order_by('-fecha_hs_apertura')
         except ValueError:
             arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
     else:
-        arqueos = ArqueoCaja.objects.all().order_by('-fecha_hs_apertura')
+        arqueos = ArqueoCaja.objects.prefetch_related('ingresos', 'egresos', 'ventas').order_by('-fecha_hs_apertura')
+
+    # Recalcula los montos para cada arqueo cargado
+    for arqueo in arqueos:
+        arqueo.calcular_montos()
 
     return render(request, 'caja/historial_arqueo.html', {'arqueos': arqueos, 'fecha_apertura': fecha_apertura})
 
@@ -132,60 +149,52 @@ def historial_arqueo(request):
 def movimientos_arqueo(request, caja_id):
     caja = get_object_or_404(ArqueoCaja, id_caja=caja_id)
     
-    # Movimientos ya ordenados por fecha
-    movimientos = Movimiento.objects.filter(caja=caja).order_by('-fecha')
-    
-    # Unificar otros movimientos
-    ingresos = caja.ingresos.all().annotate(tipo_literal=models.Value('Ingreso', output_field=models.CharField())).order_by('-fecha_ingreso')
-    egresos = caja.egresos.all().annotate(tipo_literal=models.Value('Egreso', output_field=models.CharField())).order_by('-fecha_egreso')
-    ventas = caja.ventas.all().annotate(tipo_literal=models.Value('Venta', output_field=models.CharField())).order_by('-fecha_hs')
-
-    # Unimos y ordenamos
-    movimientos_unificados = sorted(
-        chain(
-            movimientos.annotate(tipo_literal=models.Value('Movimiento', output_field=models.CharField())),
-            ingresos.annotate(fecha=models.F('fecha_ingreso')),
-            egresos.annotate(fecha=models.F('fecha_egreso')),
-            ventas.annotate(fecha=models.F('fecha_hs'))
+    # Movimientos generales (incluyendo apertura de caja)
+    movimientos = Movimiento.objects.filter(caja=caja).annotate(
+        tipo_literal=Case(
+            When(descripcion='Apertura de caja', then=Value('Apertura de caja', output_field=CharField())),
+            default=Value('Movimiento', output_field=CharField())
         ),
-        key=attrgetter('fecha'),
+        fecha_movimiento=F('fecha'),
+        monto_calculado=F('monto')
+    ).order_by('-fecha')
+
+    # Ingresos manuales para el arqueo específico
+    ingresos = Ingreso.objects.filter(id_caja=caja, tipo='manual').annotate(
+        tipo_literal=Value('Ingreso', output_field=CharField()),
+        fecha_movimiento=F('fecha_ingreso'),
+        monto_calculado=F('monto')
+    ).order_by('-fecha_ingreso')
+
+    # Egresos manuales para el arqueo específico
+    egresos = Egreso.objects.filter(id_caja=caja).annotate(
+        tipo_literal=Value('Egreso', output_field=CharField()),
+        fecha_movimiento=F('fecha_egreso'),
+        monto_calculado=F('monto')
+    ).order_by('-fecha_egreso')
+
+    # Ventas para el arqueo específico
+    ventas = Ventas.objects.filter(id_caja=caja).annotate(
+        tipo_literal=Value('Venta', output_field=CharField()),
+        fecha_movimiento=F('fecha_hs'),
+        detalle=Func(
+            Value('Venta '), F('id_venta'),
+            function='CONCAT',
+            output_field=CharField()
+        ),
+        monto_calculado=F('total_venta')
+    ).order_by('-fecha_hs')
+
+    # Unir todos los movimientos y ordenarlos por fecha
+    movimientos_unificados = sorted(
+        chain(movimientos, ingresos, egresos, ventas),
+        key=attrgetter('fecha_movimiento'),
         reverse=True
     )
-    
+
     return render(request, 'caja/movimientos_arqueo.html', {
         'caja': caja,
         'movimientos': movimientos_unificados,
-    })
-
-@login_required
-def detalle_arqueo(request, id_caja):
-    arqueo = get_object_or_404(ArqueoCaja, id_caja=id_caja)
-
-    # Filtrar ingresos y egresos manuales
-    ingresos = arqueo.ingresos.filter(tipo='manual') 
-    egresos = arqueo.egresos.filter(tipo='manual')
-
-    # Acceder a ventas y compras asociadas al arqueo
-    ventas = arqueo.ventas.all()  
-    compras = arqueo.compras.all()  
-
-    # Calcular subtotales
-    subtotal_ingresos = sum(ingreso.monto for ingreso in ingresos)
-    subtotal_egresos = sum(egreso.monto for egreso in egresos)
-    subtotal_ventas = sum(venta.total_venta for venta in ventas)
-    subtotal_compras = sum(compra.total_compra for compra in compras)
-
-    return render(request, 'caja/detalle_arqueo.html', {
-        'caja': arqueo,
-        'ingresos': ingresos,
-        'egresos': egresos,
-        'ventas': ventas,
-        'compras': compras,
-        'subtotal_ingresos': subtotal_ingresos,
-        'subtotal_egresos': subtotal_egresos,
-        'subtotal_ventas': subtotal_ventas,
-        'subtotal_compras': subtotal_compras,
-        'saldo': arqueo.monto_final
     })
 
 @login_required
@@ -201,39 +210,117 @@ def obtener_monto_final(request, id_caja):
 #INGRESO Y EGRESO
 @login_required
 def registrar_ingreso(request):
-    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
+    if request.user.is_superuser:
+        # Superusuario: Selecciona una caja abierta y registra el ingreso.
+        if request.method == 'POST':
+            seleccionar_caja_form = SeleccionarCajaForm(request.POST)
+            form = IngresoForm(request.POST)
+
+            if seleccionar_caja_form.is_valid() and form.is_valid():
+                arqueo_abierto = seleccionar_caja_form.cleaned_data['caja']  # Caja seleccionada
+                ingreso = form.save(commit=False)
+                ingreso.id_caja = arqueo_abierto  # Asocia el ingreso con la caja seleccionada
+                ingreso.tipo = 'manual'
+                ingreso.save()
+
+                # Recalcula montos de la caja seleccionada
+                arqueo_abierto.calcular_montos()
+
+                messages.success(
+                    request,
+                    f"Ingreso registrado con éxito en la caja de {arqueo_abierto.id_emplead.nombre_emplead}."
+                )
+                return redirect('historial_arqueo')
+        else:
+            seleccionar_caja_form = SeleccionarCajaForm()
+            form = IngresoForm()
+
+        return render(request, 'transacciones/registrar_ingreso.html', {
+            'form': form,
+            'seleccionar_caja_form': seleccionar_caja_form
+        })
+
+    # Empleado: Operación normal.
+    empleado = request.user.empleado
+    arqueo_abierto = ArqueoCaja.get_arqueo_abierto(empleado)
     if not arqueo_abierto:
-        # Si no hay ninguna caja abierta, redirigir con un mensaje
+        messages.error(request, "No tienes una caja abierta. Debes abrir una caja primero.")
         return redirect('historial_arqueo')
+
     if request.method == 'POST':
         form = IngresoForm(request.POST)
         if form.is_valid():
             ingreso = form.save(commit=False)
             ingreso.id_caja = arqueo_abierto
-            ingreso.tipo = 'manual'  # Establecer el valor por defecto
+            ingreso.tipo = 'manual'
             ingreso.save()
+            arqueo_abierto.calcular_montos()
+            messages.success(request, f"Ingreso registrado con éxito en tu caja.")
             return redirect('historial_arqueo')
     else:
-        form = IngresoForm(initial={'id_caja': arqueo_abierto})
-    return render(request, 'transacciones/registrar_ingreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+        form = IngresoForm()
+
+    return render(request, 'transacciones/registrar_ingreso.html', {
+        'form': form,
+        'arqueo_abierto': arqueo_abierto
+    })
 
 @login_required
 def registrar_egreso(request):
-    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()
+    if request.user.is_superuser:
+        # Superusuario: Selecciona una caja abierta y registra el egreso.
+        if request.method == 'POST':
+            seleccionar_caja_form = SeleccionarCajaForm(request.POST)
+            form = EgresoForm(request.POST)
+
+            if seleccionar_caja_form.is_valid() and form.is_valid():
+                arqueo_abierto = seleccionar_caja_form.cleaned_data['caja']  # Caja seleccionada
+                egreso = form.save(commit=False)
+                egreso.id_caja = arqueo_abierto  # Asocia el egreso con la caja seleccionada
+                egreso.tipo = 'manual'
+                egreso.save()
+
+                # Recalcula montos de la caja seleccionada
+                arqueo_abierto.calcular_montos()
+
+                messages.success(
+                    request,
+                    f"Egreso registrado con éxito en la caja de {arqueo_abierto.id_emplead.nombre_emplead}."
+                )
+                return redirect('historial_arqueo')
+        else:
+            seleccionar_caja_form = SeleccionarCajaForm()
+            form = EgresoForm()
+
+        return render(request, 'transacciones/registrar_egreso.html', {
+            'form': form,
+            'seleccionar_caja_form': seleccionar_caja_form
+        })
+
+    # Empleado: Operación normal.
+    empleado = request.user.empleado
+    arqueo_abierto = ArqueoCaja.get_arqueo_abierto(empleado)
     if not arqueo_abierto:
+        messages.error(request, "No tienes una caja abierta. Debes abrir una caja primero.")
         return redirect('historial_arqueo')
+
     if request.method == 'POST':
         form = EgresoForm(request.POST)
         if form.is_valid():
             egreso = form.save(commit=False)
             egreso.id_caja = arqueo_abierto
-            egreso.tipo = 'manual'  # Establecer el valor por defecto
+            egreso.tipo = 'manual'
             egreso.save()
-            arqueo_abierto.calcular_montos()  # Recalcula los montos cada vez que se registra un egreso
+            arqueo_abierto.calcular_montos()
+            messages.success(request, f"Egreso registrado con éxito en tu caja.")
             return redirect('historial_arqueo')
     else:
         form = EgresoForm()
-    return render(request, 'transacciones/registrar_egreso.html', {'form': form, 'arqueo_abierto': arqueo_abierto})
+
+    return render(request, 'transacciones/registrar_egreso.html', {
+        'form': form,
+        'arqueo_abierto': arqueo_abierto
+    })
 
 #PRODUCTOS
 @login_required
@@ -241,8 +328,11 @@ def mostrar_articulos(request):
     producto=Productos.objects.all()
     return render(request, "articulos/mostrar.html",{"productos":producto})
 
-@permission_required('stock.view_articulo')
+
 def editar_articulos(request,id_prod):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción.")
+        return redirect('mostrar_articulos')
     producto = Productos.objects.get(id_prod=id_prod)
     formulario = ProductosForm(request.POST or None, request.FILES or None, instance=producto)
 
@@ -263,10 +353,21 @@ def crear_articulos(request):
             return redirect("mostrar_articulos")
     return render(request, "articulos/crear.html", {"formulario": formulario})
 
-@permission_required('stock.view_articulo')
-def eliminar_productos(request,id_prod):
-    producto = Productos.objects.get(id_prod=id_prod)
+
+def eliminar_productos(request, id_prod):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción.")
+        return redirect('mostrar_articulos')
+    
+    producto = get_object_or_404(Productos, id_prod=id_prod)
+    
+    # Verificar si el producto tiene ventas asociadas
+    if det_ventas.objects.filter(id_prod=producto).exists():
+        messages.error(request, "No se puede eliminar un producto que ya ha sido vendido.")
+        return redirect('mostrar_articulos')
+    
     producto.delete()
+    messages.success(request, "Producto eliminado exitosamente.")
     return redirect("mostrar_articulos")
 
 #CLIENTES
@@ -274,8 +375,10 @@ def mostrar_clientes(request):
     cliente=Clientes.objects.all()
     return render(request, "clientes/mostrar.html",{"clientes":cliente})
 
-@permission_required('stock.view_cliente')
 def editar_clientes(request, id_cli):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción.")
+        return redirect('mostrar_clientes')
     cliente = Clientes.objects.get(id_cli=id_cli)
     formulario = ClientesForm(request.POST or None, request.FILES or None, instance=cliente)
     
@@ -294,16 +397,28 @@ def crear_clientes(request):
         return redirect("mostrar_clientes")
     return render(request,"clientes/crear.html",{"formulario": formulario})
 
-@permission_required('stock.view_cliente')
 def eliminar_clientes(request, id_cli):
-    cliente = Clientes.objects.get(id_cli=id_cli)
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción.")
+        return redirect('mostrar_clientes')
+    
+    cliente = get_object_or_404(Clientes, id_cli=id_cli)
+    
+    # Verificar si el cliente tiene ventas asociadas
+    if Ventas.objects.filter(id_cli=cliente).exists():
+        messages.error(request, "No se puede eliminar un cliente que ya tiene ventas registradas.")
+        return redirect("mostrar_clientes")
+    
     cliente.delete()
+    messages.success(request, "Cliente eliminado exitosamente.")
     return redirect("mostrar_clientes")
 
 #EMPLEADOS
 @login_required
-@permission_required("stock.view_empelado")
 def mostrar_empleados(request):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción")
+        return redirect('inicio')
     empleado=Empleados.objects.all()
     return render(request,"empleados/mostrar.html",{"empleados":empleado})
 
@@ -334,15 +449,46 @@ def crear_empleados(request):
 
 @permission_required('stock.view_empleado')
 def eliminar_empleados(request, id_emplead):
-    empleado = Empleados.objects.get(id_emplead=id_emplead)
+    empleado = get_object_or_404(Empleados, id_emplead=id_emplead)
+    
+    # Verificar si el empleado tiene ventas asociadas
+    if Ventas.objects.filter(id_caja__id_emplead=empleado).exists():
+        messages.error(request, "No se puede eliminar un empleado que ya tiene ventas asociadas.")
+        return redirect("mostrar_empleados")
+    
     empleado.delete()
     messages.success(request, "Empleado y usuario eliminados correctamente.")
     return redirect("mostrar_empleados")
 
+@login_required 
+def ver_acciones_empleado(request, empleado_id):
+    # Obtener el empleado especificado
+    empleado = get_object_or_404(Empleados, id_emplead=empleado_id)
+    # Filtrar las acciones de auditoría para este empleado
+    acciones = AuditoriaEmpleado.objects.filter(empleado=empleado).order_by('-fecha_hora')
+
+    context = {
+        'empleado': empleado,
+        'acciones': acciones
+    }
+    return render(request, 'ver_acciones.html', context)
+
+@login_required
+def registrar_accion(empleado, proceso):
+    AuditoriaEmpleado.objects.create(
+        empleado=empleado,
+        nombre_empleado=f"{empleado.nombre_emplead} {empleado.apellido_emplead}",
+        proceso=proceso,
+        fecha_hora=timezone.now()
+    )
+
 #PROVEDORES
 @login_required
-@permission_required("stock.view_empleado")
 def mostrar_proveedores(request):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción")
+        return redirect('inicio')
+
     proveedor= Proveedores.objects.all()
     return render(request, "proveedores/mostrar.html",{"proveedores": proveedor})
 
@@ -372,38 +518,62 @@ def crear_proveedores(request):
     return render(request, "proveedores/crear.html", {"formulario": formulario})
 
 @permission_required('stock.view_empleado')
-def eliminar_proveedores(request,id_prov):
-    proveedor = Proveedores.objects.get(id_prov=id_prov)
+def eliminar_proveedores(request, id_prov):
+    proveedor = get_object_or_404(Proveedores, id_prov=id_prov)
+    
+    # Verifica si el proveedor tiene compras asociadas
+    if Compras.objects.filter(id_prov=proveedor).exists():
+        messages.error(request, "No se puede eliminar un proveedor que ya tiene compras registradas.")
+        return redirect("mostrar_proveedores")
+    
     proveedor.delete()
+    messages.success(request, "Proveedor eliminado exitosamente.")
     return redirect("mostrar_proveedores")
 
-#VENTAS
+#VENTA
 @login_required
 def crear_venta(request):
     producto = Productos.objects.all()
-    empleado = Empleados.objects.all()
     cliente = Clientes.objects.all()
-    arqueo_abierto = ArqueoCaja.objects.filter(cerrado=False).first()  # Buscar el arqueo abierto
+    
+    # Obtener el empleado actual
+    try:
+        empleado_actual = Empleados.objects.get(user=request.user)
+    except Empleados.DoesNotExist:
+        messages.error(request, "No tienes un empleado asociado para hacer ventas.")
+        return redirect('inicio')
+    
+    # Obtener el arqueo abierto para el empleado actual
+    arqueo_abierto = ArqueoCaja.objects.filter(id_emplead=empleado_actual, cerrado=False).first()
 
     if not arqueo_abierto:
-        # Si no hay arqueo abierto, redirigir con mensaje
-        return redirect('historial_arqueo')
+        messages.error(request, "No tienes una caja abierta. Debes abrir una caja primero.")
+        return redirect('apertura_arqueo')
+    
+    if request.method == 'POST':
+        cliente_id = request.POST.get('cliente', None)  # Puede ser None si no se seleccionó un cliente
+        if cliente_id:
+            cliente = Clientes.objects.get(id_cli=cliente_id)
+        else:
+            cliente = None  # Venta sin cliente
+    # Validar si el usuario es administrador
+    if request.user.is_staff:
+        messages.error(request, "No tienes un empleado asociado para hacer ventas.")
+        return redirect('inicio')
 
     if request.method == "POST":
-        id_cli = request.POST.get('cliente')    
-        total_venta = request.POST.get('total') 
+        id_cli = request.POST.get('cliente')
+        total_venta = request.POST.get('total')
 
-        cliente_obj=Clientes.objects.get(id_cli=id_cli)if id_cli else None
+        cliente_obj = Clientes.objects.get(id_cli=id_cli) if id_cli else None
 
         nueva_venta = Ventas(
-            id_caja=arqueo_abierto,  # Asociar venta al arqueo de caja abierto
-            id_cli=cliente_obj,  
+            id_caja=arqueo_abierto,  # Asociar venta al arqueo de caja abierto del empleado actual
+            id_cli=cliente_obj,
             total_venta=total_venta,
             fecha_hs=timezone.now()
         )
         nueva_venta.save()
-
-        empleado_actual = Empleados.objects.get(user=request.user)
 
         registrar_accion(empleado_actual, f"Creación de venta {nueva_venta.id_venta}")
 
@@ -415,6 +585,14 @@ def crear_venta(request):
             producto = Productos.objects.get(id_prod=productos_ids[i])
             cantidad = int(cantidades[i])
             subtotal = float(subtotales[i])
+            
+            if not producto or not cantidad:
+                messages.error(request, "No se puede confirmar la venta sin productos.")
+                return redirect('crear_venta')  
+            
+            if cantidad > producto.stock_actual:
+                messages.error(request, f"Stock insuficiente para el producto {producto.nombre_prod}. Disponible: {producto.stock_actual}.")
+                return redirect("crear_venta")
 
             nuevo_detalle = det_ventas(
                 id_prod=producto,
@@ -426,7 +604,6 @@ def crear_venta(request):
             nuevo_detalle.save()
 
             registrar_accion(empleado_actual, f"Creación de detalle de venta para producto {producto.nombre_prod}")
-
 
             producto.stock_actual -= cantidad
             producto.save()
@@ -441,13 +618,10 @@ def crear_venta(request):
 
         registrar_accion(empleado_actual, f"Registro de ingreso en arqueo para venta {nueva_venta.id_venta}")
 
-
         # Actualizar los montos en el arqueo de caja
         arqueo_abierto.calcular_montos()
 
-
         registrar_accion(empleado_actual, f"Actualización de montos en arqueo de caja {arqueo_abierto.id_caja}")
-
 
         return redirect('det_venta', id_venta=nueva_venta.id_venta)
 
@@ -455,7 +629,7 @@ def crear_venta(request):
         formulario = VentasForm()
 
     context = {
-        "empleados": empleado,
+        "empleados": Empleados.objects.all(),
         "clientes": cliente,
         "productos": producto,
         "formulario": formulario
@@ -472,6 +646,8 @@ def det_venta(request, id_venta):
         'detalles': detalles
     }
     return render(request, 'ventas/detalle_ventas.html', context)
+
+
 
 @login_required
 def GenerarPdf(request,id_venta ):
@@ -501,10 +677,28 @@ def historial_ventas(request):
     }
     return render (request, "ventas/historial_ventas.html", context)
 
+@login_required
+def ventas_del_mes(request):
+    ventas = (
+        Ventas.objects
+        .filter(fecha_hs__month=date.today().month, fecha_hs__year=date.today().year)  # Cambiado a fecha_hs
+        .values('fecha_hs')  # Cambiado a fecha_hs
+        .annotate(total=Sum('total_venta'))
+        .order_by('fecha_hs') 
+    )
+
+    labels = [venta['fecha_hs'].strftime('%d-%m') for venta in ventas]  # Cambiado a fecha_hs
+    data = [venta['total_venta'] for venta in ventas]
+
+    return JsonResponse({'labels': labels, 'data': data})
+
 #COMPRAS   
 @login_required
-@permission_required("stock.view_empleado")
 def crear_compra(request):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar compras.")
+        return redirect('inicio')
+     
     proveedores = Proveedores.objects.all()
     productos = Productos.objects.all()
 
@@ -513,6 +707,8 @@ def crear_compra(request):
         total_compra = request.POST.get("total")
         proveedor = get_object_or_404(Proveedores, id_prov=id_prov)
         
+       
+
         # Crear la compra principal
         nueva_compra = Compras(
             id_prov=proveedor,
@@ -535,6 +731,7 @@ def crear_compra(request):
 
             producto = get_object_or_404(Productos, id_prod=id_producto)
             producto.precio_costo = precio_costo
+            producto.stock_actual+=cantidad
             producto.save()
 
             det_compra = det_compras(
@@ -556,8 +753,11 @@ def crear_compra(request):
     return render(request, "compras/crear_compra.html", context)
 
 @login_required
-@permission_required("stock.view_empleado")
 def det_compra(request, id_compra):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para visualizar historial de compra.")
+        return redirect('inicio')
+    
     # Obtener la compra específica
     compra = get_object_or_404(Compras, id_compra=id_compra)
     # Obtener todos los detalles de productos asociados a esta compra
@@ -570,8 +770,10 @@ def det_compra(request, id_compra):
     return render(request, 'compras/det_compras.html', context)
 
 @login_required
-@permission_required("stock.view_empleado")
 def historial_compra(request):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción.")
+        return redirect('inicio')
     # Obtener todas las compras ordenadas por fecha (la más reciente primero)
     compras = Compras.objects.all().order_by('-fecha_compra')
 
@@ -580,40 +782,4 @@ def historial_compra(request):
     }
     return render(request, 'compras/historial_compras.html', context)
 
-@login_required 
-def ver_acciones_empleado(request, empleado_id):
-    # Obtener el empleado especificado
-    empleado = get_object_or_404(Empleados, id_emplead=empleado_id)
-    # Filtrar las acciones de auditoría para este empleado
-    acciones = AuditoriaEmpleado.objects.filter(empleado=empleado).order_by('-fecha_hora')
-
-    context = {
-        'empleado': empleado,
-        'acciones': acciones
-    }
-    return render(request, 'ver_acciones.html', context)
-
-@login_required
-def registrar_accion(empleado, proceso):
-    AuditoriaEmpleado.objects.create(
-        empleado=empleado,
-        nombre_empleado=f"{empleado.nombre_emplead} {empleado.apellido_emplead}",
-        proceso=proceso,
-        fecha_hora=timezone.now()
-    )
-
-@login_required
-def ventas_del_mes(request):
-    ventas = (
-        Ventas.objects
-        .filter(fecha_hs__month=date.today().month, fecha_hs__year=date.today().year)  # Cambiado a fecha_hs
-        .values('fecha_hs')  # Cambiado a fecha_hs
-        .annotate(total=Sum('total_venta'))
-        .order_by('fecha_hs') 
-    )
-
-    labels = [venta['fecha_hs'].strftime('%d-%m') for venta in ventas]  # Cambiado a fecha_hs
-    data = [venta['total_venta'] for venta in ventas]
-
-    return JsonResponse({'labels': labels, 'data': data})
 

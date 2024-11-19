@@ -78,3 +78,19 @@
     border-radius: 5px;
     text-align: center;
 }
+
+
+
+/* detalle pdf */
+
+body { font-family: Arial, sans-serif; }
+.header { text-align: center; margin-bottom: 20px; }
+.header h2 { font-size: 24px; color: #333; }
+.venta-info { margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+table, th, td { border: 1px solid #ddd; padding: 8px; }
+th { background-color: #191a1b; color: white; }
+
+
+
+

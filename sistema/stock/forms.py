@@ -4,17 +4,20 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 import string
 import secrets
-##PROVEEDORES
+
+#PROVEEDORES
 class ProveedoresForm(forms.ModelForm):
     class Meta:
         model = Proveedores
         fields = "__all__"
-##CLIENTES
+
+#CLIENTES
 class ClientesForm(forms.ModelForm):
     class Meta:
         model = Clientes
         fields="__all__"
-##EMPLEADOS
+
+#EMPLEADOS
 class EmpleadosForm(forms.ModelForm):
     username = forms.CharField(max_length=150, required=False)
 
@@ -81,6 +84,7 @@ class EmpleadosForm(forms.ModelForm):
         )
 
         return empleado
+
 ##PRODUCTOS
 class ProductosForm(forms.ModelForm):
     class Meta:
@@ -123,17 +127,20 @@ class ProductosForm(forms.ModelForm):
         if punto_reposicion is not None and punto_reposicion < 0:
             raise forms.ValidationError("El punto de reposición no puede ser negativo.")
         return punto_reposicion
-##VENTAS
+
+#VENTAS
 class VentasForm(forms.ModelForm):
     class Meta:
         model = Ventas
         fields=["id_caja","id_cli", "total_venta", "fecha_hs"]
-##COMPRAS
+
+#COMPRAS
 class ComprasForm(forms.ModelForm):
     class Meta:
         model = Compras
         fields=["id_compra","id_prov","id_caja","fecha_compra","total_compra"]
-##CAJA
+
+#CAJA
 class ArqueoCajaForm(forms.ModelForm):
     class Meta:
         model = ArqueoCaja
@@ -153,6 +160,7 @@ class CerrarArqueoForm(forms.ModelForm):
     class Meta:
         model = ArqueoCaja
         fields = []
+
 class IngresoForm(forms.ModelForm):
     class Meta:
         model = Ingreso
@@ -167,6 +175,7 @@ class IngresoForm(forms.ModelForm):
         if monto < 0:
             raise forms.ValidationError("El monto no puede ser negativo.")
         return monto
+
 class EgresoForm(forms.ModelForm):
     class Meta:
         model = Egreso
@@ -182,3 +191,9 @@ class EgresoForm(forms.ModelForm):
             raise forms.ValidationError("El monto no puede ser negativo.")
         return monto 
 
+class SeleccionarCajaForm(forms.Form):
+    caja = forms.ModelChoiceField(
+        queryset=ArqueoCaja.objects.filter(cerrado=False),  # Solo cajas abiertas
+        label="Seleccionar Caja",
+        empty_label="Seleccione una caja"
+    )

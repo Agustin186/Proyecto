@@ -1,55 +1,54 @@
 /* Contenedor principal del historial */
 #pa_contenedor_historial {
-    background-color: #f8f9fa; /* Fondo claro */
-    border: 1px solid #ddd; /* Borde sutil */
-    border-radius: 10px; /* Bordes redondeados */
-    margin: 20px auto; /* Margen superior e inferior ajustado */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra más suave */
-    width: 90%; /* Ancho dinámico */
-    max-width: 1200px; /* Ancho máximo */
-    height: 73vh; /* Altura adecuada */
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
+    height: 73vh;
     display: flex;
     flex-direction: column;
-    padding: 20px; /* Relleno interno */
+    padding: 20px;
 }
 
 /* Título del historial */
 #pa_contenedor_historial h2 {
     text-align: center;
-    font-size: 2em;
-    color: #007bff; /* Azul más destacable */
-    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #007bff;
+    margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 3px solid #007bff; /* Borde inferior más grueso */
+    border-bottom: 3px solid #007bff;
 }
 
 /* Contenedor con scroll para la tabla */
 .table-container {
     flex-grow: 1;
-    overflow-y: auto; /* Scroll vertical */
+    overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 10px; /* Espaciado interno */
+    padding: 10px;
 }
 
 /* Tabla de historial */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0;
 }
 
 table th, table td {
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
+    font-size: 0.9rem;
 }
 
 table th {
     background-color: #007bff;
     color: white;
     text-transform: uppercase;
-    font-size: 1em; /* Tamaño ligeramente más grande */
 }
 
 table tr.closed td {
@@ -58,7 +57,7 @@ table tr.closed td {
 }
 
 table tr:hover {
-    background-color: #f8f9fa;
+    background-color: #f1f1f1;
 }
 
 /* Fila de totales */
@@ -70,9 +69,9 @@ tfoot td {
 /* Mensaje de "No hay registros" */
 .no-data {
     text-align: center;
-    font-size: 1.2em;
-    color: #999;
-    padding: 20px; /* Espaciado adicional */
+    font-size: 1.1em;
+    color: #777;
+    padding: 20px;
 }
 
 /* Botones personalizados para acciones */
@@ -80,75 +79,113 @@ tfoot td {
     display: inline-block;
     font-weight: 500;
     text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
-    padding: 8px 12px; /* Ajustamos el tamaño del botón */
-    font-size: 0.9rem; /* Tamaño de fuente reducido */
-    border: 1px solid transparent;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: none;
     border-radius: 5px;
     text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
 }
 
-.btn-m, .btn-a, .red-btn {
-    background-color: #6c757d; /* Color estándar */
+.btn:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+/* Estilo verde para ingresos */
+.btn-i {
+    background-color: #28a745; /* Verde */
     color: white;
 }
 
-.btn-m:hover, .btn-a:hover, .red-btn:hover {
-    background-color: #5a6268; /* Color más oscuro al pasar el cursor */
+.btn-i:hover {
+    background-color: #218838;
 }
 
-/* Estilo para "Buscar" input y botón */
-form {
+/* Estilo rojo para egresos */
+.btn-e {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+}
+
+.btn-e:hover {
+    background-color: #c82333;
+}
+
+/* Estilo rojo para cerrar caja */
+.red-btn {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+}
+
+.red-btn:hover {
+    background-color: #c82333;
+}
+
+/* Estilo para movimientos */
+.btn-m {
+    background-color: #007bff; /* Azul */
+    color: white;
+}
+
+.btn-m:hover {
+    background-color: #0056b3;
+}
+
+
+/* Encapsular estilos para el formulario de búsqueda dentro de #pa_contenedor_historial */
+#pa_contenedor_historial form {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Espaciado entre elementos */
-    margin-bottom: 20px; /* Margen inferior para separar del resto */
+    gap: 10px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
 }
 
-input[type="date"] {
-    padding: 5px 10px; /* Espaciado interno */
-    font-size: 0.9rem; /* Tamaño de fuente reducido */
-    border: 1px solid #ddd; /* Borde */
-    border-radius: 5px; /* Bordes redondeados */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
-    transition: border-color 0.3s ease;
+#pa_contenedor_historial form label {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #007bff;
 }
 
-input[type="date"]:focus {
-    border-color: #007bff; /* Borde azul al enfocar */
-    outline: none; /* Sin borde de enfoque predeterminado */
+#pa_contenedor_historial input[type="date"] {
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s;
 }
 
-button[type="submit"] {
-    background-color: #007bff; /* Color azul */
-    color: white; /* Texto blanco */
-    padding: 5px 15px; /* Espaciado */
-    font-size: 0.9rem; /* Tamaño de fuente reducido */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cursor de mano */
-    transition: background-color 0.3s ease;
+#pa_contenedor_historial input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
-button[type="submit"]:hover {
-    background-color: #0056b3; /* Azul más oscuro al pasar el cursor */
-}
-
-
-.btn-i, .btn-e, .btn-m {
-    background-color: #6c757d;
+#pa_contenedor_historial button[type="submit"] {
+    background-color: #007bff;
     color: white;
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.btn-i:hover, .btn-e:hover, .btn-m:hover {
-    background-color: #5a6268;
+#pa_contenedor_historial button[type="submit"]:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
+
 /* Scroll personalizado */
 .table-container::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 .table-container::-webkit-scrollbar-thumb {
@@ -163,8 +200,8 @@ button[type="submit"]:hover {
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     #pa_contenedor_historial {
-        width: 100%;
-        padding: 10px;
+        width: 95%;
+        padding: 15px;
     }
 
     .table-container {
@@ -173,41 +210,61 @@ button[type="submit"]:hover {
 
     table th, table td {
         padding: 8px;
-        font-size: 0.9em;
+        font-size: 0.85em;
+    }
+
+    form {
+        flex-direction: column;
+        gap: 5px;
     }
 }
 
-/* Estilos para la ventana modal */
+/* mensaje de error */
+/* mensaje de error */
+
+/* Estilos para el fondo del modal */
 .modal {
-    display: none;
+    display: none; /* Oculto por defecto */
     position: fixed;
-    z-index: 1;
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Opacidad ligeramente mejorada */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* Estilos para el contenido del modal */
 .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
+    background-color: white; /* Fondo blanco */
+    color: black; /* Texto negro */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+    max-width: 500px;
+    width: 90%; /* Se adapta a pantallas pequeñas */
+    text-align: center; /* Centrar texto */
 }
 
+/* Estilo para el botón de cerrar */
 .close {
-    color: #aaa;
+    color: black; /* Color del icono de cerrar */
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
-    color: #333;
-    cursor: pointer;
+.close:hover, .close:focus {
+    color: #555; /* Color más claro al pasar el mouse */
+    text-decoration: none;
+}
+
+/* Estilo para los mensajes dentro del modal */
+.modal-content p {
+    font-size: 1rem;
+    margin: 10px 0;
 }

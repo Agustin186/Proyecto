@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
         totalInput.value = total.toFixed(2);
     }
 
+
+
     function actualizarSubtotal(fila) {
         const cantidad = parseInt(fila.querySelector('.cantidad').value) || 1;
         const precio = parseFloat(fila.querySelector('.precio').textContent) || 0;
@@ -70,3 +72,54 @@ document.addEventListener('DOMContentLoaded', function () {
     let hoy = new Date().toISOString("en-CA").split('T')[0];
     document.getElementById('fecha_hs').value = hoy;
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+     let hoy = new Date().toISOString("en-CA").split('T')[0];
+     document.getElementById('fecha_hs').value = hoy;
+})
+
+  document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('modal');
+      var closeBtn = document.querySelector('.close');
+
+      // Verificar si el modal y el botón de cerrar existen
+      if (modal && closeBtn) {
+          // Mostrar modal si contiene mensajes
+          if (modal.querySelector('p')) {
+              modal.style.display = 'flex';
+          }
+
+          // Cerrar modal al hacer clic en la "x"
+          closeBtn.addEventListener('click', function () {
+              modal.style.display = 'none';
+          });
+
+          // Cerrar modal al hacer clic fuera del contenido
+          window.addEventListener('click', function (event) {
+              if (event.target === modal) {
+                  modal.style.display = 'none';
+              }
+          });
+      }
+  });
+
+   //FUNCION PARA LA BARRA DE BUSQUEDA DE PRODUCTOS
+  document.addEventListener('DOMContentLoaded', function () {
+    const buscarProductoInput = document.getElementById('buscarProducto');
+    const listaProductos = document.getElementById('lista-productos');
+
+    buscarProductoInput.addEventListener('input', function () {
+        const filtro = buscarProductoInput.value.toLowerCase();
+
+        listaProductos.querySelectorAll('tr').forEach(tr => {
+            const nombreProducto = tr.cells[1]?.textContent.toLowerCase() || ''; // Nombre del producto
+            if (nombreProducto.includes(filtro)) {
+                tr.style.display = ''; // Mostrar fila si coincide
+            } else {
+                tr.style.display = 'none'; // Ocultar fila si no coincide
+            }
+        });
+    });
+});
+  

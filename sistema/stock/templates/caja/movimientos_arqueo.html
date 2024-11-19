@@ -8,50 +8,37 @@
         <table>
             <thead>
                 <tr>
+                    <th>Fecha</th>
                     <th>Tipo</th>
+                    <th>Detalle</th>
                     <th>Monto</th>
-                    <th>Hora</th>
-                    <th>Descripción</th>
                 </tr>
             </thead>
             <tbody>
                 {% for movimiento in movimientos %}
                 <tr>
+                    <td>{{ movimiento.fecha_movimiento }}</td>
                     <td>{{ movimiento.tipo_literal }}</td>
-                    <td>${{ movimiento.monto }}</td>
-                    <td>{{ movimiento.fecha|time }}</td>
-                    <td>{{ movimiento.descripcion }}</td>
+                    <td>
+                        {% if movimiento.tipo_literal == "Venta" %}
+                        {{ movimiento.detalle }}
+                        {% elif movimiento.tipo_literal == "Apertura de caja" %}
+                        {{ movimiento.descripcion }}
+                        {% else %}
+                        {{ movimiento.descripcion }}
+                        {% endif %}
+                    </td>
+                    <td>{{ movimiento.monto_calculado }}</td>
                 </tr>
                 {% endfor %}
-                {% for ingreso in ingresos %}
-                <tr>
-                    <td>Ingreso</td>
-                    <td>${{ ingreso.monto }}</td>
-                    <td>{{ ingreso.fecha_ingreso|time }}</td>
-                    <td>{{ ingreso.descripcion }}</td>
-                </tr>
-                {% endfor %}
-                {% for egreso in egresos %}
-                <tr>
-                    <td>Egreso</td>
-                    <td>${{ egreso.monto }}</td>
-                    <td>{{ egreso.fecha_egreso|time }}</td>
-                    <td>{{ egreso.descripcion }}</td>
-                </tr>
-                {% endfor %}
-                {% for venta in ventas %}
-                <tr>
-                    <td>Venta</td>
-                    <td>${{ venta.total_venta }}</td>
-                    <td>{{ venta.fecha_hs|time }}</td>
-                    <td>{{ venta.descripcion }}</td>
-                </tr>
-                {% endfor %}
-
             </tbody>
         </table>
+
     </div>
 </div>
 
-<link rel="stylesheet" href="/static/css/estilo_movimiento_arqueo.css"> 
+<head>
+    <link rel="stylesheet" href="/static/css/estilo_movimiento_arqueo.css">
+</head>
+
 {% endblock %}

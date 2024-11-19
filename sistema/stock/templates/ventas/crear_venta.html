@@ -4,11 +4,25 @@
 
 {% block contenido %}
 <div class="contenedor_ventas">
+
+
+    {% if messages %}
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span> <!-- Este elemento debe existir -->
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     <!-- Caja de Venta -->
     <div class="caja_venta">
         <div class="Encabezado_venta">
             <h1>Nueva Venta</h1>
         </div>
+
+        
 
         <form action="{% url 'crear_venta' %}" method="POST">
             {% csrf_token %}
@@ -29,16 +43,17 @@
                     </div>
                 </div>
             
-                <!-- SELECCIÓN DEL CLIENTE -->
-                <div class="grupo_formularios">
-                    <label>Cliente:</label>
-                    <select name="cliente" id="cliente">
-                        {% for cliente in clientes %}
-                        <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
+<!-- SELECCIÓN DEL CLIENTE -->
+<div class="grupo_formularios">
+    <label>Cliente:</label>
+    <select name="cliente" id="cliente">
+        <option value=""></option> <!-- Opción vacía -->
+        {% for cliente in clientes %}
+        <option value="{{ cliente.id_cli }}">{{ cliente.nombre_cli }} {{ cliente.apellido_cli }}</option>
+        {% endfor %}
+    </select>
+</div>
+
             </div>
             <!-- Contenedor con scroll para la tabla de productos agregados -->
             <div class="tabla-productos-contenedor">
@@ -63,6 +78,7 @@
                 <!-- Botones de Acción -->
                 <div class="buttons">
                     <button class="btn_aceptar_venta" type="submit" value="Guardar" onclick="return ConfirmarVenta()">Aceptar</button>
+
                     <button class="btn_salir" type="button" onclick=window.location.href='{% url 'inicio' %}'>Salir</button>
                 </div>
                <!-- Total de la Venta -->
@@ -122,9 +138,25 @@
 </div>
 
 <head>
-    <link rel="stylesheet" href="/static/css/estilo_ventas.css"> 
+    <link rel="stylesheet" href="/static/css/estilo_crear_ventas.css"> 
 </head>
 <body>
+    <script>
+        function ConfirmarVenta() {
+    const tablaVenta = document.querySelector('#tabla-venta tbody');
+
+    // Validar que haya al menos un producto en la tabla
+    if (tablaVenta.children.length === 0) {
+        alert('No puedes confirmar una venta sin agregar productos.');
+        return false; // Evita el envío del formulario
+    }
+
+    // Si hay productos, mostrar el mensaje de confirmación
+    return confirm("¿Está seguro de confirmar la venta?");
+}
+
+    </script>
+    
     <script src="/static/scripts/crear_venta.js"></script>
 </body>
 

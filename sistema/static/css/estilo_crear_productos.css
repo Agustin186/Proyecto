@@ -1,0 +1,228 @@
+/* Contenedor principal para formularios restringuido */
+#pa_card.restringuido {
+    background-color: #ffffff;
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    max-width: 95%; /* Para hacerlo más amplio */
+    margin: 30px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#pa_card_header.restringuido {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#pa_card_body.restringuido {
+    padding: 20px;
+}
+
+#pa_card_title.restringuido {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007bff;
+    text-align: center;
+}
+
+/* Formulario restringuido */
+form.restringuido {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+form.restringuido label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+form.restringuido input[type="text"], 
+form.restringuido input[type="number"], 
+form.restringuido input[type="email"], 
+form.restringuido textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border 0.3s ease;
+}
+
+form.restringuido input:focus, 
+form.restringuido textarea:focus {
+    border-color: #0056b3;
+    background-color: #ffffff;
+    outline: none;
+}
+
+form.restringuido .btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+form.restringuido .btn:hover {
+    background-color: #218838;
+}
+
+/* Tablas de productos restringuido */
+#productos-view.restringuido {
+    width: 95%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#productos-view.restringuido h4 {
+    text-align: center;
+    font-size: 22px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Tabla de productos restringuido */
+.table-scroll.restringuido {
+    overflow-x: auto; /* Habilitar scroll horizontal si es necesario */
+}
+
+.productos-table.restringuido {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.productos-table.restringuido th, 
+.productos-table.restringuido td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.productos-table.restringuido th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+}
+
+.productos-table.restringuido tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.productos-table.restringuido tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.productos-table.restringuido tr:hover {
+    background-color: #e6f7ff;
+}
+
+.no-data.restringuido {
+    text-align: center;
+    font-size: 1.2em;
+    color: #999;
+}
+
+/* Botones restringuido */
+.btn-editar.restringuido, 
+.btn-borrar.restringuido, 
+.btn-agregar.restringuido {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-editar.restringuido {
+    background-color: #28a745;
+}
+
+.btn-editar.restringuido:hover {
+    background-color: #218838;
+}
+
+.btn-borrar.restringuido {
+    background-color: #dc3545;
+}
+
+.btn-borrar.restringuido:hover {
+    background-color: #c82333;
+}
+
+.btn-agregar.restringuido {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-agregar.restringuido:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+
+
+/* Scroll personalizado restringuido */
+.table-scroll.restringuido::-webkit-scrollbar {
+    width: 10px;
+}
+
+.table-scroll.restringuido::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 5px;
+}
+
+.table-scroll.restringuido::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Responsivo restringido */
+@media (max-width: 768px) {
+    #productos-view.restringuido {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .table-scroll.restringuido {
+        max-height: 300px;
+    }
+
+    .productos-table.restringuido th, 
+    .productos-table.restringuido td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .btn-agregar.restringuido {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

@@ -1,95 +1,80 @@
-/* Estilos generales */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f1f1f1;
-    margin: 0;
-    padding: 0;
-}
-
-.contenedor_detalle_compra {
-    max-width: 800px;
-    margin: 20px auto;
+#pa_detalle_contenedor {
+    width: 60%;
+    margin: 40px auto;
     padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #007bff;
+    border: 1px solid #ddd;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
 }
 
-h1 {
-    font-size: 24px;
-    color: #333;
+#pa_titulo_detalle, #pa_titulo_productos {
     text-align: center;
+    color: #333;
     margin-bottom: 20px;
+    font-size: 1.5em;
 }
 
-.info_compra p {
-    font-size: 16px;
-    margin: 5px 0;
+#pa_id_venta, #pa_cliente, #pa_fecha, #pa_total {
+    font-size: 1.1em;
+    margin: 10px 0;
 }
 
-.info_compra strong {
-    color: #007bff;
+#pa_id_venta strong, #pa_cliente strong, #pa_fecha strong, #pa_total strong {
+    color: #555;
 }
 
-/* Tabla de detalle de compra */
-.table {
+#pa_detalle_table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin: 20px 0;
 }
 
-.table th, 
-.table td {
+#pa_detalle_table th, #pa_detalle_table td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
 }
 
-.table th {
-    background-color: #007bff;
+#pa_detalle_table th {
+    background-color: #4CAF50;
     color: white;
+    font-size: 1.1em;
 }
 
-.table tbody tr:hover {
+#pa_detalle_table tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-/* Botón regresar */
-.boton-regresar {
+#pa_detalle_table tr:hover {
+    background-color: #ddd;
+}
+
+#pa_btn_volver {
+    display: block;
+    width: 100px;
+    margin: 20px auto;
+    padding: 10px;
     text-align: center;
-    margin-top: 20px;
-}
-
-.boton-regresar .btn {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
     text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
+    background-color: #c93716;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
-.boton-regresar .btn:hover {
+#pa_btn_volver:hover {
+    background-color: #c93716;
+}
+
+#btn_imprimir{
+    display: block;
+    width: 100px;
     background-color: #0056b3;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-    .contenedor_detalle_compra {
-        padding: 15px;
-    }
-
-    .table th, 
-    .table td {
-        font-size: 14px;
-        padding: 8px;
-    }
-
-    .boton-regresar .btn {
-        font-size: 14px;
-        padding: 8px 15px;
-    }
+    margin: 20px auto;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
 }

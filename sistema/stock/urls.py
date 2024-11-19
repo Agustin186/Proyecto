@@ -20,7 +20,6 @@ urlpatterns = [
     path('movimiento/<int:caja_id>/', views.movimientos_arqueo, name="movimientos_arqueo"),
     path('registrar_ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
     path('registrar_egreso/', views.registrar_egreso, name='registrar_egreso'),
-    path('detalle_arqueo/<int:id_caja>/', views.detalle_arqueo, name='detalle_arqueo'),
     
     ##CRUD Articulos
     path('mostrar_articulos/', views.mostrar_articulos, name='mostrar_articulos'),
