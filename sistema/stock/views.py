@@ -13,6 +13,12 @@ from xhtml2pdf import pisa
 from itertools import chain
 from operator import attrgetter
 
+#IMPORTS PARA GRAFICO DE VENTAS
+import pandas as pd
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+
 #INICIO
 def inicio(request):
     # Obtén las últimas 10 ventas ordenadas por fecha
@@ -691,6 +697,43 @@ def ventas_del_mes(request):
     data = [venta['total_venta'] for venta in ventas]
 
     return JsonResponse({'labels': labels, 'data': data})
+##GRAFICO DE VENTAS
+def grafico_ventas(request):
+    # Obtener datos de ventas
+    ventas = Ventas.objects.all().values('fecha_hs', 'total_venta')
+    df = pd.DataFrame(ventas)
+
+    # Verifica si hay datos
+    if df.empty:
+        return render(request, 'ventas/grafico_ventas.html', {'grafico': None, 'mensaje': 'No hay datos de ventas para mostrar.'})
+
+    # Asegurarse de que total_venta sea numérico
+    df['total_venta'] = pd.to_numeric(df['total_venta'], errors='coerce')
+    df = df.dropna(subset=['total_venta'])
+
+    # Procesar datos
+    df['fecha'] = pd.to_datetime(df['fecha_hs']).dt.date
+    ventas_diarias = df.groupby('fecha')['total_venta'].sum()
+
+    # Crear gráfico
+    plt.figure(figsize=(10, 5))
+    ventas_diarias.plot(kind='bar', color='skyblue', edgecolor='black')
+    plt.title('Ventas Diarias')
+    plt.xlabel('Fecha')
+    plt.ylabel('Total Ventas')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Convertir gráfico a imagen
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    grafico_base64 = base64.b64encode(image_png).decode('utf-8')
+
+    return render(request, 'ventas/grafico_ventas.html', {'grafico': grafico_base64})
 
 #COMPRAS   
 @login_required

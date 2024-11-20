@@ -2,8 +2,8 @@
 {% block titulo %} Lista de Clientes {% endblock %}
 
 {% block contenido %}
-<div class="contenedor-lista restringuido">
-    <div class="titulo-lista restringuido">Lista de Clientes</div>
+<div class="contenedor_clientes">
+    <div class="titulo_clientes">Lista de Clientes</div>
 
     {% if messages %}
     <div id="modal" class="modal restringuido">
@@ -16,8 +16,8 @@
     </div>
     {% endif %}
 
-    <div class="contenedor-tabla restringuido">
-        <table class="tabla restringuido">
+    <div class="contenedor_tabla_clientes">
+        <table class="tabla_clientes">
             <thead>
                 <tr>
                     <th>Código</th>
@@ -33,44 +33,23 @@
                     <td>{{ cliente.nombre_cli }}</td>
                     <td>{{ cliente.apellido_cli }}</td>
                     <td>
-                        <a class="btn-editar restringuido" href="{% url 'editar_clientes' cliente.id_cli %}">Editar</a>
-                        <a class="btn-borrar restringuido" href="{% url 'eliminar_clientes' cliente.id_cli %}">Borrar</a>
+                        <a class="btn_editar_cliente" href="{% url 'editar_clientes' cliente.id_cli %}">Editar</a>
+                        <a class="btn_borrar_cliente" href="{% url 'eliminar_clientes' cliente.id_cli %}">Borrar</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="no-datos restringuido">No existen clientes</td>
+                    <td colspan="4" class="no_clientes">No existen clientes</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="boton-agregar restringuido">
-        <a class="btn-agregar restringuido" href="{% url 'crear_clientes' %}">Agregar Cliente</a>
+    <div class="boton_agregar_cliente">
+        <a href="{% url 'crear_clientes' %}">Agregar Cliente</a>
     </div>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var modal = document.getElementById('modal');
-        var closeBtn = document.querySelector('.close');
-
-        if (modal && closeBtn) {
-            if (modal.querySelector('p')) {
-                modal.style.display = 'flex';
-            }
-
-            closeBtn.addEventListener('click', function () {
-                modal.style.display = 'none';
-            });
-
-            window.addEventListener('click', function (event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
-    });
-</script>
+<script src="/sistema/static/scripts/clientes.js"></script>
 
 {% endblock %}

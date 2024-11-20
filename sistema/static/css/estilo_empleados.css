@@ -7,16 +7,15 @@ body {
     background-color: #f4f4f4;
 }
 
-h4.titulo_productos {
+.titulo_empleados {
     text-align: center;
     color: #0056b3;
     margin-bottom: 10px;
-    font-size: 25px;
-    border-top: 5px;
+    font-size: 35px;
 }
 
 /* Contenedor principal */
-.contenedor_productos {
+.contenedor_empleados {
     width: 90%;
     max-width: 1200px;
     margin: 20px auto;
@@ -27,18 +26,8 @@ h4.titulo_productos {
     height: 520px;
 }
 
-/* Barra de búsqueda */
-#buscarProducto {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-/* Tabla de productos */
-.contenedor_tabla_productos {
+/* Tabla de empleados */
+.contenedor_tabla_empleados {
     max-height: 400px; /* Limita la altura del contenedor de la tabla */
     overflow-y: auto; /* Scroll vertical en la tabla */
     border: 1px solid #ddd;
@@ -46,12 +35,12 @@ h4.titulo_productos {
     height: 350px;
 }
 
-.tabla_productos {
+.tabla_empleados {
     width: 100%;
     border-collapse: collapse;
 }
 
-.tabla_productos thead th {
+.tabla_empleados thead th {
     background-color: #007bff;
     color: white;
     font-weight: bold;
@@ -59,27 +48,27 @@ h4.titulo_productos {
     text-align: center;
 }
 
-.tabla_productos tbody tr {
+.tabla_empleados tbody tr {
     border-bottom: 1px solid #ddd;
 }
 
-.tabla_productos td {
+.tabla_empleados td {
     padding: 10px;
     text-align: center;
 }
 
-.tabla_productos tbody tr:nth-child(odd) {
+.tabla_empleados tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
 
-.tabla_productos tbody tr:hover {
+.tabla_empleados tbody tr:hover {
     background-color: #f1f1f1;
 }
 
 /* Botones de acciones */
-.btn_editar_producto {
-    color: #ffffff; /* Amarillo para el texto */
-    background-color:#ffc107 ;
+.btn_editar_empleado {
+    color: #ffffff;
+    background-color: #ffc107; /* Amarillo */
     padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
@@ -87,14 +76,13 @@ h4.titulo_productos {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.btn_editar_producto:hover {
-    background-color: #ffc107; /* Fondo amarillo al hover */
-    color: white;
+.btn_editar_empleado:hover {
+    background-color: #e0a800; /* Amarillo oscuro */
 }
 
-.btn_borrar_producto {
-    color: #ffffff; /* Rojo para el texto */
-    background-color:#dc3545 ;
+.btn_borrar_empleado {
+    color: #ffffff;
+    background-color: #dc3545; /* Rojo */
     padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
@@ -102,21 +90,33 @@ h4.titulo_productos {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.btn_borrar_producto:hover {
-    background-color: #dc3545; /* Fondo rojo al hover */
-    color: white;
+.btn_borrar_empleado:hover {
+    background-color: #c82333; /* Rojo oscuro */
 }
 
-/* Botón agregar producto */
-.btn_agregar_producto {
+.btn_acciones_empleado {
+    color: #ffffff;
+    background-color: #17a2b8; /* Azul claro */
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn_acciones_empleado:hover {
+    background-color: #138496; /* Azul más oscuro */
+}
+
+/* Botón agregar empleado */
+.boton_agregar_empleado a {
     display: block;
     width: 100%;
     max-width: 200px;
     margin: 20px auto;
     text-align: center;
-    background-color: white;
-    color: #ffffff; /* Verde para el texto */
     background-color: #28a745;
+    color: white;
     padding: 10px;
     font-weight: bold;
     border-radius: 5px;
@@ -124,65 +124,56 @@ h4.titulo_productos {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.btn_agregar_producto:hover {
-    background-color: #28a745; /* Fondo verde al hover */
-    color: white;
+.boton_agregar_empleado a:hover {
+    background-color: #218838; /* Fondo verde oscuro */
 }
+
 /* Scroll personalizado */
-.contenedor_tabla_productos::-webkit-scrollbar {
+.contenedor_tabla_empleados::-webkit-scrollbar {
     width: 8px;
 }
 
-.contenedor_tabla_productos::-webkit-scrollbar-thumb {
+.contenedor_tabla_empleados::-webkit-scrollbar-thumb {
     background: #007bff;
     border-radius: 5px;
 }
 
-.contenedor_tabla_productos::-webkit-scrollbar-track {
+.contenedor_tabla_empleados::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
 /* Responsivo */
 @media (max-width: 768px) {
-    .contenedor_productos {
+    .contenedor_empleados {
         padding: 10px;
     }
 
-    h4.titulo_productos {
+    .titulo_empleados {
         font-size: 20px;
     }
 
-    #buscarProducto {
-        font-size: 12px;
-    }
-
-    .tabla_productos thead th, .tabla_productos td {
+    .tabla_empleados thead th, .tabla_empleados td {
         font-size: 12px;
         padding: 8px;
     }
 
-    .btn_agregar_producto {
+    .boton_agregar_empleado a {
         font-size: 14px;
         padding: 8px;
     }
 }
 
 @media (max-width: 480px) {
-    h4.titulo_productos {
+    .titulo_empleados {
         font-size: 18px;
     }
 
-    .tabla_productos thead th, .tabla_productos td {
+    .tabla_empleados thead th, .tabla_empleados td {
         font-size: 10px;
         padding: 6px;
     }
 
-    #buscarProducto {
-        font-size: 10px;
-        padding: 8px;
-    }
-
-    .btn_agregar_producto {
+    .boton_agregar_empleado a {
         font-size: 12px;
         padding: 6px;
     }

@@ -9,7 +9,7 @@
         <p><strong>Proveedor:</strong> {{ compra.id_prov.nombre_prov }}</p>
         <p><strong>Total de la compra:</strong> ${{ compra.total_compra }}</p>
     </div>
-    <table class="table table-bordered">
+    <table class="tabla_detalle_compra">
         <thead>
             <tr>
                 <th>Producto</th>
@@ -29,12 +29,10 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="boton-regresar">
-        <a href="{% url 'historial_compras' %}" class="btn btn-primary">Regresar al Historial de Compras</a>
+    <div class="boton_nueva_compra">
+        <a href="{% url 'crear_compra' %}">Nueva compra</a>
     </div>
 </div>
-<head>
-    <link rel="stylesheet" href="/static/css/estilo_detalle_compras.css"> 
-</head>
+
 {% endblock %}
 

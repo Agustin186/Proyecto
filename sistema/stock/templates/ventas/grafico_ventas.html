@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<h1>Gráfico de Ventas Diarias</h1>
+{% if grafico %}
+<img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de Ventas Diarias">
+{% else %}
+<p>{{ mensaje }}</p>
+{% endif %}
+{% endblock %}

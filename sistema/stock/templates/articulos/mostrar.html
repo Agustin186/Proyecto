@@ -3,7 +3,7 @@
 {% block titulo %} Lista de Productos {% endblock %}
 
 {% block contenido %}
-<div id="productos-view" class="restringuido">
+<div class="contenedor_productos">
     {% if messages %}
     <div id="modal" class="modal restringuido">
         <div class="modal-content restringuido">
@@ -15,46 +15,46 @@
     </div>
     {% endif %}
 
-    <h4 class="restringuido">Productos</h4>
+    <h4 class="titulo_productos">Lista de productos</h4>
 
     <!-- Barra de búsqueda -->
     <input type="text" id="buscarProducto" class="form-control restringuido" placeholder="Buscar producto...">
 
     <!-- Contenedor de tabla con scroll -->
-    <div class="table-scroll restringuido">
-        <table class="productos-table restringuido">
+    <div class="contenedor_tabla_productos">
+        <table class="tabla_productos">
             <thead>
-                <tr class="restringuido">
-                    <th class="restringuido">Código</th>
-                    <th class="restringuido">Nombre</th>
-                    <th class="restringuido">Precio</th>
-                    <th class="restringuido">Stock Actual</th>
-                    <th class="restringuido">Acciones</th>
+                <tr class="celdas_productos">
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock Actual</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="lista-productos">
+            <tbody id="lista_productos">
                 {% for producto in productos %}
                 <tr class="restringuido">
-                    <td class="restringuido">{{ producto.id_prod }}</td>
-                    <td class="restringuido">{{ producto.nombre_prod }}</td>
-                    <td class="restringuido">{{ producto.precio_prod }}</td>
-                    <td class="restringuido">{{ producto.stock_actual }}</td>
-                    <td class="restringuido">
-                        <a class="btn-editar restringuido" href="{% url 'editar_articulos' producto.id_prod %}">Editar</a>
+                    <td>{{ producto.id_prod }}</td>
+                    <td>{{ producto.nombre_prod }}</td>
+                    <td>{{ producto.precio_prod }}</td>
+                    <td>{{ producto.stock_actual }}</td>
+                    <td>
+                        <a class="btn_editar_producto " href="{% url 'editar_articulos' producto.id_prod %}">Editar</a>
                         |
-                        <a class="btn-borrar restringuido" href="{% url 'eliminar_producto' producto.id_prod %}">Borrar</a>
+                        <a class="btn_borrar_producto" href="{% url 'eliminar_producto' producto.id_prod %}">Borrar</a>
                     </td>
                 </tr>
                 {% empty %}
-                <tr class="restringuido">
-                    <td colspan="5" class="no-data restringuido">No hay artículos disponibles.</td>
+                <tr class="no_productos" style="display: none;">
+                    <td colspan="5">No hay artículos disponibles.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <a class="btn-agregar restringuido" href="{% url 'crear_articulos' %}">Agregar producto</a>
+    <a class="btn_agregar_producto" href="{% url 'crear_articulos' %}">Agregar producto</a>
 </div>
 
 <script src="/sistema/static/scripts/productos.js"></script>

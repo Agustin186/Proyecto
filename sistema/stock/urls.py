@@ -62,5 +62,6 @@ urlpatterns = [
     path('detalle_venta/pdf/<int:id_venta>/', views.GenerarPdf, name='generar_pdf'),
     path("historial_ventas", views.historial_ventas, name="historial_ventas"),
     path('ventas_del-mes/', views.ventas_del_mes, name='ventas_del_mes'),
+    path("grafico_ventas/", views.grafico_ventas, name="grafico_ventas")
  
 ]

@@ -105,7 +105,7 @@
 }
 
 /* Botón de detalle */
-#pa_btn_detalle {
+#btn_detalle_venta {
     display: inline-block;
     padding: 8px 12px;
     border-radius: 5px;
@@ -113,11 +113,6 @@
     background-color: #28a745;
     color: white;
     transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-#pa_btn_detalle:hover {
-    background-color: #218838;
-    transform: scale(1.05);
 }
 
 /* Ajustes responsive */

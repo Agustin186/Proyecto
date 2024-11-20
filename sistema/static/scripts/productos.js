@@ -1,28 +1,43 @@
-
-//BARRA DE BUSQUEDA
 document.addEventListener('DOMContentLoaded', function () {
-    const buscarProductoInput = document.getElementById('buscarProducto');
-    const listaProductos = document.getElementById('lista-productos');
+    const buscarProducto = document.getElementById('buscarProducto');
+    const listaProductos = document.getElementById('lista_productos');
 
-    if (buscarProductoInput && listaProductos) {
-        buscarProductoInput.addEventListener('input', function () {
-            const filtro = buscarProductoInput.value.toLowerCase();
+    buscarProducto.addEventListener('input', function () {
+        const filtro = buscarProducto.value.toLowerCase().trim(); // Convertir a minúsculas y eliminar espacios extra
+        const filas = listaProductos.querySelectorAll('tr');
 
-            listaProductos.querySelectorAll('tr').forEach(tr => {
-                const nombreProducto = tr.cells[1]?.textContent.toLowerCase() || ''; // Columna del nombre
-                const codigoProducto = tr.cells[0]?.textContent.toLowerCase() || ''; // Columna del código
+        let hayCoincidencias = false; // Indica si hay coincidencias
 
-                if (nombreProducto.includes(filtro) || codigoProducto.includes(filtro)) {
-                    tr.style.display = ''; // Mostrar fila si coincide
-                } else {
-                    tr.style.display = 'none'; // Ocultar fila si no coincide
+        filas.forEach(fila => {
+            const celdas = fila.querySelectorAll('td');
+            let coincidencia = false;
+
+            // Verificar cada celda de la fila para encontrar coincidencias
+            celdas.forEach(celda => {
+                if (celda.textContent.toLowerCase().includes(filtro)) {
+                    coincidencia = true;
                 }
             });
+
+            // Mostrar u ocultar la fila según la coincidencia
+            if (coincidencia) {
+                fila.style.display = '';
+                hayCoincidencias = true;
+            } else {
+                fila.style.display = 'none';
+            }
         });
-    } else {
-        console.error('No se encontraron los elementos necesarios para la búsqueda.');
-    }
+
+        // Mostrar mensaje si no hay coincidencias
+        const filaNoProductos = document.querySelector('.no_productos');
+        if (!hayCoincidencias) {
+            if (filaNoProductos) filaNoProductos.style.display = ''; // Mostrar fila "No hay artículos"
+        } else {
+            if (filaNoProductos) filaNoProductos.style.display = 'none'; // Ocultar fila "No hay artículos"
+        }
+    });
 });
+
 
 //MENSAJE DE ERROR
 document.addEventListener('DOMContentLoaded', function () {

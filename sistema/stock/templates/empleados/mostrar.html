@@ -2,8 +2,8 @@
 {% block titulo %} Lista de Empleados {% endblock %}
 
 {% block contenido %}
-<div class="contenedor-lista restringuido">
-    <div class="titulo-lista restringuido">Lista de Empleados</div>
+<div class="contenedor_empleados">
+    <div class="titulo_empleados">Lista de Empleados</div>
     {% if messages %}
     <div id="mensaje-modal" class="modal restringuido">
         <div class="modal-content restringuido">
@@ -15,8 +15,8 @@
     </div>
     {% endif %}
 
-    <div class="contenedor-tabla restringuido">
-        <table class="tabla restringuido">
+    <div class="contenedor_tabla_empleados">
+        <table class="tabla_empleados">
             <thead>
                 <tr>
                     <th>Código</th>
@@ -32,47 +32,25 @@
                     <td>{{ empleado.nombre_emplead }}</td>
                     <td>{{ empleado.apellido_emplead }}</td>
                     <td>
-                        <a class="btn-editar restringuido" href="{% url 'editar_empleados' empleado.id_emplead %}">Editar</a>
-                        <a class="btn-borrar restringuido" href="{% url 'eliminar_empleados' empleado.id_emplead %}">Borrar</a>
-                        <a class="btn-acciones restringuido" href="{% url 'ver_acciones_empleados' empleado.id_emplead %}">Ver acciones</a>
+                        <a class="btn_editar_empleado" href="{% url 'editar_empleados' empleado.id_emplead %}">Editar</a>
+                        <a class="btn_borrar_empleado" href="{% url 'eliminar_empleados' empleado.id_emplead %}">Borrar</a>
+                        <a class="btn_acciones_empleado" href="{% url 'ver_acciones_empleados' empleado.id_emplead %}">Ver acciones</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="no-datos restringuido">No existen empleados</td>
+                    <td colspan="4" class="no_empleados">No existen empleados</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="boton-agregar restringuido">
-        <a class="btn-agregar restringuido" href="{% url 'crear_empleados' %}">Agregar Empleado</a>
+    <div class="boton_agregar_empleado">
+        <a href="{% url 'crear_empleados' %}">Agregar Empleado</a>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var modal = document.getElementById("mensaje-modal");
-        var span = document.getElementsByClassName("close restringuido")[0];
-    
-        // Mostrar el modal si existe
-        if (modal) {
-            modal.style.display = "flex";
-        }
-    
-        // Cuando el usuario hace clic en la "x", se cierra el modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-    
-        // Cuando el usuario hace clic fuera del contenido del modal, también se cierra
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-    });
-    </script>
+<script src="/sistema/static/scripts/empleados.js"></script>
 
 {% endblock %}

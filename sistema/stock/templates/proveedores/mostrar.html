@@ -2,8 +2,8 @@
 {% block titulo %} Lista de Proveedores {% endblock %}
 
 {% block contenido %}
-<div class="contenedor-lista restringuido">
-    <div class="titulo-lista restringuido">Lista de Proveedores</div>
+<div class="contenedor_proveedores">
+    <div class="titulo_proveedores">Lista de Proveedores</div>
 
     <!--MENSAJE DE BORRADO-->
     {% if messages %}
@@ -17,8 +17,8 @@
     </div>
     {% endif %}
 
-    <div class="contenedor-tabla restringuido">
-        <table class="tabla restringuido">
+    <div class="tabla_proveedores">
+        <table class="tabla_proveedores_agregados">
             <thead>
                 <tr>
                     <th>Código</th>
@@ -38,45 +38,22 @@
                     <td>{{ proveedor.correo_prov }}</td>
                     <td>{{ proveedor.tel_prov }}</td>
                     <td>
-                        <a class="btn-editar restringuido" href="{% url 'editar_proveedores' proveedor.id_prov %}">Editar</a>
-                        <a class="btn-borrar restringuido" href="{% url 'eliminar_proveedores' proveedor.id_prov %}">Borrar</a>
+                        <a class="btn_editar_proveedor" href="{% url 'editar_proveedores' proveedor.id_prov %}">Editar</a>
+                        <a class="btn_borrar_proveedor" href="{% url 'eliminar_proveedores' proveedor.id_prov %}">Borrar</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="no-datos restringuido">No existen proveedores</td>
+                    <td colspan="6" class="no_proveedor">No existen proveedores</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="boton-agregar restringuido">
-        <a class="btn-agregar restringuido" href="{% url 'crear_proveedores' %}">Agregar Proveedor</a>
+    <div class="boton_agregar_proveedor">
+        <a href="{% url 'crear_proveedores' %}">Agregar Proveedor</a>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var modal = document.getElementById("mensaje-modal");
-        var span = document.getElementsByClassName("close restringuido")[0];
-    
-        // Mostrar el modal si existe
-        if (modal) {
-            modal.style.display = "flex";
-        }
-    
-        // Cuando el usuario hace clic en la "x", se cierra el modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-    
-        // Cuando el usuario hace clic fuera del contenido del modal, también se cierra
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-    });
-    </script>
+<script src="/sistema/static/scripts/proveedores.js"></script>
 {% endblock %}

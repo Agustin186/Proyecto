@@ -5,13 +5,14 @@
 {% block contenido %}
 <div class="contenedor_compras">
     <div class="caja_compras">
-        <div class="header">
+        <div class="encabezado_compra">
             <h1>Nueva Compra</h1>
         </div>
 
         <form action="{% url 'crear_compra' %}" method="POST">
             {% csrf_token %}
 
+        <div class="contenedor_formulario_compras">
             <!-- Fecha -->
             <div class="compras_fecha">
                 <label for="fecha">Fecha:</label>
@@ -27,8 +28,11 @@
                     {% endfor %}
                 </select>
             </div>
+        </div>
+
 
             <!-- Tabla de productos -->
+        <div class="tabla_contenedor_productos_compras">   
             <table id="tabla_compras">
                 <thead>
                     <tr>
@@ -43,6 +47,14 @@
                     <!-- Aquí se agregarán los productos dinámicamente -->
                 </tbody>
             </table>
+        </div>
+         <div class="barra_inferior">
+
+            <!-- Botones de Acción -->
+            <div class="botones">
+                <button class="btn-aceptar_compra" type="submit" value="Guardar">Aceptar</button>
+
+            </div>
 
             <!-- Total de la Compra -->
             <div class="total_compra">
@@ -50,11 +62,8 @@
                 <input type="number" id="total" name="total" readonly value="0">
             </div>
 
-            <!-- Botones de Acción -->
-            <div class="botones">
-                <button class="btn-aceptar_compra" type="submit" value="Guardar">Aceptar</button>
 
-            </div>
+         </div>    
         </form>
     </div>
 

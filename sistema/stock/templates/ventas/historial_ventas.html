@@ -37,11 +37,11 @@
                     <td>${{ venta.total_venta }}</td>
                     <td>{{ venta.metodo_pago }}</td>
                     <td>{{ venta.estado }}</td>
-                    <td><a href="{% url 'det_venta' venta.id_venta %}" id="btn_detalle_compras" class="btn">Ver Detalle</a></td>
+                    <td><a href="{% url 'det_venta' venta.id_venta %}" id="btn_detalle_venta">Ver Detalle</a></td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" id="no_compras">No hay ventas registradas.</td>
+                    <td colspan="6" id="no_venta">No hay ventas registradas.</td>
                 </tr>
                 {% endfor %}
             </tbody>
