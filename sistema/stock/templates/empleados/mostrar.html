@@ -1,49 +1,44 @@
-{% extends "base.html" %}
-
-{% block titulo %} Lista de empleados {% endblock %}
+{% extends 'base.html' %}
+{% block titulo %} Lista de Empleados {% endblock %}
 
 {% block contenido %}
-<div class="box_principal">
-  <div class="card-header">Listar empleados</div>
-  <div class="card-body">
-    <h4 class="card-title">Empleados</h4>
+<div class="contenedor-lista restringuido">
+    <div class="titulo-lista restringuido">Lista de Empleados</div>
 
-    <div class="table-responsive">
-      <table class="table table-primary">
-        <thead>
-          <tr>
-            <th scope="col">Codigo</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Apellido</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for empleado in empleados %}
-          <tr class="">
-            <td scope="row">{{ empleado.id_emplead }}</td>
-            <td>{{ empleado.nombre_emplead }}</td>
-            <td>{{ empleado.apellido_emplead }}</td>
-            <td> <a name="Editar" class="btn btn-primary" href="{% url "editar_empleados" empleado.id_emplead %}" role="button">Editar</a>
-              | <a name="" id="" class="btn btn-danger" href="{% url "eliminar_empleados" empleado.id_emplead %}" role="button">Borrar</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="text-center">No existen empleados</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="contenedor-tabla restringuido">
+        <table class="tabla restringuido">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empleado in empleados %}
+                <tr>
+                    <td>{{ empleado.id_emplead }}</td>
+                    <td>{{ empleado.nombre_emplead }}</td>
+                    <td>{{ empleado.apellido_emplead }}</td>
+                    <td>
+                        <a class="btn-editar restringuido" href="{% url 'editar_empleados' empleado.id_emplead %}">Editar</a>
+                        <a class="btn-borrar restringuido" href="{% url 'eliminar_empleados' empleado.id_emplead %}">Borrar</a>
+                        <a class="btn-acciones restringuido" href="{% url 'ver_acciones_empleados' empleado.id_emplead %}">Ver acciones</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="no-datos restringuido">No existen empleados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-  </div>
-  <a
-  name="agregar" class="btn btn-success" href="{% url "crear_empleados" %}" role="button">Agregar empleado</a
->
+    <div class="boton-agregar restringuido">
+        <a class="btn-agregar restringuido" href="{% url 'crear_empleados' %}">Agregar Empleado</a>
+    </div>
 </div>
-</div>
-
-
 
 {% endblock %}

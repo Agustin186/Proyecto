@@ -3,59 +3,77 @@
 {% block titulo %} Lista de Productos {% endblock %}
 
 {% block contenido %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div class="card">
-    <div class="card-header">Listar productos</div>
-    <div class="card-body">
-      <h4 class="card-title">Productos</h4>
-  
-      <div class="table-responsive">
-        <table class="table table-primary">
-          <thead>
-            <tr>
-              <th scope="col">Codigo</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Precio</th>
-              <th scope="col">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for producto in productos %}
-            <tr class="">
-              <td scope="row">{{ producto.id_prod }}</td>
-              <td>{{ producto.nombre_prod }}</td>
-              <td>{{ producto.precio_prod }}</td>
-              <td> <a name="Editar" class="btn btn-primary" href="{% url "editar_articulos" producto.id_prod %}" role="button">Editar</a>
-                | <a name="" id="" class="btn btn-danger" href="{% url "eliminar_producto" producto.id_prod %}" role="button">Borrar</a>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">No hay artículos disponibles.</td>
-            </tr>
+<div id="productos-view" class="restringuido">
+    {% if messages %}
+    <div id="modal" class="modal restringuido">
+        <div class="modal-content restringuido">
+            <span class="close restringuido">&times;</span>
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
             {% endfor %}
-          </tbody>
-        </table>
-      </div>
-  
+        </div>
     </div>
-    <a
-    name="agregar" class="btn btn-success" href="{% url "crear_articulos" %}" role="button">Agregar producto</a
-  >
-  </div>
-  
-  
-  </div>
-</body>
-</html>
+    {% endif %}
+    <h4 class="restringuido">Productos</h4>
 
+    <!-- Contenedor de tabla con scroll -->
+    <div class="table-scroll restringuido">
+        <table class="productos-table restringuido">
+            <thead>
+                <tr class="restringuido">
+                    <th class="restringuido">Código</th>
+                    <th class="restringuido">Nombre</th>
+                    <th class="restringuido">Precio</th>
+                    <th class="restringuido">Stock Actual</th>
+                    <th class="restringuido">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr class="restringuido">
+                    <td class="restringuido">{{ producto.id_prod }}</td>
+                    <td class="restringuido">{{ producto.nombre_prod }}</td>
+                    <td class="restringuido">{{ producto.precio_prod }}</td>
+                    <td class="restringuido">{{ producto.stock_actual }}</td>
+                    <td class="restringuido">
+                        <a class="btn-editar restringuido" href="{% url 'editar_articulos' producto.id_prod %}">Editar</a>
+                        |
+                        <a class="btn-borrar restringuido" href="{% url 'eliminar_producto' producto.id_prod %}">Borrar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="restringuido">
+                    <td colspan="5" class="no-data restringuido">No hay artículos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
+    <a class="btn-agregar restringuido" href="{% url 'crear_articulos' %}">Agregar producto</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('modal');
+        var closeBtn = document.querySelector('.close');
+
+        if (modal && closeBtn) {
+            if (modal.querySelector('p')) {
+                modal.style.display = 'flex';
+            }
+
+            closeBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
 
 {% endblock %}

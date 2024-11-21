@@ -1,0 +1,260 @@
+/* Contenedor principal para tarjetas */
+.card.restringuido {
+    background-color: #ffffff;
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    max-width: 95%; /* Ocupa el 95% del ancho de la pantalla */
+    margin: 30px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header.restringuido {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-body.restringuido {
+    padding: 20px;
+}
+
+.card-title.restringuido {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007bff;
+    text-align: center;
+}
+
+.card-footer.restringuido {
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* Formularios */
+form.restringuido {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+form.restringuido label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+form.restringuido input[type="text"],
+form.restringuido input[type="number"],
+form.restringuido input[type="email"],
+form.restringuido textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border 0.3s ease;
+}
+
+form.restringuido input:focus,
+form.restringuido textarea:focus {
+    border-color: #0056b3;
+    background-color: #ffffff;
+    outline: none;
+}
+
+form.restringuido .btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+form.restringuido .btn:hover {
+    background-color: #218838;
+}
+
+/* Listas de clientes, empleados y proveedores */
+.contenedor-lista.restringuido {
+    max-width: 95%; /* Ocupa el 95% del ancho de la pantalla */
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-lista.restringuido {
+    font-size: 22px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Tablas */
+.tabla.restringuido {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabla.restringuido th,
+.tabla.restringuido td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.tabla.restringuido th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+}
+
+.tabla.restringuido tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tabla.restringuido tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.tabla.restringuido tr:hover {
+    background-color: #e6f7ff;
+}
+
+.no-datos.restringuido {
+    text-align: center;
+    font-size: 1.2em;
+    color: #999;
+}
+
+/* Botones */
+.btn-editar.restringuido,
+.btn-borrar.restringuido,
+.btn-acciones.restringuido {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-editar.restringuido {
+    background-color: #28a745;
+}
+
+.btn-editar.restringuido:hover {
+    background-color: #218838;
+}
+
+.btn-borrar.restringuido {
+    background-color: #dc3545;
+}
+
+.btn-borrar.restringuido:hover {
+    background-color: #c82333;
+}
+
+.btn-acciones.restringuido {
+    background-color: #17a2b8;
+}
+
+.btn-acciones.restringuido:hover {
+    background-color: #138496;
+}
+
+.btn-agregar.restringuido {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn-agregar.restringuido:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Modal */
+.modal.restringuido {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content.restringuido {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close.restringuido {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close.restringuido:hover,
+.close.restringuido:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor-lista.restringuido {
+        padding: 10px;
+    }
+
+    .tabla.restringuido th,
+    .tabla.restringuido td {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    .btn-agregar.restringuido {
+        width: 100%;
+    }
+}
+
+
+
+
+
