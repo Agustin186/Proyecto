@@ -71,6 +71,8 @@ h1, h4 {
 
 .grupo_formularios {
     margin-bottom: 15px;
+    display: flex;
+    justify-content: space-evenly;
 }
 
 .grupo_formularios label {
@@ -85,6 +87,7 @@ h1, h4 {
     padding: 8px;
     border: 1px solid #007bff;
     border-radius: 5px;
+    height: 40%;
 }
 
 /* Tabla de productos seleccionados */
@@ -125,6 +128,7 @@ h1, h4 {
     display: flex;
     justify-content: space-between;
     height: auto;
+    flex-direction: row;
 }
 
 /* Botones */
@@ -224,6 +228,9 @@ button {
     .contenedor_ventas {
         flex-direction: column;
         gap: 20px;
+    }
+    #pa_titulo_historial_ventas{
+        width: 10%;
     }
 
     .caja_venta, .caja_productos {

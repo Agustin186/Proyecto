@@ -66,6 +66,11 @@ body {
 }
 
 /* Botones de acciones */
+#btn_editar_borrar_cliente{
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .btn_editar_cliente {
     color: #ffffff;
     background-color: #ffc107; /* Amarillo */

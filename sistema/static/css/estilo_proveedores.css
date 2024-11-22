@@ -81,6 +81,10 @@ body {
     color: white;
 }
 
+#botones_editar_borrar{
+    display: flex;
+    justify-content: space-around;
+}
 .btn_borrar_proveedor {
     color: #ffffff; /* Rojo para el texto */
     background-color: #dc3545;

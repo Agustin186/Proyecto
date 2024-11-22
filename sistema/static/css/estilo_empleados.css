@@ -66,6 +66,11 @@ body {
 }
 
 /* Botones de acciones */
+#btn_editar_borrar_empl{
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .btn_editar_empleado {
     color: #ffffff;
     background-color: #ffc107; /* Amarillo */

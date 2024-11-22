@@ -32,7 +32,7 @@
                     <td>{{ cliente.id_cli }}</td>
                     <td>{{ cliente.nombre_cli }}</td>
                     <td>{{ cliente.apellido_cli }}</td>
-                    <td>
+                    <td id="btn_editar_borrar_cliente">
                         <a class="btn_editar_cliente" href="{% url 'editar_clientes' cliente.id_cli %}">Editar</a>
                         <a class="btn_borrar_cliente" href="{% url 'eliminar_clientes' cliente.id_cli %}">Borrar</a>
                     </td>

@@ -37,10 +37,10 @@
                     <td>{{ proveedor.cuit_prov }}</td>
                     <td>{{ proveedor.correo_prov }}</td>
                     <td>{{ proveedor.tel_prov }}</td>
-                    <td>
+                     <td id="botones_editar_borrar">
                         <a class="btn_editar_proveedor" href="{% url 'editar_proveedores' proveedor.id_prov %}">Editar</a>
                         <a class="btn_borrar_proveedor" href="{% url 'eliminar_proveedores' proveedor.id_prov %}">Borrar</a>
-                    </td>
+                     </td>
                 </tr>
                 {% empty %}
                 <tr>

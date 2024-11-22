@@ -23,13 +23,27 @@ h1 {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    height: 500px;
+    min-height: 300px;
+    max-height: 500px;
 }
 
 /* Filtros */
+#box_fechas_compras{
+    display: flex;
+    justify-content: space-evenly;
+    width: 50%;
+}
+#box_filtros_compras{
+    display: flex;
+    justify-content: space-evenly;
+    width: 50%;
+}
+
+
 #filtros_compras {
     display: flex;
     justify-content: space-between;
+    flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
     gap: 10px;
@@ -78,7 +92,21 @@ h1 {
     background-color: #c82333;
 }
 
+
+
 /* Tabla de compras */
+
+.tabla_compras_scroll{
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll solo en esta área */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+    min-height: 300px;
+    max-height: 350px;
+}
+
+
 #tabla_historial_compras {
     width: 100%;
     border-collapse: collapse;
@@ -110,6 +138,8 @@ h1 {
 .tabla_compras tbody tr:hover {
     background-color: #f1f1f1;
 }
+
+
 
 .no_compras {
     text-align: center;
@@ -149,7 +179,7 @@ h1 {
 /* Responsivo */
 @media (max-width: 768px) {
     #filtros_compras {
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
         align-items: flex-start;
     }

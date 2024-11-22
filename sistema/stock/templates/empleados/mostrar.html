@@ -31,7 +31,7 @@
                     <td>{{ empleado.id_emplead }}</td>
                     <td>{{ empleado.nombre_emplead }}</td>
                     <td>{{ empleado.apellido_emplead }}</td>
-                    <td>
+                    <td id="btn_editar_borrar_empl">
                         <a class="btn_editar_empleado" href="{% url 'editar_empleados' empleado.id_emplead %}">Editar</a>
                         <a class="btn_borrar_empleado" href="{% url 'eliminar_empleados' empleado.id_emplead %}">Borrar</a>
                         <a class="btn_acciones_empleado" href="{% url 'ver_acciones_empleados' empleado.id_emplead %}">Ver acciones</a>
