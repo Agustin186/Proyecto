@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<h1>Gráfico de Ventas Diarias</h1>
+
+<!-- Formulario para filtrar por rango de fechas -->
+<form method="GET" action="">
+    <label for="fecha_inicio">Fecha Inicio:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio|default_if_none:'' }}">
+    
+    <label for="fecha_fin">Fecha Fin:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin|default_if_none:'' }}">
+    
+    <button type="submit">Filtrar</button>
+    <button type="submit" name="limpiar" value="true">Limpiar Filtros</button>
+</form>
+
+<!-- Mostrar el gráfico o un mensaje -->
+{% if grafico %}
+    <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de Ventas Diarias">
+{% else %}
+    <p>{{ mensaje }}</p>
+{% endif %}
+{% endblock %}

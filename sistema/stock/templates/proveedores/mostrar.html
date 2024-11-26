@@ -1,58 +1,59 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block titulo %} Lista de Proveedores {% endblock %}
 
 {% block contenido %}
+<div class="contenedor_proveedores">
+    <div class="titulo_proveedores">Lista de Proveedores</div>
 
-<div class="box_principal">
-  <div class="Titulo">Lista de Proveedores</div>
+    <!--MENSAJE DE BORRADO-->
+    {% if messages %}
+    <div id="mensaje-modal" class="modal restringuido">
+        <div class="modal-content restringuido">
+            <span class="close restringuido">&times;</span>
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
-   <div class="box_secundaria">
-    <div class="tabla-responsive">
-      <table class="table table-primary">
-        <thead>
-          <tr>
-            <th scope="col">Codigo</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">CUIT</th>
-            <th scope="col">Correo electronico</th>
-            <th scope="col">Contacto</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for proveedor in proveedores %}
-
-          <tr class="">
-            <td scope="row">{{ proveedor.id_prov }}</td>
-            <td>{{ proveedor.nombre_prov }}</td>
-            <td>{{ proveedor.cuit_prov }}</td>
-            <td>{{ proveedor.correo_prov }}</td>
-            <td>{{ proveedor.tel_prov }}</td>
-            <td> <a name="Editar" class="btn btn-primary" href="{% url "editar_proveedores" proveedor.id_prov %}" role="button">Editar</a>
-              | <a name="" id="" class="btn btn-danger" href="{% url "eliminar_proveedores" proveedor.id_prov %}" role="button">Borrar</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="text-center">No existen proveedores</td>
-          </tr>
-          {% endfor %}
-
-        </tbody>
-
-      </table>
+    <div class="tabla_proveedores">
+        <table class="tabla_proveedores_agregados">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>CUIT</th>
+                    <th>Correo electrónico</th>
+                    <th>Contacto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proveedor in proveedores %}
+                <tr>
+                    <td>{{ proveedor.id_prov }}</td>
+                    <td>{{ proveedor.nombre_prov }}</td>
+                    <td>{{ proveedor.cuit_prov }}</td>
+                    <td>{{ proveedor.correo_prov }}</td>
+                    <td>{{ proveedor.tel_prov }}</td>
+                     <td id="botones_editar_borrar">
+                        <a class="btn_editar_proveedor" href="{% url 'editar_proveedores' proveedor.id_prov %}">Editar</a>
+                        <a class="btn_borrar_proveedor" href="{% url 'eliminar_proveedores' proveedor.id_prov %}">Borrar</a>
+                     </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no_proveedor">No existen proveedores</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-  </div>
-  <a
-  name="agregar" class="btn_agregar" href="{% url "crear_proveedores" %}" role="button">Agregar Proveedor</a>
+    <div class="boton_agregar_proveedor">
+        <a href="{% url 'crear_proveedores' %}">Agregar Proveedor</a>
+    </div>
 </div>
-
-
-</div>
-
-
-
+<script src="/sistema/static/scripts/proveedores.js"></script>
 {% endblock %}

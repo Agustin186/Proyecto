@@ -1,0 +1,154 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    text-align: center;
+    color: #0056b3;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Contenedor principal */
+.contenedor_detalle_compra {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Información de la compra */
+.info_compra {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.info_compra p {
+    margin: 5px 0;
+}
+
+.info_compra strong {
+    color: #0056b3;
+}
+
+/* Tabla de detalle de compra */
+.tabla_detalle_compra {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla_detalle_compra thead th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_detalle_compra tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla_detalle_compra td {
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_detalle_compra tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.tabla_detalle_compra tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botón nueva compra */
+.boton_nueva_compra a {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.boton_nueva_compra a:hover {
+    background-color: #218838; /* Verde oscuro */
+}
+
+/* Scroll personalizado para tablas */
+.tabla_detalle_compra::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tabla_detalle_compra::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 5px;
+}
+
+.tabla_detalle_compra::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor_detalle_compra {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .info_compra {
+        font-size: 14px;
+    }
+
+    .tabla_detalle_compra thead th, 
+    .tabla_detalle_compra td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .boton_nueva_compra a {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 18px;
+    }
+
+    .info_compra {
+        font-size: 12px;
+    }
+
+    .tabla_detalle_compra thead th, 
+    .tabla_detalle_compra td {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .boton_nueva_compra a {
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+

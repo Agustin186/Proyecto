@@ -3,59 +3,60 @@
 {% block titulo %} Lista de Productos {% endblock %}
 
 {% block contenido %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div class="card">
-    <div class="card-header">Listar productos</div>
-    <div class="card-body">
-      <h4 class="card-title">Productos</h4>
-  
-      <div class="table-responsive">
-        <table class="table table-primary">
-          <thead>
-            <tr>
-              <th scope="col">Codigo</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Precio</th>
-              <th scope="col">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for producto in productos %}
-            <tr class="">
-              <td scope="row">{{ producto.id_prod }}</td>
-              <td>{{ producto.nombre_prod }}</td>
-              <td>{{ producto.precio_prod }}</td>
-              <td> <a name="Editar" class="btn btn-primary" href="{% url "editar_articulos" producto.id_prod %}" role="button">Editar</a>
-                | <a name="" id="" class="btn btn-danger" href="{% url "eliminar_producto" producto.id_prod %}" role="button">Borrar</a>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">No hay artículos disponibles.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-  
+<div class="contenedor_productos">
+    {% if messages %}
+    <div id="modal" class="modal restringuido">
+        <div class="modal-content restringuido">
+            <span class="close restringuido">&times;</span>
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+                {% endfor %}
+        </div>
     </div>
-    <a
-    name="agregar" class="btn btn-success" href="{% url "crear_articulos" %}" role="button">Agregar producto</a
-  >
-  </div>
-  
-  
-  </div>
-</body>
-</html>
+    {% endif %}
 
+    <h4 class="titulo_productos">Lista de productos</h4>
 
+    <!-- Barra de búsqueda -->
+    <input type="text" id="buscarProducto" class="form-control restringuido" placeholder="Buscar producto...">
+
+    <!-- Contenedor de tabla con scroll -->
+    <div class="contenedor_tabla_productos">
+        <table class="tabla_productos">
+            <thead>
+                <tr class="celdas_productos">
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock Actual</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="lista_productos">
+                {% for producto in productos %}
+                <tr class="restringuido">
+                    <td>{{ producto.id_prod }}</td>
+                    <td>{{ producto.nombre_prod }}</td>
+                    <td>{{ producto.precio_prod }}</td>
+                    <td>{{ producto.stock_actual }}</td>
+                    <td>
+                        <a class="btn_editar_producto " href="{% url 'editar_articulos' producto.id_prod %}">Editar</a>
+                        |
+                        <a class="btn_borrar_producto" href="{% url 'eliminar_producto' producto.id_prod %}">Borrar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="no_productos" style="display: none;">
+                    <td colspan="5">No hay artículos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn_agregar_producto" href="{% url 'crear_articulos' %}">Agregar producto</a>
+</div>
+
+<script src="/sistema/static/scripts/productos.js"></script>
 
 {% endblock %}

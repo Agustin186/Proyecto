@@ -1,0 +1,172 @@
+/*estilo general */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.titulo_proveedores {
+    text-align: center;
+    color: #0056b3;
+    margin-bottom: 10px;
+    font-size: 35px;
+}
+
+/* Contenedor principal */
+.contenedor_proveedores {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    height: 520px;
+}
+
+/* Tabla de proveedores */
+.tabla_proveedores {
+    max-height: 400px; /* Limita la altura del contenedor de la tabla */
+    overflow-y: auto; /* Scroll vertical en la tabla */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 350px;
+}
+
+.tabla_proveedores_agregados {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla_proveedores_agregados thead th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_proveedores_agregados tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla_proveedores_agregados td {
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_proveedores_agregados tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.tabla_proveedores_agregados tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botones de acciones */
+.btn_editar_proveedor {
+    color: #ffffff; /* Amarillo para el texto */
+    background-color: #ffc107;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn_editar_proveedor:hover {
+    background-color: #e0a800; /* Fondo amarillo oscuro al hover */
+    color: white;
+}
+
+#botones_editar_borrar{
+    display: flex;
+    justify-content: space-around;
+}
+.btn_borrar_proveedor {
+    color: #ffffff; /* Rojo para el texto */
+    background-color: #dc3545;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn_borrar_proveedor:hover {
+    background-color: #c82333; /* Fondo rojo oscuro al hover */
+    color: white;
+}
+
+/* Botón agregar proveedor */
+.boton_agregar_proveedor a {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.boton_agregar_proveedor a:hover {
+    background-color: #218838; /* Fondo verde oscuro al hover */
+}
+
+/* Scroll personalizado */
+.tabla_proveedores::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tabla_proveedores::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 5px;
+}
+
+.tabla_proveedores::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor_proveedores {
+        padding: 10px;
+    }
+
+    .titulo_proveedores {
+        font-size: 20px;
+    }
+
+    .tabla_proveedores_agregados thead th, .tabla_proveedores_agregados td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .boton_agregar_proveedor a {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo_proveedores {
+        font-size: 18px;
+    }
+
+    .tabla_proveedores_agregados thead th, .tabla_proveedores_agregados td {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .boton_agregar_proveedor a {
+        font-size: 12px;
+        padding: 6px;
+    }
+}

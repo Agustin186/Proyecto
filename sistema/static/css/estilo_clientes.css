@@ -1,0 +1,171 @@
+/* estilo general */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.titulo_clientes {
+    text-align: center;
+    color: #0056b3;
+    margin-bottom: 10px;
+    font-size: 35px;
+}
+
+/* Contenedor principal */
+.contenedor_clientes {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    height: 520px;
+}
+
+/* Tabla de clientes */
+.contenedor_tabla_clientes {
+    max-height: 400px; /* Limita la altura del contenedor de la tabla */
+    overflow-y: auto; /* Scroll vertical en la tabla */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 350px;
+}
+
+.tabla_clientes {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla_clientes thead th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_clientes tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla_clientes td {
+    padding: 10px;
+    text-align: center;
+}
+
+.tabla_clientes tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.tabla_clientes tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botones de acciones */
+#btn_editar_borrar_cliente{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.btn_editar_cliente {
+    color: #ffffff;
+    background-color: #ffc107; /* Amarillo */
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn_editar_cliente:hover {
+    background-color: #e0a800; /* Amarillo oscuro */
+}
+
+.btn_borrar_cliente {
+    color: #ffffff;
+    background-color: #dc3545; /* Rojo */
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn_borrar_cliente:hover {
+    background-color: #c82333; /* Rojo oscuro */
+}
+
+/* Botón agregar cliente */
+.boton_agregar_cliente a {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #28a745; /* Verde */
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.boton_agregar_cliente a:hover {
+    background-color: #218838; /* Verde oscuro */
+}
+
+/* Scroll personalizado */
+.contenedor_tabla_clientes::-webkit-scrollbar {
+    width: 8px;
+}
+
+.contenedor_tabla_clientes::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 5px;
+}
+
+.contenedor_tabla_clientes::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor_clientes {
+        padding: 10px;
+    }
+
+    .titulo_clientes {
+        font-size: 20px;
+    }
+
+    .tabla_clientes thead th, .tabla_clientes td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .boton_agregar_cliente a {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo_clientes {
+        font-size: 18px;
+    }
+
+    .tabla_clientes thead th, .tabla_clientes td {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .boton_agregar_cliente a {
+        font-size: 12px;
+        padding: 6px;
+    }
+}

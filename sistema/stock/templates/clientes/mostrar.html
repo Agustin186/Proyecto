@@ -1,51 +1,55 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block titulo %} Lista de Clientes {% endblock %}
 
 {% block contenido %}
+<div class="contenedor_clientes">
+    <div class="titulo_clientes">Lista de Clientes</div>
 
-<div class="box_principal">
-  <div class="Titulo">Lista de Clientes</div>
-  <div class="box_secundaria">
+    {% if messages %}
+    <div id="modal" class="modal restringuido">
+        <div class="modal-content restringuido">
+            <span class="close restringuido">&times;</span>
+            {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
-    <div class="table-responsive">
-      <table class="table table-primary">
-        <thead>
-          <tr>
-            <th scope="col">Codigo</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Apellido</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for cliente in clientes %}
-          <tr class="">
-            <td scope="row">{{ cliente.id_cli }}</td>
-            <td>{{ cliente.nombre_cli }}</td>
-            <td>{{ cliente.apellido_cli }}</td>
-            <td> <a name="Editar" class="btn btn-primary" href="{% url "editar_clientes" cliente.id_cli %}" role="button">Editar</a>
-              | <a name="borrar" class="btn btn-danger" href="{% url "eliminar_clientes" cliente.id_cli %}" role="button">Borrar</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="text-center">No existen clientes</td>  
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="contenedor_tabla_clientes">
+        <table class="tabla_clientes">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.id_cli }}</td>
+                    <td>{{ cliente.nombre_cli }}</td>
+                    <td>{{ cliente.apellido_cli }}</td>
+                    <td id="btn_editar_borrar_cliente">
+                        <a class="btn_editar_cliente" href="{% url 'editar_clientes' cliente.id_cli %}">Editar</a>
+                        <a class="btn_borrar_cliente" href="{% url 'eliminar_clientes' cliente.id_cli %}">Borrar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="no_clientes">No existen clientes</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-  </div>
-  <a
-  name="agregar" class="btn btn-success" href="{% url "crear_clientes" %}" role="button">Agregar cliente</a
->
+    <div class="boton_agregar_cliente">
+        <a href="{% url 'crear_clientes' %}">Agregar Cliente</a>
+    </div>
 </div>
-
-
-</div>
-
-
+<script src="/sistema/static/scripts/clientes.js"></script>
 
 {% endblock %}

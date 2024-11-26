@@ -4,24 +4,55 @@
 {% block titulo %}Inicio{% endblock %}
 
 {% block contenido %}
-    <div class="container mt-4">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Artículos</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for producto in productos %}
-                            <li class="list-group-item">
-                                {{ producto.nombre_prod }} - ${{ producto.precio_prod }}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">No hay artículos disponibles.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+<div class="contenedor_inicio">
+    <div class="titulo_inicio">
+        <h3>Ultimas 10 ventas del dia</h3>
+    </div>
+    <div class="contenedor_tabla_inicio">
+        <div class="tabla_inicio">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th>Fecha y Hora</th>
+                        <th>Empleado</th>
+                        <th>Cliente</th>
+                        <th>Total Venta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas_recientes %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ venta.fecha_hs|date:"d/m/Y H:i" }}</td>
+                        <td>{{ venta.id_caja }}</td>
+                        <td>
+                            {% if venta.id_cli %}
+                            {{ venta.id_cli.nombre_cli }} {{ venta.id_cli.apellido_cli }}
+                            {% else %}
+
+                            {% endif %}
+                        </td>
+
+                        <td>{{ venta.total_venta }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Filas vacías para completar hasta 10 -->
+                    {% for _ in filas_vacias %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+
+
+
 {% endblock %}

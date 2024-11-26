@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { font-size: 24px; color: #333; }
-        .venta-info { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table, th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #007bff; color: white; }
-    </style>
+    <link rel="stylesheet" href="/static/css/estilo_detalle_venta_pdf.css">
 </head>
 <body>
     <div class="header">
-        <h2>Detalle de Venta</h2>
+        <h2>Comprobante de Venta</h2>
+        <p class="nota">** Este comprobante no es válido como factura **</p>
     </div>
+
     <div class="venta-info">
-        <p><strong>ID Venta:</strong> {{ venta.id_venta }}</p>
+        <p><strong>Código de Venta:</strong> {{ venta.id_venta }}</p>
         <p><strong>Cliente:</strong> {{ venta.id_cli.nombre_cli }} {{ venta.id_cli.apellido_cli }}</p>
         <p><strong>Fecha:</strong> {{ venta.fecha_hs }}</p>
         <p><strong>Total:</strong> ${{ venta.total_venta }}</p>
     </div>
+
     <h3>Productos Vendidos</h3>
     <table>
         <thead>
@@ -31,6 +26,7 @@
                 <th>Subtotal</th>
             </tr>
         </thead>
+       <div class="productos"> 
         <tbody>
             {% for detalle in detalles %}
             <tr>
@@ -41,6 +37,12 @@
             </tr>
             {% endfor %}
         </tbody>
+       </div>
     </table>
+
+    <div class="footer">
+        <p>Gracias por su compra en SMARTCELL.</p>
+    </div>
 </body>
 </html>
+
