@@ -7,7 +7,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra más suave */
     width: 90%; /* Ancho dinámico */
     max-width: 1200px; /* Ancho máximo */
-    height: 73vh; /* Altura adecuada */
+    height: 72vh; /* Altura adecuada */
     display: flex;
     flex-direction: column;
     padding: 20px; /* Relleno interno */
@@ -31,6 +31,22 @@
     border-radius: 10px;
     padding: 10px; /* Espaciado interno */
     background-color: #ffffff; /* Fondo blanco para destacar las tablas */
+}
+#contenedor_volver{
+    align-content: flex-start;
+}
+
+#btn_volver_historial_caja{
+    width: 100px;
+    margin: 20px auto;
+    padding: 10px;
+    align-items: start;
+    text-align: center;
+    text-decoration: none;
+    background-color: #c93716;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;  
 }
 
 /* Tabla de movimientos */

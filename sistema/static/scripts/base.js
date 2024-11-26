@@ -1,4 +1,4 @@
- let tiempoInactividadPermitido = 50000
+ let tiempoInactividadPermitido = 5000000
  let temporizador;
 
  function resetearTemporizador() {

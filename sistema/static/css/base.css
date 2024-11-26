@@ -305,6 +305,7 @@ html {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    height: auto;
     /* Más profundidad en el contenedor principal */
 }
 
@@ -382,3 +383,6 @@ table tr:hover td {
     transition: background-color 0.3s ease;
     /* Animación suave */
 }
+
+
+

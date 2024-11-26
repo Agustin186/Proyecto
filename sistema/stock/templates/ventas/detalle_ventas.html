@@ -34,7 +34,8 @@
         </tbody>
     </table>
     <a href="{% url 'crear_venta' %}" id="pa_btn_volver" class="btn btn-primary">Nueva venta</a>
-    <a href="{% url 'generar_pdf' venta.id_venta %}" id="btn_imprimir" class="btn-primary">Imprimir</a>
+    <a href="{% url 'generar_pdf' venta.id_venta %}" id="btn_imprimir">Imprimir</a>
+    <a href="{% url 'historial_ventas' %}" id="btn_volver_historial">Historial</a>
 </div>
 <head>
     <link rel="stylesheet" href="/static/css/estilo_detalle_ventas.css"> 

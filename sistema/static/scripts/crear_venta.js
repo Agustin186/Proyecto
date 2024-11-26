@@ -1,7 +1,19 @@
 // Confirmación de la venta
+
 function ConfirmarVenta() {
+    const tablaVenta = document.querySelector('#tabla-venta tbody');
+
+    // Validar que haya al menos un producto en la tabla
+    if (tablaVenta.children.length === 0) {
+        alert('No puedes confirmar una venta sin agregar productos.');
+        return false; // Evita el envío del formulario
+    }
+
+    // Si hay productos, mostrar el mensaje de confirmación
     return confirm("¿Está seguro de confirmar la venta?");
 }
+
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const tablaVenta = document.querySelector('#tabla-venta tbody');

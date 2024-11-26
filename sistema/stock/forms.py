@@ -89,7 +89,7 @@ class EmpleadosForm(forms.ModelForm):
 class ProductosForm(forms.ModelForm):
     class Meta:
         model = Productos
-        fields = ['nombre_prod', 'precio_prod', 'stock_min', 'stock_max', 'stock_actual', 'punto_reposicion'] 
+        fields = ['nombre_prod', 'precio_prod', 'stock_min', 'stock_max', 'stock_actual', 'punto_reposicion',"precio_costo"] 
 
     def clean_nombre_prod(self):
         nombre_prod = self.cleaned_data.get('nombre_prod')

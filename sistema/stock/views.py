@@ -41,7 +41,7 @@ def procesar_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('inicio')  
+            return redirect('grafico_ventas')  
         else:
             messages.error(request, "Usuario o contraseña incorrecta")  
     return render(request, "procesar_login.html")
@@ -331,6 +331,10 @@ def registrar_egreso(request):
 #PRODUCTOS
 @login_required
 def mostrar_articulos(request):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permiso para realizar esta acción")
+        return redirect('grafico_ventas')
+
     producto=Productos.objects.all()
     return render(request, "articulos/mostrar.html",{"productos":producto})
 
@@ -424,7 +428,7 @@ def eliminar_clientes(request, id_cli):
 def mostrar_empleados(request):
     if not request.user.is_superuser:
         messages.error(request, "No tienes permiso para realizar esta acción")
-        return redirect('inicio')
+        return redirect('grafico_ventas')
     empleado=Empleados.objects.all()
     return render(request,"empleados/mostrar.html",{"empleados":empleado})
 
@@ -493,7 +497,7 @@ def registrar_accion(empleado, proceso):
 def mostrar_proveedores(request):
     if not request.user.is_superuser:
         messages.error(request, "No tienes permiso para realizar esta acción")
-        return redirect('inicio')
+        return redirect('grafico_ventas')
 
     proveedor= Proveedores.objects.all()
     return render(request, "proveedores/mostrar.html",{"proveedores": proveedor})
@@ -654,7 +658,6 @@ def det_venta(request, id_venta):
     return render(request, 'ventas/detalle_ventas.html', context)
 
 
-
 @login_required
 def GenerarPdf(request,id_venta ):
     venta=Ventas.objects.get(id_venta=id_venta)
@@ -698,24 +701,60 @@ def ventas_del_mes(request):
 
     return JsonResponse({'labels': labels, 'data': data})
 ##GRAFICO DE VENTAS
+from datetime import datetime, timedelta
+from django.shortcuts import render
+from django.db.models import Sum
+import pandas as pd
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+
 def grafico_ventas(request):
-    # Obtener datos de ventas
+    # Obtener los parámetros de fechas del formulario
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    limpiar = request.GET.get('limpiar')
+
+    # Obtener los datos de ventas
     ventas = Ventas.objects.all().values('fecha_hs', 'total_venta')
     df = pd.DataFrame(ventas)
 
-    # Verifica si hay datos
+    # Verificar si hay datos
     if df.empty:
         return render(request, 'ventas/grafico_ventas.html', {'grafico': None, 'mensaje': 'No hay datos de ventas para mostrar.'})
 
-    # Asegurarse de que total_venta sea numérico
+    # Asegurar que el total de la venta sea numérico
     df['total_venta'] = pd.to_numeric(df['total_venta'], errors='coerce')
     df = df.dropna(subset=['total_venta'])
 
-    # Procesar datos
+    # Convertir la columna de fecha a datetime
     df['fecha'] = pd.to_datetime(df['fecha_hs']).dt.date
+
+    # Determinar el rango de fechas
+    if limpiar:
+        # Mostrar los últimos 5 días
+        fecha_fin = datetime.now().date()
+        fecha_inicio = fecha_fin - timedelta(days=5)
+    elif fecha_inicio and fecha_fin:
+        # Convertir las fechas ingresadas
+        fecha_inicio = pd.to_datetime(fecha_inicio).date()
+        fecha_fin = pd.to_datetime(fecha_fin).date()
+    else:
+        # Mostrar los últimos 5 días si no hay filtros
+        fecha_fin = datetime.now().date()
+        fecha_inicio = fecha_fin - timedelta(days=5)
+
+    # Filtrar por rango de fechas
+    df = df[(df['fecha'] >= fecha_inicio) & (df['fecha'] <= fecha_fin)]
+
+    # Verificar si hay datos después del filtro
+    if df.empty:
+        return render(request, 'ventas/grafico_ventas.html', {'grafico': None, 'mensaje': 'No hay datos de ventas para el rango seleccionado.'})
+
+    # Procesar los datos agrupándolos por fecha
     ventas_diarias = df.groupby('fecha')['total_venta'].sum()
 
-    # Crear gráfico
+    # Crear el gráfico
     plt.figure(figsize=(10, 5))
     ventas_diarias.plot(kind='bar', color='skyblue', edgecolor='black')
     plt.title('Ventas Diarias')
@@ -724,7 +763,7 @@ def grafico_ventas(request):
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    # Convertir gráfico a imagen
+    # Convertir el gráfico a imagen
     buffer = BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
@@ -733,14 +772,64 @@ def grafico_ventas(request):
 
     grafico_base64 = base64.b64encode(image_png).decode('utf-8')
 
-    return render(request, 'ventas/grafico_ventas.html', {'grafico': grafico_base64})
+    return render(request, 'ventas/grafico_ventas.html', {
+        'grafico': grafico_base64,
+        'mensaje': None,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin
+    })
+def grafico_ventas_semanales(request):
+    # Obtener los datos de ventas
+    ventas = Ventas.objects.all().values('fecha_hs', 'total_venta')
+    df = pd.DataFrame(ventas)
 
+    # Verificar si hay datos
+    if df.empty:
+        return render(request, 'ventas/grafico_ventas_semanales.html', {'grafico': None, 'mensaje': 'No hay datos de ventas para mostrar.'})
+
+    # Asegurar que el total de la venta sea numérico
+    df['total_venta'] = pd.to_numeric(df['total_venta'], errors='coerce')
+    df = df.dropna(subset=['total_venta'])
+
+    # Convertir la columna de fecha a datetime
+    df['fecha'] = pd.to_datetime(df['fecha_hs'])
+
+    # Crear una columna de semana (año + número de semana)
+    df['semana'] = df['fecha'].dt.to_period('W').apply(lambda r: r.start_time)
+
+    # Agrupar por semana y sumar las ventas
+    ventas_semanales = df.groupby('semana')['total_venta'].sum()
+
+    # Crear el gráfico de líneas
+    plt.figure(figsize=(10, 5))
+    plt.plot(ventas_semanales.index, ventas_semanales.values, marker='o', linestyle='-', color='blue', label='Ventas Semanales')
+    plt.title('Ventas Semanales', fontsize=16, fontweight='bold')
+    plt.xlabel('Semana', fontsize=12)
+    plt.ylabel('Total Ventas', fontsize=12)
+    plt.xticks(rotation=45, fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+
+    # Convertir el gráfico a imagen
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    grafico_base64 = base64.b64encode(image_png).decode('utf-8')
+
+    return render(request, 'ventas/grafico_ventas_semanales.html', {
+        'grafico': grafico_base64,
+        'mensaje': None
+    })
 #COMPRAS   
 @login_required
 def crear_compra(request):
     if not request.user.is_superuser:
         messages.error(request, "No tienes permiso para realizar compras.")
-        return redirect('inicio')
+        return redirect('grafico_ventas')
      
     proveedores = Proveedores.objects.all()
     productos = Productos.objects.all()
@@ -816,7 +905,7 @@ def det_compra(request, id_compra):
 def historial_compra(request):
     if not request.user.is_superuser:
         messages.error(request, "No tienes permiso para realizar esta acción.")
-        return redirect('inicio')
+        return redirect('grafico_ventas')
     # Obtener todas las compras ordenadas por fecha (la más reciente primero)
     compras = Compras.objects.all().order_by('-fecha_compra')
 

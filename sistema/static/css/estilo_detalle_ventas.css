@@ -58,6 +58,19 @@
     padding: 10px;
     text-align: center;
     text-decoration: none;
+    background-color: #16c91c;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#btn_volver_historial{
+
+    width: 100px;
+    margin: 20px auto;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
     background-color: #c93716;
     color: white;
     border-radius: 5px;

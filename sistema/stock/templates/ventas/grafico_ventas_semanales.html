@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<h1>Gráfico de Ventas Semanales</h1>
+
+<!-- Mostrar el gráfico o un mensaje -->
+{% if grafico %}
+    <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de Ventas Semanales">
+{% else %}
+    <p>{{ mensaje }}</p>
+{% endif %}
+{% endblock %}

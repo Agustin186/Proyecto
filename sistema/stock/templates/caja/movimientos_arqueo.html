@@ -2,8 +2,13 @@
 {% load static %}
 {% block titulo %}Movimientos de Caja{% endblock %}
 {% block contenido %}
+
 <div id="pa_contenedor_movimientos">
-    <h2>Movimientos de Caja {{ caja.id_caja }} - {{ caja.fecha_hs_apertura }}</h2>
+    <div id="contenedor_volver">
+     <a href="{% url 'historial_arqueo' %}" id="btn_volver_historial_caja">Volver</a>
+    </div>
+     <h2 id="titulo_fecha">Movimientos de Caja Nro: "{{ caja.id_caja }}" <br> FECHA: {{ caja.fecha_hs_apertura }}</h2>
+    
     <div class="table-container">
         <table>
             <thead>
